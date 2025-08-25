@@ -9,13 +9,67 @@ const HeroSection = () => {
   useEffect(() => {
     setIsVisible(true);
   }, []);
+
+  // Slideshow Banner 컴포넌트
+  const SlideshowBanner = () => {
+    const images = [
+      "images/banner1.png",
+      "images/banner2.png",
+      "images/banner3.png",
+      "images/banner4.png",
+      "images/banner5.png"
+    ];
+
+    const [currIndex, setCurrIndex] = useState(0);  // 현재 보여주는 배너 index
+
+    useEffect(() => {
+      const interval = setInterval(() => {
+        setCurrIndex((prevIndex) => (prevIndex + 1) % images.length);
+      }, 5000);
+      return () => {
+        clearInterval(interval);
+      };
+    }, [images.length, currIndex]);
+
+    return (
+      <>
+        <div>
+          {
+            images.map((src, index) => (
+              <img
+                key={index}
+                src={src}
+                alt={`Banner ${index + 1}`}
+                className={`absolute inset-0 w-full h-full object-cover transition-opacity ${
+                  index === currIndex ? 'opacity-100' : 'opacity-0'
+                }`}
+              />
+            ))
+          }
+        </div>
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2 z-10">
+          {images.map((_, index) => (
+            <button
+              type="button"
+              key={index}
+              onClick={() => setCurrIndex(index)}
+              className={`w-3 h-3 rounded-full transition ${
+                index === currIndex ? "bg-white" : "bg-white/50"
+              }`}
+            />
+          ))}
+        </div>
+      </>
+    );
+  };
+
   return (
-    <section id="hero" className="relative min-h-screen flex items-center overflow-hidden">
+    <section id="hero" className="relative min-h-screen flex items-center overflow-hidden z-1">
       {/* Animated Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary via-secondary to-primary animate-gradient" />
+      {/* <div className="absolute inset-0 bg-gradient-to-br from-primary via-secondary to-primary animate-gradient" /> */}
       
       {/* Floating Particles */}
-      <div className="absolute inset-0">
+      {/* <div className="absolute inset-0" style={{ backgroundImage : "url('images/banner1.png')", backgroundSize: 'cover' }}>
         {[...Array(20)].map((_, i) => (
           <div
             key={i}
@@ -28,7 +82,10 @@ const HeroSection = () => {
             }}
           />
         ))}
-      </div>
+      </div> */}
+
+      {/* Slideshow Banner */}
+      <SlideshowBanner />
       
       {/* Overlay */}
       <div className="absolute inset-0 bg-black/20" />
@@ -39,10 +96,10 @@ const HeroSection = () => {
             isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
           }`}>
             <p className="text-lg md:text-xl font-medium opacity-90 animate-slideInLeft">
-              고민하지마세요 저선있으니까요
+              고민하지마세요 자신있으니까요
             </p>
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight animate-fadeIn">
-              청소는 <span className="text-white drop-shadow-2xl">온다클린</span>에서
+              청소는 <span className="text-white drop-shadow-2xl">케어빌</span>에서
             </h1>
           </div>
           
@@ -52,7 +109,7 @@ const HeroSection = () => {
           }`}>
             <Badge className="glass text-white border-white/30 px-8 py-3 text-lg font-semibold flex items-center gap-2 hover:scale-105 transition-transform cursor-pointer">
               <Sparkles className="h-5 w-5 animate-pulse" />
-              국내 1위 프리미엄 청소업체 온다클린
+              프리미엄 청소업체 케어빌
             </Badge>
           </div>
           

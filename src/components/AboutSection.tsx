@@ -25,11 +25,10 @@ const AboutSection = () => {
       <div className="container mx-auto px-6">
         <div className="text-center mb-12 animate-fadeIn">
           <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gradient">
-            온다클린을 선택하는 이유
+            생활 공간을 돌보다, ㈜케어빌입니다.
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            대한민국 No.1 청소 전문 기업 온다클린은 
-            고객님의 깨끗한 공간을 위해 최선을 다합니다
+            케어빌은 고객님의 일상에 따뜻한 변화를 더하는 생활 공간 케어 전문기업입니다.
           </p>
         </div>
 
@@ -39,9 +38,10 @@ const AboutSection = () => {
               프리미엄 청소 서비스의 기준
             </h3>
             <p className="text-muted-foreground leading-relaxed">
-              온다클린은 단순한 청소가 아닌, 고객님의 건강하고 쾌적한 생활 공간을 
-              만들어드리는 것을 목표로 합니다. 최첨단 장비와 친환경 세제를 사용하여 
-              깨끗함은 물론 안전함까지 보장합니다.
+              우리는 고객 한 분 한 분의 공간을 정성껏 돌보고, 신뢰로 책임지는 생활관리 파트너가 되고자 합니다.
+              눈에 보이는 청결은 물론, 보이지 않는 편안함까지 전하는 것을 케어빌의 소중한 가치로 삼고 있습니다.
+              당신의 일상에 편안함과 감동을 선물하는 브랜드, 
+              (주)케어빌을 찾아주셔서 감사합니다.
             </p>
             <ul className="space-y-3">
               {[
