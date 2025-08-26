@@ -58,15 +58,15 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px]">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
+        <DialogHeader className="mb-0">
           <DialogTitle>상담 신청</DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="py-0 mb-0">
             문의 내용을 작성해주시면 빠르게 연락드리겠습니다.
           </DialogDescription>
         </DialogHeader>
-        <Card className="p-6 border-none shadow-none">
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <Card className="px-6 pb-0 pt-0 border-none shadow-none">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="nm">고객명</Label>
