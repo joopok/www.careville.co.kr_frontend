@@ -15,14 +15,14 @@ const Header = () => {
   }, []);
 
   const menuItems = [
-    { name: "케어빌", href: "#about" },
-    { name: "홈클리닝", href: "#home-cleaning" }, 
+    // { name: "케어빌"      , href: "#about" }, // #about 섹션이 없어져서 주석 처리
+    { name: "홈클리닝"    , href: "#home-cleaning" }, 
     { name: "사업장클리닝", href: "#business-cleaning" },
-    { name: "특수청소", href: "#special-cleaning" },
-    { name: "작업후기", href: "#reviews" },
-    { name: "공지&리뷰", href: "#notice" },
-    { name: "CS 센터", href: "#contact" },
-    { name: "부가서비스", href: "#additional" }
+    { name: "특수청소"    , href: "#special-cleaning" },
+    { name: "작업후기"    , href: "#reviews" },
+    { name: "질문"        , href: "#notice" },
+    { name: "CS 센터"     , href: "#contact" },
+    { name: "부가서비스"  , href: "#additional" }
   ];
 
   const scrollToSection = (href: string) => {
@@ -34,7 +34,7 @@ const Header = () => {
   };
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-20 transition-all duration-300 ${
+    <header className={`fixed top-0 left-0 right-0 z-30 transition-all duration-300 ${
       isScrolled 
         ? 'bg-white/95 backdrop-blur-lg shadow-lg border-b border-purple-100' 
         : 'bg-transparent'
