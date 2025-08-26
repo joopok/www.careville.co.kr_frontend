@@ -22,36 +22,11 @@ const Footer = () => {
 
   return (
     <footer className="bg-gradient-to-b from-background to-card border-t">
-      {/* Newsletter Section */}
-      <div className="bg-primary/5 border-b">
-        <div className="container mx-auto px-4 py-12">
-          <div className="max-w-4xl mx-auto text-center">
-            <div className="flex items-center justify-center gap-2 mb-4">
-              <Sparkles className="w-5 h-5 text-primary" />
-              <h3 className="text-2xl font-bold">최신 소식과 특별 할인을 받아보세요</h3>
-            </div>
-            <p className="text-muted-foreground mb-6">
-              케어빌의 새로운 서비스와 프로모션 정보를 가장 먼저 만나보세요
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-              <input
-                type="email"
-                placeholder="이메일 주소를 입력하세요"
-                className="flex-1 px-4 py-2 rounded-lg border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
-              />
-              <Button size="lg" className="whitespace-nowrap">
-                구독하기 <ChevronRight className="w-4 h-4 ml-1" />
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Main Footer Content */}
       <div className="container mx-auto px-4 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8 lg:gap-10">
           {/* Company Info */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-5">
             <div>
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center shadow-lg">
@@ -207,13 +182,6 @@ const Footer = () => {
                 </a>
               </li>
               <li className="flex items-start gap-3 text-muted-foreground">
-                <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                <div>
-                  <p className="font-semibold text-foreground">서울특별시 강남구</p>
-                  <p className="text-sm">테헤란로 123, 케어빌타워 5층</p>
-                </div>
-              </li>
-              <li className="flex items-start gap-3 text-muted-foreground">
                 <Clock className="w-4 h-4 mt-0.5 flex-shrink-0" />
                 <div>
                   <p className="font-semibold text-foreground">운영시간</p>
@@ -223,36 +191,44 @@ const Footer = () => {
               </li>
             </ul>
           </div>
+
+          {/* Company Details */}
+          <div className="lg:col-span-2">
+            <h4 className="font-bold text-foreground mb-6 text-lg">사업자 정보</h4>
+            <div className="space-y-3 text-sm text-muted-foreground">
+              <div className="flex flex-col space-y-2">
+                <div className="flex items-start gap-2">
+                  <span className="font-semibold min-w-[80px]">상호명:</span>
+                  <span>(주)케어빌</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="font-semibold min-w-[80px]">대표이사:</span>
+                  <span>홍길동</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="font-semibold min-w-[80px]">사업자번호:</span>
+                  <span>123-45-67890</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="font-semibold min-w-[80px]">통신판매업:</span>
+                  <span>제2024-서울강남-1234호</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="font-semibold min-w-[80px]">주소:</span>
+                  <span>서울특별시 강남구 테헤란로 123, 케어빌타워 5층</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="font-semibold min-w-[80px]">개인정보:</span>
+                  <span>김철수 (privacy@careville.co.kr)</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <Separator className="my-12" />
 
         {/* Bottom Footer */}
         <div className="space-y-6">
-          {/* Quick Links */}
-          <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground justify-center">
-            <a href="#" className="hover:text-primary transition-colors">이용약관</a>
-            <a href="#" className="hover:text-primary transition-colors font-semibold">개인정보처리방침</a>
-            <a href="#" className="hover:text-primary transition-colors">위치기반서비스 이용약관</a>
-            <a href="#" className="hover:text-primary transition-colors">사업자정보 확인</a>
-            <a href="#" className="hover:text-primary transition-colors">제휴 문의</a>
-            <a href="#" className="hover:text-primary transition-colors">고객센터</a>
-          </div>
-
-          {/* Company Details */}
-          <div className="text-center text-xs text-muted-foreground space-y-2">
-            <p>
-              (주)케어빌 | 대표이사: 홍길동 | 사업자등록번호: 123-45-67890 | 통신판매업신고: 제2024-서울강남-1234호
-            </p>
-            <p>
-              주소: 서울특별시 강남구 테헤란로 123, 케어빌타워 5층 | 개인정보관리책임자: 김철수 (privacy@careville.co.kr)
-            </p>
-            <p>
-              호스팅 서비스: Amazon Web Services (AWS) | 구매안전서비스: 고객님은 안전거래를 위해 현금 등으로 결제 시 저희 쇼핑몰에서 가입한 구매안전서비스를 이용하실 수 있습니다.
-            </p>
-          </div>
-
-          {/* Copyright */}
           <div className="text-center pt-6 border-t">
             <p className="text-sm text-muted-foreground">
               &copy; {currentYear} CareVille. All rights reserved. Made with ❤️ for clean and healthy spaces.

@@ -65,19 +65,19 @@ const PricingSection = () => {
     special: [
       {
         id: 4,
-        name: "에어컨 전문 케어 청소",
-        description: "천장형, 벽걸이형, 스탠드형 에어컨 완전분해 항균세척",
+        name: "에어컨 설치 및 수리 전문",
+        description: "천장형, 벽걸이형, 스탠드형 에어컨 설치, 수리, 청소 통합 서비스",
         price: "90,000",
         originalPrice: "120,000",
         discount: "25%",
         features: [
-          "에어컨 완전 분해",
-          "항균 세척 및 소독",
-          "필터 교체 서비스",
-          "성능 점검",
-          "1년 보증 서비스"
+          "신규 에어컨 전문 설치",
+          "고장 진단 및 수리",
+          "냉매 충전 서비스",
+          "완전 분해 세척",
+          "1년 A/S 보증"
         ],
-        duration: "2시간",
+        duration: "2-3시간",
         popular: true
       },
       {
@@ -113,11 +113,45 @@ const PricingSection = () => {
         ],
         duration: "6-7시간",
         popular: true
+      },
+      {
+        id: 7,
+        name: "주방 시공",
+        description: "주방 리모델링 및 싱크대 교체 전문",
+        price: "450,000",
+        originalPrice: "550,000",
+        discount: "18%",
+        features: [
+          "싱크대 완전 교체",
+          "상부장/하부장 설치",
+          "수전 및 배관 교체",
+          "타일 시공 가능",
+          "2년 시공 보증"
+        ],
+        duration: "1-2일",
+        popular: false
+      },
+      {
+        id: 8,
+        name: "층간소음 매트 시공",
+        description: "프리미엄 층간소음 방지 매트 설치",
+        price: "180,000",
+        originalPrice: "220,000",
+        discount: "18%",
+        features: [
+          "고밀도 흡음재 사용",
+          "전문가 정밀 시공",
+          "바닥 평탄화 작업",
+          "친환경 인증 자재",
+          "10년 품질 보증"
+        ],
+        duration: "4-5시간",
+        popular: true
       }
     ],
     business: [
       {
-        id: 7,
+        id: 9,
         name: "소형 사무실 청소",
         description: "30평 이하 사무실 정기 청소",
         price: "150,000",
@@ -134,7 +168,7 @@ const PricingSection = () => {
         popular: false
       },
       {
-        id: 8,
+        id: 10,
         name: "매장 전문 청소",
         description: "카페, 음식점, 소매점 청소",
         price: "200,000",
@@ -151,7 +185,7 @@ const PricingSection = () => {
         popular: true
       },
       {
-        id: 9,
+        id: 11,
         name: "대형 사무실 청소",
         description: "100평 이상 사무실 청소",
         price: "400,000",
@@ -184,14 +218,14 @@ const PricingSection = () => {
         >
           <Badge className="mb-4" variant="secondary">
             <Sparkles className="w-3 h-3 mr-1" />
-            투명한 가격 정책
+            명확한 가격 정책
           </Badge>
           <h2 className="text-4xl font-bold mb-4">
-            합리적이고 <span className="text-primary">투명한 가격</span>
+            투명하고 <span className="text-primary">합리적인 가격</span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            숨겨진 비용 없이 정직한 가격으로 최상의 서비스를 제공합니다.
-            모든 가격은 VAT 포함이며, 추가 비용은 없습니다.
+            추가 비용 걱정 없는 정직한 가격 정책으로 신뢰를 드립니다.
+            모든 서비스 가격은 VAT 포함이며, 숨겨진 비용은 일체 없습니다.
           </p>
         </motion.div>
 
