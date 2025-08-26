@@ -15,7 +15,7 @@ const Header = () => {
   }, []);
 
   const menuItems = [
-    { name: "온다클린", href: "#about" },
+    { name: "케어빌", href: "#about" },
     { name: "홈클리닝", href: "#home-cleaning" }, 
     { name: "사업장클리닝", href: "#business-cleaning" },
     { name: "특수청소", href: "#special-cleaning" },
@@ -43,9 +43,9 @@ const Header = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center space-x-2 group cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-            <Sparkles className="h-6 w-6 text-primary animate-pulse" />
-            <div className="text-2xl font-bold text-gradient">온다클린</div>
-            <div className={`text-xs transition-colors ${isScrolled ? 'text-muted-foreground' : 'text-white/80'}`}>청소는 역시</div>
+            {/* <Sparkles className="h-6 w-6 text-primary animate-pulse" /> */}
+            <div className="text-2xl font-bold text-gradient">케어빌</div>
+            <div className={`text-xs transition-colors ${isScrolled ? 'text-muted-foreground' : 'text-white/80'}`}>carevile</div>
           </div>
 
           {/* Desktop Navigation */}
