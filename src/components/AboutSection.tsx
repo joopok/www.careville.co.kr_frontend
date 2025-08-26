@@ -15,7 +15,7 @@ const AboutSection = () => {
     },
     {
       icon: Clock,
-      title: "신속한 대응",
+      title: "신속한 우리들의 대응",
       description: "24시간 내 방문 상담 가능"
     }
   ];

@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(lsof:*)",
-      "Bash(npm run dev:*)"
+      "Bash(npm run dev:*)",
+      "WebFetch(domain:ontotalcare.co.kr)",
+      "Bash(npm install:*)"
     ],
     "deny": [],
     "ask": []

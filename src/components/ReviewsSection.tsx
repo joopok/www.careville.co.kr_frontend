@@ -1,9 +1,19 @@
 import { Card } from "@/components/ui/card";
-import { Star, Quote, ThumbsUp, MessageSquare } from "lucide-react";
-import { useState } from "react";
+import { Star, Quote, ThumbsUp, MessageSquare, ChevronLeft, ChevronRight } from "lucide-react";
+import { useState, useRef } from "react";
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination, Grid, Autoplay } from 'swiper/modules';
+import type { Swiper as SwiperType } from 'swiper';
+
+// Import Swiper styles
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import 'swiper/css/grid';
 
 const ReviewsSection = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const swiperRef = useRef<SwiperType>();
 
   const reviews = [
     {
@@ -45,6 +55,46 @@ const ReviewsSection = () => {
       date: "2023.12.28",
       content: "10년 살던 집인데 새집처럼 깨끗해졌어요. 보증금도 전액 돌려받았습니다!",
       likes: 55
+    },
+    {
+      id: 5,
+      category: "home",
+      name: "정수아",
+      service: "정기 청소",
+      rating: 5,
+      date: "2024.01.20",
+      content: "매월 정기청소 서비스를 이용하고 있는데, 항상 친절하고 꼼꼼하게 청소해주세요.",
+      likes: 33
+    },
+    {
+      id: 6,
+      category: "business",
+      name: "강민수",
+      service: "매장 청소",
+      rating: 5,
+      date: "2024.01.18",
+      content: "카페 운영중인데 새벽 시간에 와서 깔끔하게 청소해주셔서 너무 좋아요.",
+      likes: 45
+    },
+    {
+      id: 7,
+      category: "special",
+      name: "윤지원",
+      service: "곰팡이 제거",
+      rating: 5,
+      date: "2024.01.12",
+      content: "욕실 곰팡이가 심했는데 완전히 제거해주시고 예방법까지 알려주셨어요.",
+      likes: 58
+    },
+    {
+      id: 8,
+      category: "home",
+      name: "송현우",
+      service: "대청소",
+      rating: 5,
+      date: "2024.01.08",
+      content: "명절 대청소 서비스 정말 만족합니다. 온 가족이 편하게 명절을 보냈어요.",
+      likes: 41
     }
   ];
 
@@ -59,8 +109,48 @@ const ReviewsSection = () => {
     ? reviews 
     : reviews.filter(r => r.category === selectedCategory);
 
+  // Group reviews in pairs for 2x2 grid display
+  const groupedReviews = [];
+  for (let i = 0; i < filteredReviews.length; i += 4) {
+    groupedReviews.push(filteredReviews.slice(i, i + 4));
+  }
+
+  const ReviewCard = ({ review }: { review: typeof reviews[0] }) => (
+    <Card className="h-full p-6 hover:shadow-lg transition-all duration-300 bg-white">
+      <div className="flex items-start gap-4">
+        <Quote className="h-8 w-8 text-primary/20 flex-shrink-0" />
+        <div className="flex-1">
+          <div className="flex items-start justify-between mb-3">
+            <div>
+              <div className="font-semibold text-lg">{review.name}</div>
+              <div className="text-sm text-muted-foreground">
+                {review.service} • {review.date}
+              </div>
+            </div>
+            <div className="flex gap-0.5">
+              {[...Array(review.rating)].map((_, i) => (
+                <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+              ))}
+            </div>
+          </div>
+          
+          <p className="text-gray-700 mb-4 leading-relaxed line-clamp-3">
+            {review.content}
+          </p>
+          
+          <div className="flex items-center gap-4 text-sm">
+            <button className="flex items-center gap-1 text-muted-foreground hover:text-primary transition-colors">
+              <ThumbsUp className="h-4 w-4" />
+              <span>도움이 돼요 ({review.likes})</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </Card>
+  );
+
   return (
-    <section id="reviews" className="py-20 bg-white">
+    <section id="reviews" className="py-20 bg-gradient-to-b from-white to-gray-50">
       <div className="container mx-auto px-6">
         <div className="text-center mb-12 animate-fadeIn">
           <div className="inline-flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full mb-4">
@@ -71,7 +161,7 @@ const ReviewsSection = () => {
             고객님들의 생생한 후기
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            온다클린을 경험하신 고객님들의 진솔한 이야기를 들어보세요
+            케어빌을 경험하신 고객님들의 진솔한 이야기를 들어보세요
           </p>
         </div>
 
@@ -91,58 +181,83 @@ const ReviewsSection = () => {
           ))}
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6">
-          {filteredReviews.map((review, index) => (
-            <Card 
-              key={review.id}
-              className="p-6 hover:shadow-lg transition-all duration-300 animate-fadeIn"
-              style={{ animationDelay: `${index * 100}ms` }}
-            >
-              <div className="flex items-start gap-4">
-                <Quote className="h-8 w-8 text-primary/20 flex-shrink-0" />
-                <div className="flex-1">
-                  <div className="flex items-start justify-between mb-3">
-                    <div>
-                      <div className="font-semibold text-lg">{review.name}</div>
-                      <div className="text-sm text-muted-foreground">
-                        {review.service} • {review.date}
-                      </div>
-                    </div>
-                    <div className="flex gap-0.5">
-                      {[...Array(review.rating)].map((_, i) => (
-                        <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                      ))}
-                    </div>
-                  </div>
-                  
-                  <p className="text-gray-700 mb-4 leading-relaxed">
-                    {review.content}
-                  </p>
-                  
-                  <div className="flex items-center gap-4 text-sm">
-                    <button className="flex items-center gap-1 text-muted-foreground hover:text-primary transition-colors">
-                      <ThumbsUp className="h-4 w-4" />
-                      <span>도움이 돼요 ({review.likes})</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </Card>
-          ))}
-        </div>
+        <div className="relative max-w-6xl mx-auto">
+          {/* Custom Navigation Buttons */}
+          <button
+            onClick={() => swiperRef.current?.slidePrev()}
+            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 md:-translate-x-12 z-10 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-colors"
+          >
+            <ChevronLeft className="w-6 h-6 text-gray-600" />
+          </button>
+          <button
+            onClick={() => swiperRef.current?.slideNext()}
+            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 md:translate-x-12 z-10 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-colors"
+          >
+            <ChevronRight className="w-6 h-6 text-gray-600" />
+          </button>
 
-        <div className="mt-12 text-center">
-          <Card className="inline-block p-6 bg-gradient-to-r from-yellow-50 to-orange-50 border-yellow-200">
-            <div className="flex items-center gap-2 mb-2">
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} className="h-6 w-6 fill-yellow-400 text-yellow-400" />
-              ))}
-            </div>
-            <div className="text-2xl font-bold mb-1">평균 4.9점</div>
-            <div className="text-muted-foreground">12,000+ 고객 리뷰 기준</div>
-          </Card>
+          <Swiper
+            onBeforeInit={(swiper) => {
+              swiperRef.current = swiper;
+            }}
+            modules={[Navigation, Pagination, Grid, Autoplay]}
+            spaceBetween={20}
+            slidesPerView={1}
+            grid={{
+              rows: 2,
+              fill: 'row'
+            }}
+            pagination={{
+              clickable: true,
+              dynamicBullets: true,
+            }}
+            autoplay={{
+              delay: 5000,
+              disableOnInteraction: false,
+            }}
+            breakpoints={{
+              768: {
+                slidesPerView: 2,
+                grid: {
+                  rows: 2,
+                  fill: 'row'
+                }
+              }
+            }}
+            className="reviews-swiper pb-12"
+            style={{
+              '--swiper-pagination-color': 'hsl(var(--primary))',
+              '--swiper-pagination-bullet-inactive-color': '#e5e7eb',
+              '--swiper-pagination-bullet-inactive-opacity': '1',
+              '--swiper-pagination-bullet-size': '8px',
+              '--swiper-pagination-bullet-horizontal-gap': '6px'
+            } as React.CSSProperties}
+          >
+            {filteredReviews.map((review) => (
+              <SwiperSlide key={review.id}>
+                <div className="h-full pb-2">
+                  <ReviewCard review={review} />
+                </div>
+              </SwiperSlide>
+            ))}
+          </Swiper>
         </div>
       </div>
+
+      <style jsx global>{`
+        .reviews-swiper .swiper-wrapper {
+          padding-bottom: 2rem;
+        }
+        .reviews-swiper .swiper-pagination {
+          bottom: 0;
+        }
+        .reviews-swiper .swiper-slide {
+          height: auto;
+        }
+        .reviews-swiper .swiper-grid-column > .swiper-wrapper {
+          flex-direction: column;
+        }
+      `}</style>
     </section>
   );
 };
