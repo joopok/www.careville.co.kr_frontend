@@ -1,4 +1,3 @@
-
 import { Card } from "@/components/ui/card";
 import { Star, Quote, ThumbsUp, MessageSquare, ChevronLeft, ChevronRight } from "lucide-react";
 import { useState, useRef, memo } from "react";
@@ -16,9 +15,8 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import 'swiper/css/grid';
-import './ReviewsSection.css';
 
-const ReviewsSection = () => {
+const ReviewsSection2 = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const swiperRef = useRef<SwiperType>(null);
 
@@ -112,6 +110,7 @@ const ReviewsSection = () => {
     content: "",
   });
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -122,21 +121,34 @@ const ReviewsSection = () => {
     setNewReview(prev => ({ ...prev, rating }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const newReviewData = {
-      id: reviews.length + 1,
-      category: "home", // Or determine based on service
-      name: newReview.name,
-      service: newReview.service,
-      rating: newReview.rating,
-      date: new Date().toISOString().split('T')[0].replace(/-/g, '.'),
-      content: newReview.content,
-      likes: 0,
-    };
-    setReviews(prev => [newReviewData, ...prev]);
-    setNewReview({ name: "", service: "", rating: 5, content: "" });
-    setIsDialogOpen(false);
+    setIsLoading(true);
+
+    try {
+      const response = await fetch('/api/reviews', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newReview),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to submit review');
+      }
+
+      const savedReview = await response.json();
+
+      setReviews(prev => [savedReview, ...prev]);
+      setNewReview({ name: "", service: "", rating: 5, content: "" });
+      setIsDialogOpen(false);
+    } catch (error) {
+      console.error(error);
+      // Here you could show an error message to the user
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const categories = [
@@ -245,7 +257,9 @@ const ReviewsSection = () => {
                   </div>
                 </div>
                 <DialogFooter>
-                  <Button type="submit">제출하기</Button>
+                  <Button type="submit" disabled={isLoading}>
+                    {isLoading ? '제출 중...' : '제출하기'}
+                  </Button>
                 </DialogFooter>
               </form>
             </DialogContent>
@@ -330,8 +344,23 @@ const ReviewsSection = () => {
           </Swiper>
         </div>
       </div>
+
+      <style jsx global>{`
+        .reviews-swiper .swiper-wrapper {
+          padding-bottom: 2rem;
+        }
+        .reviews-swiper .swiper-pagination {
+          bottom: 0;
+        }
+        .reviews-swiper .swiper-slide {
+          height: auto;
+        }
+        .reviews-swiper .swiper-grid-column > .swiper-wrapper {
+          flex-direction: column;
+        }
+      `}</style>
     </section>
   );
 };
 
-export default memo(ReviewsSection);
+export default memo(ReviewsSection2);
