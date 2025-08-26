@@ -15,14 +15,14 @@ const Header = () => {
   }, []);
 
   const menuItems = [
-    { name: "케어빌", href: "#about" },
-    { name: "홈클리닝", href: "#home-cleaning" }, 
+    // { name: "케어빌"      , href: "#about" }, // #about 섹션이 없어져서 주석 처리
+    { name: "홈클리닝"    , href: "#home-cleaning" }, 
     { name: "사업장클리닝", href: "#business-cleaning" },
-    { name: "특수청소", href: "#special-cleaning" },
-    { name: "작업후기", href: "#reviews" },
-    { name: "공지&리뷰", href: "#notice" },
-    { name: "CS 센터", href: "#contact" },
-    { name: "부가서비스", href: "#additional" }
+    { name: "특수청소"    , href: "#special-cleaning" },
+    { name: "작업후기"    , href: "#reviews" },
+    { name: "질문"        , href: "#notice" },
+    { name: "CS 센터"     , href: "#contact" },
+    { name: "부가서비스"  , href: "#additional" }
   ];
 
   const scrollToSection = (href: string) => {
@@ -34,13 +34,13 @@ const Header = () => {
   };
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+    <header className={`fixed top-0 left-0 right-0 z-30 transition-all duration-300 ${
       isScrolled 
         ? 'bg-white/95 backdrop-blur-lg shadow-lg border-b border-purple-100' 
         : 'bg-transparent'
     }`}>
       <div className="container mx-auto px-6">
-        <div className="flex items-center justify-between h-16">
+        <div className="relative flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center space-x-2 group cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
             {/* <Sparkles className="h-6 w-6 text-primary animate-pulse" /> */}
@@ -49,7 +49,7 @@ const Header = () => {
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-6">
+          <nav className="hidden lg:flex items-center space-x-6 absolute left-1/2 -translate-x-1/2">
             {menuItems.map((item) => (
               <button
                 key={item.name}
@@ -63,23 +63,25 @@ const Header = () => {
             ))}
           </nav>
 
-          {/* Phone Button */}
-          <Button className="hidden md:flex bg-gradient-to-r from-primary to-secondary hover:scale-105 transition-all duration-300 text-white px-6 rounded-full shadow-lg hover:shadow-xl animate-glow">
-            <Phone className="mr-2 h-4 w-4" />
-            1600-9762
-          </Button>
+          <div className="flex items-center">
+            {/* Phone Button */}
+            {/* <Button className="hidden md:flex bg-gradient-to-r from-primary to-secondary hover:scale-105 transition-all duration-300 text-white px-6 rounded-full shadow-lg hover:shadow-xl ">
+              <Phone className="mr-2 h-4 w-4" />
+              1600-9762
+            </Button> */}
 
-          {/* Mobile Menu Button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className={`lg:hidden transition-colors ${
-              isScrolled ? 'text-foreground' : 'text-white'
-            }`}
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-          </Button>
+            {/* Mobile Menu Button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className={`lg:hidden transition-colors ${
+                isScrolled ? 'text-foreground' : 'text-white'
+              }`}
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </Button>
+          </div>
         </div>
 
         {/* Mobile Menu */}
