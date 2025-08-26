@@ -4,7 +4,8 @@
       "Bash(lsof:*)",
       "Bash(npm run dev:*)",
       "WebFetch(domain:ontotalcare.co.kr)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(npm run build:*)"
     ],
     "deny": [],
     "ask": []
