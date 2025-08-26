@@ -3,45 +3,45 @@ import { Badge } from "@/components/ui/badge";
 
 const services = [
   {
-    title: "Move-in Cleaning",
-    description: "Complete deep cleaning for new homes",
+    title: "입주 청소",
+    description: "새집 입주를 위한 완벽한 딥클리닝",
     image: "🏠",
-    quotes: "11 average quotes",
+    quotes: "평균 11건 견적",
     popular: true
   },
   {
-    title: "Studio Cleaning", 
-    description: "Specialized cleaning for small spaces",
+    title: "원룸 청소", 
+    description: "작은 공간을 위한 맞춤형 청소",
     image: "🏢",
-    quotes: "8 average quotes",
+    quotes: "평균 8건 견적",
     popular: false
   },
   {
-    title: "Washing Machine",
-    description: "Deep cleaning and maintenance",
+    title: "세탁기 청소",
+    description: "세탁기 분해 청소 및 관리",
     image: "🧺",
-    quotes: "5 average quotes", 
+    quotes: "평균 5건 견적", 
     popular: false
   },
   {
-    title: "Air Conditioner",
-    description: "Professional AC cleaning service",
+    title: "에어컨 청소",
+    description: "전문적인 에어컨 클리닝 서비스",
     image: "❄️",
-    quotes: "7 average quotes",
+    quotes: "평균 7건 견적",
     popular: true
   },
   {
-    title: "Bathroom Grouting",
-    description: "Professional grouting and sealing",
+    title: "욕실 줄눈 시공",
+    description: "곰팡이 제거 및 줄눈 재시공",
     image: "🚿",
-    quotes: "3 average quotes",
+    quotes: "평균 3건 견적",
     popular: false
   },
   {
-    title: "Moving Services",
-    description: "Complete moving assistance",
+    title: "이사 도우미",
+    description: "이사 전후 완벽한 정리 서비스",
     image: "📦",
-    quotes: "12 average quotes",
+    quotes: "평균 12건 견적",
     popular: true
   }
 ];
@@ -52,10 +52,10 @@ const ServicesSection = () => {
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-            Popular Services
+            인기 서비스
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            From budget-friendly options to premium mom-cafe recommended services
+            합리적인 가격부터 프리미엄 서비스까지, 고객님께 꼭 맞는 서비스를 선택하세요
           </p>
         </div>
         
@@ -75,7 +75,7 @@ const ServicesSection = () => {
                       </h3>
                       {service.popular && (
                         <Badge variant="secondary" className="bg-primary/10 text-primary">
-                          Popular
+                          인기
                         </Badge>
                       )}
                     </div>

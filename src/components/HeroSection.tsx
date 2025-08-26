@@ -15,18 +15,18 @@ const HeroSection = () => {
   const features = [
     {
       icon: Award,
-      title: "15년 전통",
-      description: "2009년부터 시작된 청소 전문 기업"
+      title: "15년 전문성",
+      description: "2009년부터 축적된 전문 노하우"
     },
     {
       icon: Shield,
-      title: "믿을 수 있는 서비스",
-      description: "철저한 직원 교육과 품질 관리"
+      title: "신뢰할 수 있는 파트너",
+      description: "체계적인 교육과 엄격한 품질 관리"
     },
     {
       icon: Clock,
-      title: "신속한 우리들의 대응",
-      description: "24시간 내 방문 상담 가능"
+      title: "24시간 케어 시스템",
+      description: "언제든 신속한 상담과 서비스 제공"
     }
   ];
 
@@ -49,7 +49,7 @@ const HeroSection = () => {
       return () => {
         clearInterval(interval);
       };
-    }, [images.length, currIndex]);
+    }, [images.length]);
 
     return (
       <>
@@ -60,7 +60,7 @@ const HeroSection = () => {
                 key={index}
                 src={src}
                 alt={`Banner ${index + 1}`}
-                className={`absolute inset-0 w-full h-full object-cover transition-opacity ${
+                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out ${
                   index === currIndex ? 'opacity-100' : 'opacity-0'
                 }`}
               />
@@ -73,8 +73,8 @@ const HeroSection = () => {
               type="button"
               key={index}
               onClick={() => setCurrIndex(index)}
-              className={`w-3 h-3 rounded-full transition ${
-                index === currIndex ? "bg-white" : "bg-white/50"
+              className={`w-3 h-3 rounded-full transition-all duration-500 ease-in-out ${
+                index === currIndex ? "bg-white scale-125" : "bg-white/50 hover:bg-white/70"
               }`}
             />
           ))}
@@ -92,22 +92,22 @@ const HeroSection = () => {
       <div className="absolute inset-0 bg-black/20" />
       
       {/* Hero Content */}
-      <div className="flex-1 flex items-center -mt-[400px]">
+      <div className="flex-1 flex items-center -mt-[390px]">
         <div className="container mx-auto px-6 py-20 relative z-10">
           <div className="text-center text-white space-y-8 max-w-4xl mx-auto">
             <div className={`space-y-6 transition-all duration-1000 transform ${
               isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
             }`}>
               <p className="text-lg md:text-xl font-medium opacity-90 animate-slideInLeft">
-                고민하지마세요 자신있으니까요
+                당신의 소중한 공간, 전문가에게 맡기세요
               </p>
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight animate-fadeIn">
-                청소는 <span className="text-white drop-shadow-2xl">케어빌</span>에서
+                깨끗함의 새로운 기준 <span className="text-white drop-shadow-2xl">케어빌</span>
               </h1>
             </div>
             
             {/* Premium Badge */}
-            <div className={`flex justify-center transition-all duration-1000 delay-300 transform ${
+            <div className={`flex justify-center mt-2.5 transition-all duration-1000 delay-300 transform ${
               isVisible ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
             }`}>
               <Badge className="glass text-white border-white/30 px-8 py-3 text-lg font-semibold flex items-center gap-2 hover:scale-105 transition-transform cursor-pointer">
@@ -116,7 +116,7 @@ const HeroSection = () => {
               </Badge>
             </div>
             
-            <div className={`flex flex-col sm:flex-row gap-4 justify-center mt-12 transition-all duration-1000 delay-500 transform ${
+            <div className={`flex flex-col sm:flex-row gap-4 justify-center mt-14 transition-all duration-1000 delay-500 transform ${
               isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
             }`}>
               <Button 
@@ -147,13 +147,13 @@ const HeroSection = () => {
       {/* AboutSection as Overlay at Bottom */}
       <div className="absolute bottom-[0px] left-0 right-0 z-20">
         <div className="bg-gradient-to-t from-white via-white/95 to-white/0 backdrop-blur-sm">
-          <div className="container mx-auto px-6 pb-8 pt-8">
+          <div className="container mx-auto px-6 pb-12 pt-12">
             <div className="text-center mb-8">
               <h2 className="text-2xl md:text-3xl font-bold mb-3 text-gradient">
-                생활 공간을 돌보다, ㈜케어빌입니다.
+                프리미엄 라이프케어 파트너, ㈜케어빌
               </h2>
               <p className="text-muted-foreground text-base max-w-2xl mx-auto">
-                케어빌은 고객님의 일상에 따뜻한 변화를 더하는 생활 공간 케어 전문기업입니다.
+                15년의 노하우와 최첨단 기술력으로 고객님의 일상에 완벽한 청결함을 선사합니다
               </p>
             </div>
 

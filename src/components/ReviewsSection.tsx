@@ -10,6 +10,7 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import 'swiper/css/grid';
+import './ReviewsSection.css';
 
 const ReviewsSection = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -243,21 +244,6 @@ const ReviewsSection = () => {
           </Swiper>
         </div>
       </div>
-
-      <style jsx global>{`
-        .reviews-swiper .swiper-wrapper {
-          padding-bottom: 2rem;
-        }
-        .reviews-swiper .swiper-pagination {
-          bottom: 0;
-        }
-        .reviews-swiper .swiper-slide {
-          height: auto;
-        }
-        .reviews-swiper .swiper-grid-column > .swiper-wrapper {
-          flex-direction: column;
-        }
-      `}</style>
     </section>
   );
 };

@@ -1,0 +1,15 @@
+.reviews-swiper .swiper-wrapper {
+  padding-bottom: 2rem;
+}
+
+.reviews-swiper .swiper-pagination {
+  bottom: 0;
+}
+
+.reviews-swiper .swiper-slide {
+  height: auto;
+}
+
+.reviews-swiper .swiper-grid-column > .swiper-wrapper {
+  flex-direction: column;
+}

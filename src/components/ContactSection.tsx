@@ -15,7 +15,7 @@ const ContactSection = () => {
     {
       icon: Mail,
       title: "이메일 문의",
-      content: "info@ondaclean.com",
+      content: "info@careville.co.kr",
       description: "24시간 접수 가능"
     },
     {
@@ -41,10 +41,11 @@ const ContactSection = () => {
             <span className="text-primary font-semibold">CS 센터</span>
           </div>
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            언제든 문의하세요
+            고객님과 함께하는 케어빌
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            온다클린은 고객님의 소중한 의견을 기다립니다
+            편리한 상담 채널로 언제든지 문의하세요. 
+            전문 상담사가 친절하게 도와드립니다
           </p>
         </div>
 
@@ -90,18 +91,6 @@ const ContactSection = () => {
             ))}
           </div>
         </div>
-
-        <Card className="mt-8 p-8 bg-gradient-to-r from-primary/5 to-secondary/5">
-          <div className="text-center">
-            <h3 className="text-2xl font-bold mb-4">카카오톡 상담</h3>
-            <p className="text-muted-foreground mb-6">
-              카카오톡 채널을 통해 더 빠르고 편리하게 상담받으세요
-            </p>
-            <Button size="lg" className="bg-yellow-400 hover:bg-yellow-500 text-black">
-              카카오톡 상담 시작
-            </Button>
-          </div>
-        </Card>
       </div>
     </section>
   );

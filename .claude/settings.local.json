@@ -5,7 +5,12 @@
       "Bash(npm run dev:*)",
       "WebFetch(domain:ontotalcare.co.kr)",
       "Bash(npm install:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(curl:*)",
+      "Read(/C:\\c\\workspace\\clean02/**)",
+      "Read(/C:\\c\\workspace\\clean02/**)",
+      "Read(/C:\\c\\workspace\\clean02\\www.careville.co.kr_frontend\\node_modules/**)",
+      "Bash(npx playwright install:*)"
     ],
     "deny": [],
     "ask": []
