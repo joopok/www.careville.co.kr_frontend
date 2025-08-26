@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, memo, useMemo, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Check, Star, Sparkles } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -295,4 +295,4 @@ const PricingSection = () => {
   );
 };
 
-export default PricingSection;
+export default memo(PricingSection);
