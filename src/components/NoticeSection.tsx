@@ -53,10 +53,10 @@ const NoticeSection = () => {
             <span className="text-accent-foreground font-semibold">공지&리뷰</span>
           </div>
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            온다클린 소식
+            케어빌 새소식
           </h2>
           <p className="text-muted-foreground text-lg">
-            중요한 공지사항과 이벤트 정보를 확인하세요
+            최신 공지사항과 특별 이벤트를 놓치지 마세요
           </p>
         </div>
 

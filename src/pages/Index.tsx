@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 import HomeCleaningSection from "@/components/HomeCleaningSection";
 import BusinessCleaningSection from "@/components/BusinessCleaningSection";
 import SpecialCleaningSection from "@/components/SpecialCleaningSection";
+import AirConditionerSection from "@/components/AirConditionerSection";
 import ReviewsSection from "@/components/ReviewsSection";
 import NoticeSection from "@/components/NoticeSection";
 import ContactSection from "@/components/ContactSection";
@@ -17,6 +18,7 @@ const Index = () => {
       <Header />
       <HeroSection />
       <ServiceMenuSection />
+      <AirConditionerSection />
       <HomeCleaningSection />
       <BusinessCleaningSection />
       <SpecialCleaningSection />

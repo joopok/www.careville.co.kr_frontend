@@ -29,7 +29,7 @@ const serviceCategories = [
   {
     title: "특수청소",
     icon: Zap,
-    services: ["식당 청소", "화재 청소", "침수 청소", "쓰레기집 청소", "공장 청소"],
+    services: ["에어컨 설치/수리", "식당 청소", "화재 청소", "침수 청소", "공장 청소"],
     popular: true
   },
   {
@@ -66,7 +66,7 @@ const features = [
 const ServiceMenuSection = () => {
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
   return (
-    <section id="services" className="py-20 bg-gradient-to-b from-background to-accent/10">
+    <section id="services" className="py-20 -mt-10 bg-gradient-to-b from-background to-accent/10">
       <div className="container mx-auto px-6">
         {/* Section Title */}
         <div className="text-center mb-12 animate-fadeIn">
@@ -74,7 +74,7 @@ const ServiceMenuSection = () => {
             프리미엄 청소 서비스
           </h2>
           <p className="text-muted-foreground text-lg">
-            온다클린만의 특별한 청소 서비스를 경험해보세요
+            케어빌만의 차별화된 프리미엄 서비스를 경험해보세요
           </p>
         </div>
         {/* Service Categories */}

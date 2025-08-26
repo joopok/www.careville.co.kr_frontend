@@ -1,8 +1,15 @@
 import { Card } from "@/components/ui/card";
-import { Zap, Flame, Droplets, Trash2, Factory, AlertTriangle } from "lucide-react";
+import { AirVent, Flame, Droplets, Trash2, Factory, AlertTriangle, Zap } from "lucide-react";
 
 const SpecialCleaningSection = () => {
   const services = [
+    {
+      icon: AirVent,
+      title: "에어컨 설치/수리",
+      description: "전문 기술로 에어컨 설치 및 수리",
+      difficulty: "전문",
+      color: "text-blue-500"
+    },
     {
       icon: Factory,
       title: "식당 청소",
@@ -49,11 +56,11 @@ const SpecialCleaningSection = () => {
             <span className="text-destructive font-semibold">특수청소</span>
           </div>
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            어려운 청소도 온다클린이 해결합니다
+            어떤 상황도 완벽하게 해결합니다
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            특수한 상황에 맞는 전문 장비와 기술로 
-            완벽한 청소 서비스를 제공합니다
+            특수한 환경에 최적화된 전문 장비와 숙련된 기술력으로
+            모든 청소 난제를 해결해드립니다
           </p>
         </div>
 

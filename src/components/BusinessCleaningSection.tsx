@@ -39,11 +39,11 @@ const BusinessCleaningSection = () => {
             <span className="text-secondary font-semibold">사업장클리닝</span>
           </div>
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            비즈니스 공간의 품격을 높여드립니다
+            성공적인 비즈니스를 위한 첫걸음
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            깨끗한 사업장은 성공의 시작입니다. 
-            전문적인 관리로 업무 효율을 높여보세요
+            깨끗하고 쾌적한 업무 환경이 생산성을 높입니다.
+            케어빌의 체계적인 관리로 비즈니스에만 집중하세요
           </p>
         </div>
 
