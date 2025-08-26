@@ -24,9 +24,9 @@ const Footer = () => {
     <footer className="bg-gradient-to-b from-background to-card border-t">
       {/* Main Footer Content */}
       <div className="container mx-auto px-4 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8 lg:gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12">
           {/* Company Info */}
-          <div className="lg:col-span-2 space-y-5">
+          <div className="space-y-5">
             <div>
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center shadow-lg">
@@ -79,86 +79,6 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Services */}
-          <div>
-            <h4 className="font-bold text-foreground mb-6 text-lg">서비스</h4>
-            <ul className="space-y-3">
-              <li>
-                <a href="#" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 group">
-                  <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <span>입주/이사 청소</span>
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 group">
-                  <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <span>정기 청소</span>
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 group">
-                  <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <span>사무실 청소</span>
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 group">
-                  <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <span>에어컨 청소</span>
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 group">
-                  <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <span>특수 청소</span>
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 group">
-                  <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <span>소독 방역</span>
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          {/* Company */}
-          <div>
-            <h4 className="font-bold text-foreground mb-6 text-lg">회사 소개</h4>
-            <ul className="space-y-3">
-              <li>
-                <a href="#" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 group">
-                  <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <span>케어빌 소개</span>
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 group">
-                  <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <span>서비스 지역</span>
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 group">
-                  <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <span>파트너 모집</span>
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 group">
-                  <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <span>채용 정보</span>
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 group">
-                  <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <span>뉴스 & 공지</span>
-                </a>
-              </li>
-            </ul>
-          </div>
-
           {/* Contact Info */}
           <div>
             <h4 className="font-bold text-foreground mb-6 text-lg">고객센터</h4>
@@ -193,7 +113,7 @@ const Footer = () => {
           </div>
 
           {/* Company Details */}
-          <div className="lg:col-span-2">
+          <div>
             <h4 className="font-bold text-foreground mb-6 text-lg">사업자 정보</h4>
             <div className="space-y-3 text-sm text-muted-foreground">
               <div className="flex flex-col space-y-2">
@@ -227,12 +147,14 @@ const Footer = () => {
         </div>
 
 
-        {/* Bottom Footer */}
-        <div className="space-y-6">
-          <div className="text-center pt-6 border-t">
-            <p className="text-sm text-muted-foreground">
-              &copy; {currentYear} CareVille. All rights reserved. Made with ❤️ for clean and healthy spaces.
-            </p>
+        {/* Enhanced Bottom Footer */}
+        <div className="mt-12">
+          {/* Legal Links Bar */}
+          <div className="border-t pt-6 pb-4">
+              <p className="text-xs text-muted-foreground">
+                Copyright &copy; {currentYear} CareVille. All rights reserved. 
+                본 사이트의 모든 콘텐츠는 저작권법의 보호를 받으며, 무단 전재 및 복사를 금합니다.
+              </p>
           </div>
         </div>
       </div>

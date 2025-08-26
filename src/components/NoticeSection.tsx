@@ -75,7 +75,7 @@ const NoticeSection = () => {
 					</p>
 				</div>
 
-				<div className="grid md:grid-cols-1 gap-8">
+				<div className="grid md:grid-cols-1 gap-8 py-[5px]">
 					<div>
 						{/* <h3 className="text-xl font-bold mb-4">자주 묻는 질문</h3> */}
 						<Accordion type="single" collapsible className="w-full">

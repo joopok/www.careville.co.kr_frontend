@@ -13,3 +13,58 @@
 .reviews-swiper .swiper-grid-column > .swiper-wrapper {
   flex-direction: column;
 }
+
+/* 2x2 Grid Enhancement */
+.reviews-swiper {
+  position: relative;
+}
+
+/* Ensure equal heights for all slides in the same row */
+.reviews-swiper .swiper-slide {
+  height: auto !important;
+  display: flex;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+/* Ensure slide content takes full height */
+.reviews-swiper .swiper-slide > div {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* Equal height for grid rows */
+.reviews-swiper .swiper-wrapper {
+  align-items: stretch;
+}
+
+/* Fix grid row heights */
+.reviews-swiper[class*="swiper-grid"] > .swiper-wrapper {
+  align-items: stretch;
+}
+
+.reviews-swiper[class*="swiper-grid"] .swiper-slide {
+  height: 100% !important;
+  align-self: stretch;
+}
+
+/* Center space for navigation */
+@media (min-width: 768px) {
+  .reviews-swiper .swiper-wrapper {
+    justify-content: center;
+  }
+  
+  /* Add visual gap in the center for horizontal arrows */
+  .reviews-swiper::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 160px;
+    height: 80px;
+    z-index: 5;
+    pointer-events: none;
+  }
+}
