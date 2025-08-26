@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { CommandProcessor } from '../commands';
 import { RegisterManager } from '../registers';
 import { TextBuffer } from '../motions';
-import { VimState } from '../types';
+import { VimState, VimPosition } from '../types';
 
 class MockTextBuffer implements TextBuffer {
   private lines: string[] = [
@@ -21,7 +21,7 @@ class MockTextBuffer implements TextBuffer {
     return this.lines.length;
   }
 
-  getText(start: any, end: any): string {
+  getText(start: VimPosition, end: VimPosition): string {
     if (start.line === end.line) {
       const line = this.lines[start.line];
       return line.substring(start.column, end.column + 1);
