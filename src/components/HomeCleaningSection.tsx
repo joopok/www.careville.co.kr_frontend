@@ -40,11 +40,11 @@ const HomeCleaningSection = () => {
             <span className="text-primary font-semibold">홈클리닝</span>
           </div>
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            깨끗한 우리집 만들기
+            당신의 공간을 새롭게, 깨끗하게
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            전문가의 손길로 새집처럼 깨끗하게! 
-            온다클린의 홈클리닝 서비스를 경험해보세요
+            15년 전문 노하우로 완성하는 프리미엄 홈클리닝
+            케어빌이 당신의 일상을 더욱 빛나게 만들어드립니다
           </p>
         </div>
 
