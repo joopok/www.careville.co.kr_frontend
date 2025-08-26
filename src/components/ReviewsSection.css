@@ -1,9 +1,5 @@
 .reviews-swiper .swiper-wrapper {
-  padding-bottom: 2rem;
-}
-
-.reviews-swiper .swiper-pagination {
-  bottom: 0;
+  padding-bottom: 0;
 }
 
 .reviews-swiper .swiper-slide {
@@ -49,22 +45,9 @@
   align-self: stretch;
 }
 
-/* Center space for navigation */
+/* Side navigation styling */
 @media (min-width: 768px) {
   .reviews-swiper .swiper-wrapper {
     justify-content: center;
-  }
-  
-  /* Add visual gap in the center for horizontal arrows */
-  .reviews-swiper::before {
-    content: '';
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    width: 160px;
-    height: 80px;
-    z-index: 5;
-    pointer-events: none;
   }
 }

@@ -2,7 +2,7 @@ import { Card } from "@/components/ui/card";
 import { Star, Quote, ThumbsUp, MessageSquare, ChevronLeft, ChevronRight } from "lucide-react";
 import { useState, useRef, memo } from "react";
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Pagination, Grid, Autoplay } from 'swiper/modules';
+import { Navigation, Grid, Autoplay } from 'swiper/modules';
 import type { Swiper as SwiperType } from 'swiper';
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -13,7 +13,6 @@ import { Label } from "@/components/ui/label";
 // Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/navigation';
-import 'swiper/css/pagination';
 import 'swiper/css/grid';
 import './ReviewsSection.css';
 
@@ -275,39 +274,35 @@ const ReviewsSection = () => {
         </div>
 
         <div className="relative max-w-7xl mx-auto">
-          {/* 2x2 Grid Layout with Center Navigation */}
+          {/* 2x2 Grid Layout with Side Navigation */}
           <div className="relative">
-            {/* Center Navigation Arrows - Horizontal Layout */}
-            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 flex items-center gap-6">
-              <button
-                onClick={() => swiperRef.current?.slidePrev()}
-                className="w-14 h-14 bg-white rounded-full shadow-xl flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-300 group"
-              >
-                <ChevronLeft className="w-7 h-7 group-hover:scale-110 transition-transform" />
-              </button>
-              <button
-                onClick={() => swiperRef.current?.slideNext()}
-                className="w-14 h-14 bg-white rounded-full shadow-xl flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-300 group"
-              >
-                <ChevronRight className="w-7 h-7 group-hover:scale-110 transition-transform" />
-              </button>
-            </div>
+            {/* Left Navigation Arrow */}
+            <button
+              onClick={() => swiperRef.current?.slidePrev()}
+              className="absolute left-0 top-1/2 -translate-y-[calc(50%+10px)] -translate-x-4 md:-translate-x-12 z-10 w-14 h-14 bg-white rounded-full shadow-xl flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-300 group"
+            >
+              <ChevronLeft className="w-7 h-7 group-hover:scale-110 transition-transform" />
+            </button>
+            
+            {/* Right Navigation Arrow */}
+            <button
+              onClick={() => swiperRef.current?.slideNext()}
+              className="absolute right-0 top-1/2 -translate-y-[calc(50%+10px)] translate-x-4 md:translate-x-12 z-10 w-14 h-14 bg-white rounded-full shadow-xl flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-300 group"
+            >
+              <ChevronRight className="w-7 h-7 group-hover:scale-110 transition-transform" />
+            </button>
 
             <Swiper
               onBeforeInit={(swiper) => {
                 swiperRef.current = swiper;
               }}
-              modules={[Navigation, Pagination, Grid, Autoplay]}
+              modules={[Navigation, Grid, Autoplay]}
               spaceBetween={24}
               slidesPerView={2}
               slidesPerGroup={4}
               grid={{
                 rows: 2,
                 fill: 'row'
-              }}
-              pagination={{
-                clickable: true,
-                dynamicBullets: true,
               }}
               autoplay={{
                 delay: 6000,
@@ -333,15 +328,8 @@ const ReviewsSection = () => {
                   spaceBetween: 24
                 }
               }}
-              className="reviews-swiper !pb-16"
-              style={{
-                '--swiper-pagination-color': 'hsl(var(--primary))',
-                '--swiper-pagination-bullet-inactive-color': '#e5e7eb',
-                '--swiper-pagination-bullet-inactive-opacity': '1',
-                '--swiper-pagination-bullet-size': '10px',
-                '--swiper-pagination-bullet-horizontal-gap': '8px',
-                '--swiper-pagination-bottom': '0px'
-              } as React.CSSProperties}
+              className="reviews-swiper"
+              style={{} as React.CSSProperties}
             >
               {filteredReviews.map((review) => (
                 <SwiperSlide key={review.id} className="h-auto">
