@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Star, Quote, ThumbsUp, MessageSquare, ChevronLeft, ChevronRight } from "lucide-react";
-import { useState, useRef } from "react";
+import { useState, useRef, memo, useMemo, useCallback } from "react";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Grid, Autoplay } from 'swiper/modules';
 import type { Swiper as SwiperType } from 'swiper';
@@ -262,4 +262,4 @@ const ReviewsSection = () => {
   );
 };
 
-export default ReviewsSection;
+export default memo(ReviewsSection);
