@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { VimCore } from '@/lib/vim/core';
-import { VimState } from '@/lib/vim/types';
+import { VimState, VimPosition } from '@/lib/vim/types';
 import { TextBuffer } from '@/lib/vim/motions';
 
 interface UseVimModeOptions {
@@ -25,7 +25,7 @@ class TextAreaBuffer implements TextBuffer {
     return this.textArea.value.split('\n').length;
   }
 
-  getText(start: any, end: any): string {
+  getText(start: VimPosition, end: VimPosition): string {
     const lines = this.textArea.value.split('\n');
     
     if (start.line === end.line) {
