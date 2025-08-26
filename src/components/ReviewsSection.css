@@ -1,9 +1,5 @@
 .reviews-swiper .swiper-wrapper {
-  padding-bottom: 2rem;
-}
-
-.reviews-swiper .swiper-pagination {
-  bottom: 0;
+  padding-bottom: 0;
 }
 
 .reviews-swiper .swiper-slide {
@@ -12,4 +8,46 @@
 
 .reviews-swiper .swiper-grid-column > .swiper-wrapper {
   flex-direction: column;
+}
+
+/* 2x2 Grid Enhancement */
+.reviews-swiper {
+  position: relative;
+}
+
+/* Ensure equal heights for all slides in the same row */
+.reviews-swiper .swiper-slide {
+  height: auto !important;
+  display: flex;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+/* Ensure slide content takes full height */
+.reviews-swiper .swiper-slide > div {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* Equal height for grid rows */
+.reviews-swiper .swiper-wrapper {
+  align-items: stretch;
+}
+
+/* Fix grid row heights */
+.reviews-swiper[class*="swiper-grid"] > .swiper-wrapper {
+  align-items: stretch;
+}
+
+.reviews-swiper[class*="swiper-grid"] .swiper-slide {
+  height: 100% !important;
+  align-self: stretch;
+}
+
+/* Side navigation styling */
+@media (min-width: 768px) {
+  .reviews-swiper .swiper-wrapper {
+    justify-content: center;
+  }
 }

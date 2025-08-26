@@ -1,9 +1,8 @@
-
 import { Card } from "@/components/ui/card";
 import { Star, Quote, ThumbsUp, MessageSquare, ChevronLeft, ChevronRight } from "lucide-react";
 import { useState, useRef, memo } from "react";
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Pagination, Grid, Autoplay } from 'swiper/modules';
+import { Navigation, Grid, Autoplay } from 'swiper/modules';
 import type { Swiper as SwiperType } from 'swiper';
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -14,7 +13,6 @@ import { Label } from "@/components/ui/label";
 // Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/navigation';
-import 'swiper/css/pagination';
 import 'swiper/css/grid';
 import './ReviewsSection.css';
 
@@ -151,33 +149,40 @@ const ReviewsSection = () => {
     : reviews.filter(r => r.category === selectedCategory);
 
   const ReviewCard = ({ review }: { review: typeof reviews[0] }) => (
-    <Card className="h-full p-6 hover:shadow-lg transition-all duration-300 bg-white">
-      <div className="flex items-start gap-4">
-        <Quote className="h-8 w-8 text-primary/20 flex-shrink-0" />
-        <div className="flex-1">
-          <div className="flex items-start justify-between mb-3">
-            <div>
-              <div className="font-semibold text-lg">{review.name}</div>
-              <div className="text-sm text-muted-foreground">
-                {review.service} • {review.date}
+    <Card className="h-full flex flex-col hover:shadow-lg transition-all duration-300 bg-white">
+      <div className="flex-1 flex flex-col p-6">
+        <div className="flex items-start gap-4 h-full">
+          <Quote className="h-8 w-8 text-primary/20 flex-shrink-0" />
+          <div className="flex-1 flex flex-col h-full">
+            {/* Header - Fixed Height */}
+            <div className="flex items-start justify-between mb-3">
+              <div>
+                <div className="font-semibold text-lg">{review.name}</div>
+                <div className="text-sm text-muted-foreground">
+                  {review.service} • {review.date}
+                </div>
+              </div>
+              <div className="flex gap-0.5 flex-shrink-0">
+                {[...Array(review.rating)].map((_, i) => (
+                  <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                ))}
               </div>
             </div>
-            <div className="flex gap-0.5">
-              {[...Array(review.rating)].map((_, i) => (
-                <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-              ))}
+            
+            {/* Content - Flexible Height with Min Height */}
+            <div className="flex-1 min-h-[80px] mb-4">
+              <p className="text-gray-700 leading-relaxed line-clamp-3">
+                {review.content}
+              </p>
             </div>
-          </div>
-          
-          <p className="text-gray-700 mb-4 leading-relaxed line-clamp-3">
-            {review.content}
-          </p>
-          
-          <div className="flex items-center gap-4 text-sm">
-            <button className="flex items-center gap-1 text-muted-foreground hover:text-primary transition-colors">
-              <ThumbsUp className="h-4 w-4" />
-              <span>도움이 돼요 ({review.likes})</span>
-            </button>
+            
+            {/* Footer - Fixed at Bottom */}
+            <div className="flex items-center gap-4 text-sm mt-auto">
+              <button className="flex items-center gap-1 text-muted-foreground hover:text-primary transition-colors">
+                <ThumbsUp className="h-4 w-4" />
+                <span>도움이 돼요 ({review.likes})</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -268,66 +273,73 @@ const ReviewsSection = () => {
           ))}
         </div>
 
-        <div className="relative max-w-6xl mx-auto">
-          {/* Custom Navigation Buttons */}
-          <button
-            onClick={() => swiperRef.current?.slidePrev()}
-            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 md:-translate-x-12 z-10 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-colors"
-          >
-            <ChevronLeft className="w-6 h-6 text-gray-600" />
-          </button>
-          <button
-            onClick={() => swiperRef.current?.slideNext()}
-            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 md:translate-x-12 z-10 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-colors"
-          >
-            <ChevronRight className="w-6 h-6 text-gray-600" />
-          </button>
+        <div className="relative max-w-7xl mx-auto">
+          {/* 2x2 Grid Layout with Side Navigation */}
+          <div className="relative">
+            {/* Left Navigation Arrow */}
+            <button
+              onClick={() => swiperRef.current?.slidePrev()}
+              className="absolute left-0 top-1/2 -translate-y-[calc(50%+10px)] -translate-x-4 md:-translate-x-12 z-10 w-14 h-14 bg-white rounded-full shadow-xl flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-300 group"
+            >
+              <ChevronLeft className="w-7 h-7 group-hover:scale-110 transition-transform" />
+            </button>
+            
+            {/* Right Navigation Arrow */}
+            <button
+              onClick={() => swiperRef.current?.slideNext()}
+              className="absolute right-0 top-1/2 -translate-y-[calc(50%+10px)] translate-x-4 md:translate-x-12 z-10 w-14 h-14 bg-white rounded-full shadow-xl flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-300 group"
+            >
+              <ChevronRight className="w-7 h-7 group-hover:scale-110 transition-transform" />
+            </button>
 
-          <Swiper
-            onBeforeInit={(swiper) => {
-              swiperRef.current = swiper;
-            }}
-            modules={[Navigation, Pagination, Grid, Autoplay]}
-            spaceBetween={20}
-            slidesPerView={1}
-            grid={{
-              rows: 2,
-              fill: 'row'
-            }}
-            pagination={{
-              clickable: true,
-              dynamicBullets: true,
-            }}
-            autoplay={{
-              delay: 5000,
-              disableOnInteraction: false,
-            }}
-            breakpoints={{
-              768: {
-                slidesPerView: 2,
-                grid: {
-                  rows: 2,
-                  fill: 'row'
+            <Swiper
+              onBeforeInit={(swiper) => {
+                swiperRef.current = swiper;
+              }}
+              modules={[Navigation, Grid, Autoplay]}
+              spaceBetween={24}
+              slidesPerView={2}
+              slidesPerGroup={4}
+              grid={{
+                rows: 2,
+                fill: 'row'
+              }}
+              autoplay={{
+                delay: 6000,
+                disableOnInteraction: false,
+                pauseOnMouseEnter: true,
+              }}
+              breakpoints={{
+                320: {
+                  slidesPerView: 1,
+                  slidesPerGroup: 1,
+                  grid: {
+                    rows: 1,
+                    fill: 'row'
+                  }
+                },
+                768: {
+                  slidesPerView: 2,
+                  slidesPerGroup: 4,
+                  grid: {
+                    rows: 2,
+                    fill: 'row'
+                  },
+                  spaceBetween: 24
                 }
-              }
-            }}
-            className="reviews-swiper pb-12"
-            style={{
-              '--swiper-pagination-color': 'hsl(var(--primary))',
-              '--swiper-pagination-bullet-inactive-color': '#e5e7eb',
-              '--swiper-pagination-bullet-inactive-opacity': '1',
-              '--swiper-pagination-bullet-size': '8px',
-              '--swiper-pagination-bullet-horizontal-gap': '6px'
-            } as React.CSSProperties}
-          >
-            {filteredReviews.map((review) => (
-              <SwiperSlide key={review.id}>
-                <div className="h-full pb-2">
-                  <ReviewCard review={review} />
-                </div>
-              </SwiperSlide>
-            ))}
-          </Swiper>
+              }}
+              className="reviews-swiper"
+              style={{} as React.CSSProperties}
+            >
+              {filteredReviews.map((review) => (
+                <SwiperSlide key={review.id} className="h-auto">
+                  <div className="h-full flex pb-2">
+                    <ReviewCard review={review} />
+                  </div>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </div>
         </div>
       </div>
     </section>

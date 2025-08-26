@@ -187,30 +187,30 @@ const HeroSection = () => {
         </div>
       </div>
       
-      {/* Floating Contact Buttons */}
-      <div className="fixed right-6 top-1/2 -translate-y-1/2 z-50 space-y-3">
-        <Button className="group w-16 h-16 rounded-full bg-yellow-400 hover:bg-yellow-500 text-black shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110">
+      {/* Floating Contact Buttons - Horizontal Layout */}
+      <div className="fixed bottom-8 right-8 z-50 flex items-center gap-3 bg-white/90 backdrop-blur-md rounded-full p-2 shadow-2xl border border-gray-200">
+        <Button className="group w-14 h-14 rounded-full bg-yellow-400 hover:bg-yellow-500 text-black shadow-md hover:shadow-lg transition-all duration-300 hover:scale-110 flex-shrink-0">
           <div className="text-center">
             <div className="text-xs font-bold">TALK</div>
-            <div className="text-xs">카톡문의</div>
+            <div className="text-[10px]">카톡</div>
           </div>
         </Button>
-        <Button className="group w-16 h-16 rounded-full bg-gradient-to-br from-primary to-secondary hover:from-primary-dark hover:to-secondary text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110">
+        <Button className="group w-14 h-14 rounded-full bg-gradient-to-br from-primary to-secondary hover:from-primary-dark hover:to-secondary text-white shadow-md hover:shadow-lg transition-all duration-300 hover:scale-110 flex-shrink-0">
           <div className="text-center">
-            <Phone className="h-5 w-5 mx-auto mb-1 group-hover:animate-pulse" />
-            <div className="text-xs">전화하기</div>
+            <Phone className="h-4 w-4 mx-auto mb-0.5 group-hover:animate-pulse" />
+            <div className="text-[10px]">전화</div>
           </div>
         </Button>
-        <Button className="group w-16 h-16 rounded-full bg-green-500 hover:bg-green-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110">
+        <Button className="group w-14 h-14 rounded-full bg-green-500 hover:bg-green-600 text-white shadow-md hover:shadow-lg transition-all duration-300 hover:scale-110 flex-shrink-0">
           <div className="text-center">
             <div className="text-xs font-bold">blog</div>
-            <div className="text-xs">후기보기</div>
+            <div className="text-[10px]">후기</div>
           </div>
         </Button>
-        <Button className="group w-16 h-16 rounded-full bg-pink-500 hover:bg-pink-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110">
+        <Button className="group w-14 h-14 rounded-full bg-pink-500 hover:bg-pink-600 text-white shadow-md hover:shadow-lg transition-all duration-300 hover:scale-110 flex-shrink-0">
           <div className="text-center">
-            <MessageCircle className="h-5 w-5 mx-auto mb-1 group-hover:animate-pulse" />
-            <div className="text-xs">전화상담</div>
+            <MessageCircle className="h-4 w-4 mx-auto mb-0.5 group-hover:animate-pulse" />
+            <div className="text-[10px]">상담</div>
           </div>
         </Button>
       </div>

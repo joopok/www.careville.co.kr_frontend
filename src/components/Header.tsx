@@ -97,10 +97,6 @@ const Header = () => {
                 {item.name}
               </button>
             ))}
-            <Button className="w-full bg-gradient-to-r from-primary to-secondary hover:scale-105 transition-all duration-300 text-white shadow-lg">
-              <Phone className="mr-2 h-4 w-4" />
-              1600-9762
-            </Button>
           </div>
         )}
       </div>
