@@ -14,6 +14,7 @@ import { Label } from "@/components/ui/label";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { toast } from "sonner";
 
 interface ContactModalProps {
   isOpen: boolean;
@@ -50,15 +51,44 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
     },
   });
 
-  const onSubmit = (values: ContactFormValues) => {
-    console.log("Form submitted:", values);
-    // Here you would typically send the data to your backend API
-    onClose(); // Close the modal after submission
+  const onSubmit = async (values: ContactFormValues) => {
+    const url = "http://211.236.162.104:8081/cnsltReg.do";
+    const formData = new URLSearchParams();
+    for (const key in values) {
+      formData.append(key, values[key as keyof ContactFormValues] || "");
+    }
+
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: formData.toString(),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+
+      if (result.isError === false) {
+        toast.success("상담 신청이 성공적으로 접수되었습니다.");
+        onClose(); // Close the modal after successful submission
+      } else {
+        toast.error("상담 신청에 실패했습니다. 다시 시도해주세요.");
+        console.error("Submission error:", result);
+      }
+    } catch (error) {
+      toast.error("네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+      console.error("Network or submission error:", error);
+    }
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader className="mb-0">
           <DialogTitle>상담 신청</DialogTitle>
           <DialogDescription className="py-0 mb-0">
