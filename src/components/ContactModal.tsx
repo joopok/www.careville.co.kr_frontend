@@ -38,10 +38,14 @@ type ContactFormValues = z.infer<typeof formSchema>;
 
 const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
   const serviceOptions = [
-    { label: "입주 청소", value: "001" },
-    { label: "이사 청소", value: "002" },
-    { label: "거주 청소", value: "003" },
-    { label: "욕실 정기서비스", value: "004" },
+    { label: "에어컨 케어 및 세척", value: "001" },
+    { label: "설치/교체 서비스", value: "002" },
+    { label: "상가/사무실 시공", value: "003" },
+    { label: "메트리스 청소(케어)", value: "004" },
+    { label: "세탁키 케어", value: "005" },
+    { label: "욕실 전문 시공", value: "006" },
+    { label: "환풍기 설치", value: "007" },
+    { label: "프리미엄 주방케어", value: "008" },
   ];
 
   const form = useForm<ContactFormValues>({
@@ -61,18 +65,25 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
 
   const onSubmit = async (values: ContactFormValues) => {
     const url = "http://211.236.162.104:8081/cnsltReg.do";
-    const formData = new URLSearchParams();
-    for (const key in values) {
-      formData.append(key, values[key as keyof ContactFormValues] || "");
+    const dataToSend = { ...values };
+
+    // Remove hyphens from hopeDay
+    if (dataToSend.hopeDay) {
+      dataToSend.hopeDay = dataToSend.hopeDay.replace(/-/g, "");
     }
 
+    const formData = new URLSearchParams();
+    for (const key in dataToSend) {
+      formData.append(key, dataToSend[key as keyof ContactFormValues] || "");
+    }
+
+    const finalUrl = `${url}?${formData.toString()}`;
+
+    console.log("Sending POST request to:", finalUrl);
+
     try {
-      const response = await fetch(url, {
+      const response = await fetch(finalUrl, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: formData.toString(),
       });
 
       if (!response.ok) {
@@ -81,7 +92,7 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
 
       const result = await response.json();
 
-      if (result.isError === false) {
+      if (result.isError == "false") {
         toast.success("상담 신청이 성공적으로 접수되었습니다.");
         onClose(); // Close the modal after successful submission
       } else {
