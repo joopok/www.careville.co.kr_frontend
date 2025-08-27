@@ -37,6 +37,16 @@ const formSchema = z.object({
 type ContactFormValues = z.infer<typeof formSchema>;
 
 const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
+  const getTodayDate = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const todayDate = getTodayDate();
+
   const serviceOptions = [
     { label: "에어컨 케어 및 세척",   value: "001" },
     { label: "설치/교체 서비스",      value: "002" },
@@ -195,7 +205,7 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
             </div>
             <div>
               <Label htmlFor="hopeDay">희망일자</Label>
-              <Input id="hopeDay" type="date" {...form.register("hopeDay")} />
+              <Input id="hopeDay" type="date" min={todayDate} {...form.register("hopeDay")} />
               {form.formState.errors.hopeDay && (
                 <p className="text-red-500 text-sm">
                   {form.formState.errors.hopeDay.message}
