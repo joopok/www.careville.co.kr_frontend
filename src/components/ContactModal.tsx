@@ -11,7 +11,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { useForm } from "react-hook-form";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { toast } from "sonner";
@@ -27,7 +28,7 @@ const formSchema = z.object({
   tel2: z.string().optional(),
   adres1: z.string().min(1, "주소1을 입력해주세요."),
   adres2: z.string().optional(),
-  zip: z.string().min(1, "우편번호를 입력해주세요."),
+  zip: z.string().optional(),
   svcCnCd: z.string().min(1, "서비스 내용을 선택해주세요."),
   hopeDay: z.string().min(1, "희망일자를 선택해주세요."),
   inqryCn: z.string().min(1, "상담 내용을 입력해주세요."),
@@ -36,6 +37,13 @@ const formSchema = z.object({
 type ContactFormValues = z.infer<typeof formSchema>;
 
 const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
+  const serviceOptions = [
+    { label: "입주 청소", value: "001" },
+    { label: "이사 청소", value: "002" },
+    { label: "거주 청소", value: "003" },
+    { label: "욕실 정기서비스", value: "004" },
+  ];
+
   const form = useForm<ContactFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -88,7 +96,7 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[600px] max-h-[85vh] overflow-y-auto">
         <DialogHeader className="mb-0">
           <DialogTitle>상담 신청</DialogTitle>
           <DialogDescription className="py-0 mb-0">
@@ -121,6 +129,7 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
               <Label htmlFor="tel2">연락처2 (선택)</Label>
               <Input id="tel2" placeholder="추가 연락처" {...form.register("tel2")} />
             </div>
+            {/*
             <div>
               <Label htmlFor="zip">우편번호</Label>
               <Input id="zip" placeholder="우편번호" {...form.register("zip")} />
@@ -130,6 +139,7 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
                 </p>
               )}
             </div>
+            */}
             <div>
               <Label htmlFor="adres1">주소1</Label>
               <Input id="adres1" placeholder="기본 주소" {...form.register("adres1")} />
@@ -145,7 +155,24 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
             </div>
             <div>
               <Label htmlFor="svcCnCd">서비스 내용</Label>
-              <Input id="svcCnCd" placeholder="예: 홈클리닝, 사업장클리닝" {...form.register("svcCnCd")} />
+              <Controller
+                name="svcCnCd"
+                control={form.control}
+                render={({ field }) => (
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <SelectTrigger id="svcCnCd">
+                      <SelectValue placeholder="서비스를 선택해주세요" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {serviceOptions.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
               {form.formState.errors.svcCnCd && (
                 <p className="text-red-500 text-sm">
                   {form.formState.errors.svcCnCd.message}
