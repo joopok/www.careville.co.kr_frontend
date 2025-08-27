@@ -8,6 +8,7 @@ import SpecialCleaningSection from "@/components/SpecialCleaningSection";
 import AirConditionerSection from "@/components/AirConditionerSection";
 import ReviewsSection from "@/components/ReviewsSection";
 import NoticeSection from "@/components/NoticeSection";
+import PortfolioSection from "@/components/PortfolioSection";
 import ContactSection from "@/components/ContactSection";
 import AdditionalSection from "@/components/AdditionalSection";
 import PricingSection from "@/components/PricingSection";
@@ -25,6 +26,7 @@ const Index = () => {
       <PricingSection />
       <ReviewsSection />
       <NoticeSection />
+      <PortfolioSection />
       <ContactSection />
       <AdditionalSection />
       <Footer />
