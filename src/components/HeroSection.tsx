@@ -41,44 +41,164 @@ const HeroSection = () => {
       "images/banner5.png"
     ];
 
-    const [currIndex, setCurrIndex] = useState(0);  // 현재 보여주는 배너 index
+    const [currIndex, setCurrIndex] = useState(0);
+    const [isTransitioning, setIsTransitioning] = useState(false);
+    const [touchStart, setTouchStart] = useState(0);
+    const [touchEnd, setTouchEnd] = useState(0);
 
+    // Preload images for smoother transitions
+    useEffect(() => {
+      images.forEach((src) => {
+        const img = new Image();
+        img.src = src;
+      });
+    }, []);
+
+    // Auto-advance slideshow
     useEffect(() => {
       const interval = setInterval(() => {
-        setCurrIndex((prevIndex) => (prevIndex + 1) % images.length);
-      }, 5000);
-      return () => {
-        clearInterval(interval);
-      };
-    }, [images.length]);
+        handleNext();
+      }, 7000);
+      return () => clearInterval(interval);
+    }, [currIndex]);
+
+    const handleNext = () => {
+      if (!isTransitioning) {
+        setIsTransitioning(true);
+        setTimeout(() => {
+          setCurrIndex((prev) => (prev + 1) % images.length);
+          setIsTransitioning(false);
+        }, 50);
+      }
+    };
+
+    const handlePrev = () => {
+      if (!isTransitioning) {
+        setIsTransitioning(true);
+        setTimeout(() => {
+          setCurrIndex((prev) => (prev - 1 + images.length) % images.length);
+          setIsTransitioning(false);
+        }, 50);
+      }
+    };
+
+    // Touch handlers for mobile swipe
+    const handleTouchStart = (e: React.TouchEvent) => {
+      setTouchStart(e.targetTouches[0].clientX);
+    };
+
+    const handleTouchMove = (e: React.TouchEvent) => {
+      setTouchEnd(e.targetTouches[0].clientX);
+    };
+
+    const handleTouchEnd = () => {
+      if (!touchStart || !touchEnd) return;
+      
+      const distance = touchStart - touchEnd;
+      const isLeftSwipe = distance > 50;
+      const isRightSwipe = distance < -50;
+
+      if (isLeftSwipe) {
+        handleNext();
+      }
+      if (isRightSwipe) {
+        handlePrev();
+      }
+    };
+
+    const handleIndicatorClick = (index: number) => {
+      if (!isTransitioning && index !== currIndex) {
+        setIsTransitioning(true);
+        setTimeout(() => {
+          setCurrIndex(index);
+          setIsTransitioning(false);
+        }, 50);
+      }
+    };
 
     return (
       <>
-        <div>
-          {
-            images.map((src, index) => (
-              <img
+        <div 
+          className="absolute inset-0 overflow-hidden"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        >
+          {images.map((src, index) => {
+            const isActive = index === currIndex;
+            
+            return (
+              <div
                 key={index}
-                src={src}
-                alt={`Banner ${index + 1}`}
-                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out ${
-                  index === currIndex ? 'opacity-100' : 'opacity-0'
+                className={`absolute inset-0 w-full h-full transition-opacity ${
+                  isActive 
+                    ? 'opacity-100 z-20' 
+                    : 'opacity-0 z-10'
                 }`}
-              />
-            ))
-          }
+                style={{
+                  transitionDuration: '1500ms',
+                  transitionTimingFunction: 'ease-in-out',
+                }}
+              >
+                <img
+                  src={src}
+                  alt={`Banner ${index + 1}`}
+                  className={`w-full h-full object-cover ${
+                    isActive ? 'animate-smoothKenBurns' : ''
+                  }`}
+                />
+                {/* Gradient overlay for better text visibility */}
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/10 to-black/40 pointer-events-none" />
+              </div>
+            );
+          })}
         </div>
-        <div className="absolute bottom-64 left-1/2 -translate-x-1/2 flex space-x-2 z-10">
+        
+        {/* Indicators */}
+        <div className="absolute bottom-64 left-1/2 -translate-x-1/2 flex items-center gap-3 z-30">
           {images.map((_, index) => (
             <button
               type="button"
               key={index}
-              onClick={() => setCurrIndex(index)}
-              className={`w-3 h-3 rounded-full transition-all duration-500 ease-in-out ${
-                index === currIndex ? "bg-white scale-125" : "bg-white/50 hover:bg-white/70"
-              }`}
-            />
+              onClick={() => handleIndicatorClick(index)}
+              className="relative group"
+              aria-label={`Go to slide ${index + 1}`}
+            >
+              <div
+                className={`w-12 h-1 rounded-full transition-all duration-700 ${
+                  index === currIndex 
+                    ? "bg-white" 
+                    : "bg-white/30 hover:bg-white/50"
+                }`}
+              >
+                {index === currIndex && (
+                  <div className="h-full bg-white/80 rounded-full animate-slideProgress" />
+                )}
+              </div>
+            </button>
           ))}
+        </div>
+        
+        {/* Navigation arrows for desktop */}
+        <div className="hidden md:block">
+          <button
+            onClick={handlePrev}
+            className="absolute left-8 top-1/2 -translate-y-1/2 z-30 p-3 rounded-full bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 transition-all duration-300 group"
+            aria-label="Previous slide"
+          >
+            <svg className="w-6 h-6 group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <button
+            onClick={handleNext}
+            className="absolute right-8 top-1/2 -translate-y-1/2 z-30 p-3 rounded-full bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 transition-all duration-300 group"
+            aria-label="Next slide"
+          >
+            <svg className="w-6 h-6 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
         </div>
       </>
     );
@@ -88,9 +208,6 @@ const HeroSection = () => {
     <section id="hero" className="relative min-h-screen flex flex-col overflow-hidden z-1">
       {/* Slideshow Banner */}
       <SlideshowBanner />
-      
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-black/20" />
       
       {/* Hero Content */}
       <div className="flex-1 flex items-center -mt-[390px]">
