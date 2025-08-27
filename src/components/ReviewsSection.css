@@ -1,5 +1,9 @@
 .reviews-swiper .swiper-wrapper {
-  padding-bottom: 0;
+  padding-bottom: 2rem;
+}
+
+.reviews-swiper .swiper-pagination {
+  bottom: 0;
 }
 
 .reviews-swiper .swiper-slide {
