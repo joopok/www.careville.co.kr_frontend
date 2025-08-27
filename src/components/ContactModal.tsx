@@ -6,16 +6,16 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button }   from "@/components/ui/button";
+import { Input }    from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Card } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
+import { Card }     from "@/components/ui/card";
+import { Label }    from "@/components/ui/label";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { toast } from "sonner";
+import * as z       from "zod";
+import { toast }    from "sonner";
 
 interface ContactModalProps {
   isOpen: boolean;
@@ -38,14 +38,14 @@ type ContactFormValues = z.infer<typeof formSchema>;
 
 const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
   const serviceOptions = [
-    { label: "에어컨 케어 및 세척", value: "001" },
-    { label: "설치/교체 서비스", value: "002" },
-    { label: "상가/사무실 시공", value: "003" },
-    { label: "메트리스 청소(케어)", value: "004" },
-    { label: "세탁키 케어", value: "005" },
-    { label: "욕실 전문 시공", value: "006" },
-    { label: "환풍기 설치", value: "007" },
-    { label: "프리미엄 주방케어", value: "008" },
+    { label: "에어컨 케어 및 세척",   value: "001" },
+    { label: "설치/교체 서비스",      value: "002" },
+    { label: "상가/사무실 시공",      value: "003" },
+    { label: "메트리스 청소(케어)",   value: "004" },
+    { label: "세탁키 케어",           value: "005" },
+    { label: "욕실 전문 시공",        value: "006" },
+    { label: "환풍기 설치",           value: "007" },
+    { label: "프리미엄 주방케어",     value: "008" },
   ];
 
   const form = useForm<ContactFormValues>({
@@ -95,6 +95,9 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
       if (result.isError == "false") {
         toast.success("상담 신청이 성공적으로 접수되었습니다.");
         onClose(); // Close the modal after successful submission
+      } else if (result.isError == "true") {
+        toast.error(`상담 신청 실패: ${result.excpMsg || result.excpCdMsg || "알 수 없는 오류"}`);
+        console.error("Submission error:", result);
       } else {
         toast.error("상담 신청에 실패했습니다. 다시 시도해주세요.");
         console.error("Submission error:", result);
