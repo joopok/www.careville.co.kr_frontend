@@ -51,7 +51,7 @@ const ContactSection = () => {
 
         <div className="grid md:grid-cols-2 gap-8">
           <div className="space-y-6">
-            <Card className="p-6">
+            <Card className="p-6" id="quick-inquiry">
               <h3 className="text-xl font-bold mb-4">빠른 문의</h3>
               <form className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">

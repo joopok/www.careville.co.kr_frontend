@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Phone, MessageCircle, ArrowDown, Sparkles, Check, Award, Shield, Clock } from "lucide-react";
 import { useEffect, useState } from "react";
+import { handlePhoneCall } from "@/lib/utils";
 
 const HeroSection = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -122,6 +123,7 @@ const HeroSection = () => {
               <Button 
                 size="lg" 
                 className="group bg-white text-primary hover:bg-white/90 text-lg px-10 py-7 rounded-full shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-105"
+                onClick={() => handlePhoneCall("1600-9762")}
               >
                 <Phone className="mr-2 h-5 w-5 group-hover:animate-pulse" />
                 바로 상담받기
@@ -130,6 +132,12 @@ const HeroSection = () => {
                 variant="outline" 
                 size="lg"
                 className="glass text-white border-white/30 hover:bg-white/20 text-lg px-10 py-7 rounded-full backdrop-blur-md transition-all duration-300 hover:scale-105"
+                onClick={() => {
+                  const element = document.getElementById('quick-inquiry');
+                  if (element) {
+                    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  }
+                }}
               >
                 <MessageCircle className="mr-2 h-5 w-5" />
                 온라인 문의
@@ -187,15 +195,18 @@ const HeroSection = () => {
         </div>
       </div>
       
-      {/* Floating Contact Buttons - Horizontal Layout */}
-      <div className="fixed bottom-8 right-8 z-50 flex items-center gap-3 bg-white/90 backdrop-blur-md rounded-full p-2 shadow-2xl border border-gray-200">
+      {/* Floating Contact Buttons - Vertical Layout */}
+      <div className="fixed bottom-8 right-8 z-50 flex flex-col items-center gap-3 bg-white/90 backdrop-blur-md rounded-2xl p-3 shadow-2xl border border-gray-200">
         <Button className="group w-14 h-14 rounded-full bg-yellow-400 hover:bg-yellow-500 text-black shadow-md hover:shadow-lg transition-all duration-300 hover:scale-110 flex-shrink-0">
           <div className="text-center">
             <div className="text-xs font-bold">TALK</div>
             <div className="text-[10px]">카톡</div>
           </div>
         </Button>
-        <Button className="group w-14 h-14 rounded-full bg-gradient-to-br from-primary to-secondary hover:from-primary-dark hover:to-secondary text-white shadow-md hover:shadow-lg transition-all duration-300 hover:scale-110 flex-shrink-0">
+        <Button 
+          className="group w-14 h-14 rounded-full bg-gradient-to-br from-primary to-secondary hover:from-primary-dark hover:to-secondary text-white shadow-md hover:shadow-lg transition-all duration-300 hover:scale-110 flex-shrink-0"
+          onClick={() => handlePhoneCall("1600-9762")}
+        >
           <div className="text-center">
             <Phone className="h-4 w-4 mx-auto mb-0.5 group-hover:animate-pulse" />
             <div className="text-[10px]">전화</div>
