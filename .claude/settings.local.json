@@ -11,7 +11,9 @@
       "Read(/C:\\c\\workspace\\clean02/**)",
       "Read(/C:\\c\\workspace\\clean02\\www.careville.co.kr_frontend\\node_modules/**)",
       "Bash(npx playwright install:*)",
-      "Bash(npx vite:*)"
+      "Bash(npx vite:*)",
+      "Bash(npx playwright test-hero-animation.js)",
+      "Bash(node:*)"
     ],
     "deny": [],
     "ask": []

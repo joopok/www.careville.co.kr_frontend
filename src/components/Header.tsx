@@ -5,12 +5,17 @@ import { useState, useEffect } from "react";
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
     window.addEventListener('scroll', handleScroll);
+    
+    // Trigger load animation
+    setTimeout(() => setIsLoaded(true), 100);
+    
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -35,29 +40,50 @@ const Header = () => {
   };
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-30 transition-all duration-300 ${
+    <header className={`fixed top-0 left-0 right-0 z-30 transition-all duration-500 ${
       isScrolled 
         ? 'bg-white/95 backdrop-blur-lg shadow-lg border-b border-purple-100' 
-        : 'bg-transparent'
+        : 'bg-gradient-to-b from-black/70 via-black/40 to-transparent backdrop-blur-md border-b border-white/20'
+    } ${
+      isLoaded ? 'translate-y-0 opacity-100' : '-translate-y-4 opacity-0'
     }`}>
       <div className="container mx-auto px-6">
-        <div className="relative flex items-center justify-between h-16">
+        <div className={`relative flex items-center justify-between transition-all duration-300 ${
+          isScrolled ? 'h-16' : 'h-20 py-2'
+        }`}>
           {/* Logo */}
           <div className="flex items-center space-x-2 group cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
             {/* <Sparkles className="h-6 w-6 text-primary animate-pulse" /> */}
-            <div className="text-2xl font-bold text-gradient">케어빌</div>
-            <div className={`text-xs transition-colors ${isScrolled ? 'text-muted-foreground' : 'text-white/80'}`}>carevile</div>
+            <div className={`text-2xl font-bold transition-all duration-300 ${
+              isScrolled 
+                ? 'text-gradient' 
+                : 'text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]'
+            } ${
+              isLoaded && !isScrolled ? 'animate-glowPulse' : ''
+            }`}>케어빌</div>
+            <div className={`text-xs transition-colors ${
+              isScrolled 
+                ? 'text-muted-foreground' 
+                : 'text-white/90 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]'
+            }`}>carevile</div>
           </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center space-x-6 absolute left-1/2 -translate-x-1/2">
-            {menuItems.map((item) => (
+            {menuItems.map((item, index) => (
               <button
                 key={item.name}
                 onClick={() => scrollToSection(item.href)}
-                className={`font-medium text-sm transition-all duration-300 hover:text-primary hover:scale-105 ${
-                  isScrolled ? 'text-foreground' : 'text-white hover:text-white/80'
+                className={`font-medium text-sm transition-all duration-300 hover:scale-105 ${
+                  isScrolled 
+                    ? 'text-foreground hover:text-primary' 
+                    : 'text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)] hover:text-white hover:drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]'
+                } ${
+                  isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
                 }`}
+                style={{
+                  transitionDelay: isLoaded ? `${100 + index * 50}ms` : '0ms'
+                }}
               >
                 {item.name}
               </button>
@@ -75,8 +101,10 @@ const Header = () => {
             <Button
               variant="ghost"
               size="icon"
-              className={`lg:hidden transition-colors ${
-                isScrolled ? 'text-foreground' : 'text-white'
+              className={`lg:hidden transition-all duration-300 ${
+                isScrolled 
+                  ? 'text-foreground hover:bg-gray-100' 
+                  : 'text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)] hover:bg-white/10'
               }`}
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >

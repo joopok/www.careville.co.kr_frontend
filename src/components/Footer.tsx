@@ -23,7 +23,7 @@ const Footer = () => {
   return (
     <footer className="bg-gradient-to-b from-background to-card border-t">
       {/* Main Footer Content */}
-      <div className="container mx-auto px-4 py-16">
+      <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12">
           {/* Company Info */}
           <div className="space-y-5">
@@ -148,9 +148,9 @@ const Footer = () => {
 
 
         {/* Enhanced Bottom Footer */}
-        <div className="mt-12">
+        <div className="mt-6">
           {/* Legal Links Bar */}
-          <div className="border-t pt-6 pb-4">
+          <div className="border-t pt-4 pb-2">
               <p className="text-xs text-muted-foreground">
                 Copyright &copy; {currentYear} CareVille. All rights reserved. 
                 본 사이트의 모든 콘텐츠는 저작권법의 보호를 받으며, 무단 전재 및 복사를 금합니다.
