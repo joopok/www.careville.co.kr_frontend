@@ -26,9 +26,9 @@ const Header = () => {
     { name: "특수청소"    , href: "#special-cleaning" },
     { name: "작업후기"    , href: "#reviews" },
     { name: "시공사례"    , href: "#portfolio" },
-    { name: "질문"        , href: "#notice" },
     { name: "CS 센터"     , href: "#contact" },
-    { name: "부가서비스"  , href: "#additional" }
+    { name: "부가서비스"  , href: "#additional" },
+    { name: "질문"        , href: "#notice" }
   ];
 
   const scrollToSection = (href: string) => {

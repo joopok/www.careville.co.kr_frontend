@@ -60,10 +60,6 @@ const OptimizedIndex = () => {
       </Suspense>
       
       <Suspense fallback={<SectionLoader />}>
-        <NoticeSection />
-      </Suspense>
-      
-      <Suspense fallback={<SectionLoader />}>
         <PortfolioSection />
       </Suspense>
       
@@ -73,6 +69,10 @@ const OptimizedIndex = () => {
       
       <Suspense fallback={<SectionLoader />}>
         <AdditionalSection />
+      </Suspense>
+      
+      <Suspense fallback={<SectionLoader />}>
+        <NoticeSection />
       </Suspense>
       
       <Footer />
