@@ -29,10 +29,11 @@ const ReviewsSection = () => {
       svcDate: "",
       dispYn: "",
       svcCnCd: "",
+      starRate: 0,
       reviewNm: "",      
       rgsDt: "",
       reviewCn: "",
-      starRate: ""      
+            
     },
   ]);
   
@@ -57,8 +58,9 @@ const ReviewsSection = () => {
         }        
         
         const data = await response.json();
-        //console.log(data.svcCnCdList);
-        setSvcCnCdList(data.svcCnCdList);        
+        
+        setSvcCnCdList(data.svcCnCdList);         
+           
         setReviews(data.data);
       } catch (error: any) {
         setError(error.message);
@@ -73,17 +75,20 @@ const ReviewsSection = () => {
 
   const [newReview, setNewReview] = useState({
     reviewNm: "",
-    svcCnNm: "",
+    svcCnCd: "",
     starRate: 0, // Set initial to 0 to force user selection
     reviewCn: "",
+    svcDate:""
   });
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({
     reviewNm: "",
     svcCnNm: "",
+    svcCnCd:"",
     reviewCn: "",
     starRate: "",
+    svcDate: ""
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -95,11 +100,19 @@ const ReviewsSection = () => {
   };
 
   const handleServiceChange = (value: string) => {
-    setNewReview(prev => ({ ...prev, svcCnNm: value }));
-    if (errors.svcCnNm) {
-      setErrors(prev => ({ ...prev, svcCnNm: "" }));
+    setNewReview(prev => ({ ...prev, svcCnCd: value }));
+    if (errors.svcCnCd) {
+      setErrors(prev => ({ ...prev, svcCnCd: "" }));
     }
   };
+
+  const dateHandleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;     
+    setNewReview(prev => ({ ...prev, [name]: value }));
+    if (errors[name as keyof typeof errors]) {
+      setErrors(prev => ({ ...prev, [name]: "" }));
+    }
+  };  
 
   const handleRatingChange = (rating: number) => {
     setNewReview(prev => ({ ...prev, starRate: rating }));
@@ -109,13 +122,15 @@ const ReviewsSection = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+    e.preventDefault();  
+   
     const newErrors = {
       reviewNm: newReview.reviewNm.trim() === "" ? "이름을 입력해주세요." : "",
-      svcCnNm: newReview.svcCnNm.trim() === "" ? "서비스를 선택해주세요." : "",
+      svcCnNm: newReview.svcCnCd.trim() === "" ? "서비스를 선택해주세요." : "",
+      svcCnCd: newReview.svcCnCd.trim() === "" ? "서비스를 선택해주세요." : "",
       reviewCn: newReview.reviewCn.trim() === "" ? "내용을 입력해주세요." : "",
       starRate: newReview.starRate === 0 ? "별점을 선택해주세요." : "",
+      svcDate: newReview.svcDate === "" ? "희망일을 선택해주세요." : "",
     };
 
     if (Object.values(newErrors).some(error => error !== "")) {
@@ -123,9 +138,13 @@ const ReviewsSection = () => {
       return;
     }
  
-    setErrors({ reviewNm: "", svcCnNm: "", reviewCn: "", starRate: "" });
+    setErrors({ reviewNm: "", svcCnNm: "", reviewCn: "", starRate: "" ,svcDate:"", svcCnCd:""});
     setIsSubmitting(true);
-   
+    //날짜 하이픈 제거
+    newReview.svcDate = newReview.svcDate.replace(/-/g, "");    
+
+      console.log((newReview));
+
     try {
       const response = await fetch('http://211.236.162.104:8081/api/reviews', {
         method: 'POST',
@@ -139,10 +158,18 @@ const ReviewsSection = () => {
         throw new Error('Failed to submit review');
       }
 
-      const savedReview = await response.json();
-
-      setReviews(prev => [savedReview, ...prev]);
-      setNewReview({ reviewNm: "", svcCnNm: "", starRate: 0, reviewCn: "" });
+      //저장이 되면 저장된 신규 데이터 받아서 가져오기
+      //const savedReview = await response.json();           
+      //setReviews(prev => [savedReview, ...prev]);
+      const name = categories.find(c => c.id === newReview.svcCnCd)?.name ?? "알 수 없음";
+      const today = new Date();
+      const formatted = today.toISOString().split('T')[0];
+      
+      setReviews(prev => [{
+        svcCnNm: name, reviewSeq: "", svcDate: "", dispYn: "", svcCnCd: newReview.svcCnCd, reviewNm: newReview.reviewNm,
+         rgsDt: formatted, reviewCn: newReview.reviewCn, starRate: newReview.starRate},
+          ...prev]);
+      setNewReview({ reviewNm: "", svcCnCd: "", starRate: 0, reviewCn: "", svcDate: "" });
       setIsDialogOpen(false);
     } catch (error) {
       console.error(error);
@@ -281,7 +308,7 @@ const ReviewsSection = () => {
                       서비스
                     </Label>
                     <div className="col-span-3">
-                      <Select onValueChange={handleServiceChange} value={newReview.svcCnNm}>
+                      <Select onValueChange={handleServiceChange} value={newReview.svcCnCd}>
                         <SelectTrigger className={errors.svcCnNm ? 'border-red-500' : ''}>
                           <SelectValue placeholder="서비스를 선택하세요" />
                         </SelectTrigger>
@@ -379,8 +406,8 @@ const ReviewsSection = () => {
                       서비스
                     </Label>
                     <div className="col-span-3">
-                      <Select onValueChange={handleServiceChange} value={newReview.svcCnNm}>
-                        <SelectTrigger className={errors.svcCnNm ? 'border-red-500' : ''}>
+                      <Select onValueChange={handleServiceChange} value={newReview.svcCnCd}>
+                        <SelectTrigger className={errors.svcCnCd ? 'border-red-500' : ''}>
                           <SelectValue placeholder="서비스를 선택하세요" />
                         </SelectTrigger>
                         <SelectContent>
@@ -391,9 +418,20 @@ const ReviewsSection = () => {
                           ))}
                           </SelectContent>    
                       </Select>
-                      {errors.svcCnNm && <p className="text-red-500 text-xs mt-1">{errors.svcCnNm}</p>}
+                      {errors.svcCnCd && <p className="text-red-500 text-xs mt-1">{errors.svcCnCd}</p>}
+                    </div>             
+                  </div>
+                         
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="svcDate" className="text-right">
+                      희망일자
+                    </Label>
+                    <div className="col-span-3">
+                    <Input id="svcDate" name="svcDate" type="date"  onChange={dateHandleInputChange} />
+                    {errors.svcDate && <p className="text-red-500 text-xs mt-1">{errors.svcDate}</p>}                     
                     </div>
                   </div>
+
                   <div className="grid grid-cols-4 items-center gap-4">
                     <Label htmlFor="reviewCn" className="text-right">
                       내용
@@ -514,3 +552,5 @@ const ReviewsSection = () => {
 };
 
 export default memo(ReviewsSection);
+
+
