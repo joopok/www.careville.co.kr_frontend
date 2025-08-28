@@ -132,8 +132,8 @@ const HeroSection = () => {
                 key={index}
                 className={`absolute inset-0 w-full h-full transition-opacity ${
                   isActive 
-                    ? 'opacity-100 z-20' 
-                    : 'opacity-0 z-10'
+                    ? 'opacity-100 z-[1]' 
+                    : 'opacity-0 z-[0]'
                 }`}
                 style={{
                   transitionDuration: '1500ms',
@@ -155,7 +155,7 @@ const HeroSection = () => {
         </div>
         
         {/* Indicators */}
-        <div className="absolute bottom-64 left-1/2 -translate-x-1/2 flex items-center gap-3 z-30">
+        <div className="absolute bottom-64 left-1/2 -translate-x-1/2 flex items-center gap-3 z-20">
           {images.map((_, index) => (
             <button
               type="button"
@@ -183,7 +183,7 @@ const HeroSection = () => {
         <div className="hidden md:block">
           <button
             onClick={handlePrev}
-            className="absolute left-8 top-1/2 -translate-y-1/2 z-30 p-3 rounded-full bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 transition-all duration-300 group"
+            className="absolute left-8 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 transition-all duration-300 group"
             aria-label="Previous slide"
           >
             <svg className="w-6 h-6 group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -192,7 +192,7 @@ const HeroSection = () => {
           </button>
           <button
             onClick={handleNext}
-            className="absolute right-8 top-1/2 -translate-y-1/2 z-30 p-3 rounded-full bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 transition-all duration-300 group"
+            className="absolute right-8 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 transition-all duration-300 group"
             aria-label="Next slide"
           >
             <svg className="w-6 h-6 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -210,8 +210,8 @@ const HeroSection = () => {
       <SlideshowBanner />
       
       {/* Hero Content */}
-      <div className="flex-1 flex items-center -mt-[390px]">
-        <div className="container mx-auto px-6 py-20 relative z-10">
+      <div className="flex-1 flex items-center -mt-[390px] relative z-30">
+        <div className="container mx-auto px-6 py-20 relative">
           <div className="text-center text-white space-y-8 max-w-4xl mx-auto">
             <div className={`space-y-6 transition-all duration-1000 transform ${
               isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
@@ -270,7 +270,7 @@ const HeroSection = () => {
       </div>
 
       {/* AboutSection as Overlay at Bottom */}
-      <div className="absolute bottom-[0px] left-0 right-0 z-20">
+      <div className="absolute bottom-[0px] left-0 right-0 z-40">
         <div className="bg-gradient-to-t from-white via-white/95 to-white/0 backdrop-blur-sm">
           <div className="container mx-auto px-6 pb-12 pt-12">
             <div className="text-center mb-8">

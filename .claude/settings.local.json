@@ -13,7 +13,8 @@
       "Bash(npx playwright install:*)",
       "Bash(npx vite:*)",
       "Bash(npx playwright test-hero-animation.js)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Bash(npx playwright test:*)"
     ],
     "deny": [],
     "ask": []

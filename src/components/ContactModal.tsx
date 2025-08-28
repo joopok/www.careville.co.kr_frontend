@@ -52,10 +52,13 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
     { label: "설치/교체 서비스",      value: "002" },
     { label: "상가/사무실 시공",      value: "003" },
     { label: "메트리스 청소(케어)",   value: "004" },
-    { label: "세탁키 케어",           value: "005" },
-    { label: "욕실 전문 시공",        value: "006" },
-    { label: "환풍기 설치",           value: "007" },
+    { label: "세탁키 케어",          value: "005" },
+    { label: "욕실 전문 시공",       value: "006" },
+    { label: "환풍기 설치",          value: "007" },
     { label: "프리미엄 주방케어",     value: "008" },
+    { label: "특수청소",             value: "009" },
+    { label: "주방상판",             value: "010" },
+    { label: "층간소음매트",         value: "011" },
   ];
 
   const form = useForm<ContactFormValues>({
