@@ -130,7 +130,7 @@ const ReviewsSection = () => {
       svcCnCd: newReview.svcCnCd.trim() === "" ? "서비스를 선택해주세요." : "",
       reviewCn: newReview.reviewCn.trim() === "" ? "내용을 입력해주세요." : "",
       starRate: newReview.starRate === 0 ? "별점을 선택해주세요." : "",
-      svcDate: newReview.svcDate === "" ? "희망일을 선택해주세요." : "",
+      svcDate: newReview.svcDate === "" ? "서비스 날짜를 선택해주세요." : "",
     };
 
     if (Object.values(newErrors).some(error => error !== "")) {
@@ -424,7 +424,7 @@ const ReviewsSection = () => {
                          
                   <div className="grid grid-cols-4 items-center gap-4">
                     <Label htmlFor="svcDate" className="text-right">
-                      희망일자
+                      서비스 날짜
                     </Label>
                     <div className="col-span-3">
                     <Input id="svcDate" name="svcDate" type="date"  onChange={dateHandleInputChange} />
