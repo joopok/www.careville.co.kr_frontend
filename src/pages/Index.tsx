@@ -25,10 +25,10 @@ const Index = () => {
       <SpecialCleaningSection />
       <PricingSection />
       <ReviewsSection />
-      <NoticeSection />
       <PortfolioSection />
       <ContactSection />
       <AdditionalSection />
+      <NoticeSection />
       <Footer />
     </div>
   );
