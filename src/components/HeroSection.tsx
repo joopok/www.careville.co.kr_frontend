@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Phone, MessageCircle, ArrowDown, Sparkles, Check, Award, Shield, Clock } from "lucide-react";
 import { useEffect, useState } from "react";
+import { handlePhoneCall } from "@/lib/utils";
 
 const HeroSection = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -40,44 +41,164 @@ const HeroSection = () => {
       "images/banner5.png"
     ];
 
-    const [currIndex, setCurrIndex] = useState(0);  // 현재 보여주는 배너 index
+    const [currIndex, setCurrIndex] = useState(0);
+    const [isTransitioning, setIsTransitioning] = useState(false);
+    const [touchStart, setTouchStart] = useState(0);
+    const [touchEnd, setTouchEnd] = useState(0);
 
+    // Preload images for smoother transitions
+    useEffect(() => {
+      images.forEach((src) => {
+        const img = new Image();
+        img.src = src;
+      });
+    }, []);
+
+    // Auto-advance slideshow
     useEffect(() => {
       const interval = setInterval(() => {
-        setCurrIndex((prevIndex) => (prevIndex + 1) % images.length);
-      }, 5000);
-      return () => {
-        clearInterval(interval);
-      };
-    }, [images.length]);
+        handleNext();
+      }, 7000);
+      return () => clearInterval(interval);
+    }, [currIndex]);
+
+    const handleNext = () => {
+      if (!isTransitioning) {
+        setIsTransitioning(true);
+        setTimeout(() => {
+          setCurrIndex((prev) => (prev + 1) % images.length);
+          setIsTransitioning(false);
+        }, 50);
+      }
+    };
+
+    const handlePrev = () => {
+      if (!isTransitioning) {
+        setIsTransitioning(true);
+        setTimeout(() => {
+          setCurrIndex((prev) => (prev - 1 + images.length) % images.length);
+          setIsTransitioning(false);
+        }, 50);
+      }
+    };
+
+    // Touch handlers for mobile swipe
+    const handleTouchStart = (e: React.TouchEvent) => {
+      setTouchStart(e.targetTouches[0].clientX);
+    };
+
+    const handleTouchMove = (e: React.TouchEvent) => {
+      setTouchEnd(e.targetTouches[0].clientX);
+    };
+
+    const handleTouchEnd = () => {
+      if (!touchStart || !touchEnd) return;
+      
+      const distance = touchStart - touchEnd;
+      const isLeftSwipe = distance > 50;
+      const isRightSwipe = distance < -50;
+
+      if (isLeftSwipe) {
+        handleNext();
+      }
+      if (isRightSwipe) {
+        handlePrev();
+      }
+    };
+
+    const handleIndicatorClick = (index: number) => {
+      if (!isTransitioning && index !== currIndex) {
+        setIsTransitioning(true);
+        setTimeout(() => {
+          setCurrIndex(index);
+          setIsTransitioning(false);
+        }, 50);
+      }
+    };
 
     return (
       <>
-        <div>
-          {
-            images.map((src, index) => (
-              <img
+        <div 
+          className="absolute inset-0 overflow-hidden"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        >
+          {images.map((src, index) => {
+            const isActive = index === currIndex;
+            
+            return (
+              <div
                 key={index}
-                src={src}
-                alt={`Banner ${index + 1}`}
-                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out ${
-                  index === currIndex ? 'opacity-100' : 'opacity-0'
+                className={`absolute inset-0 w-full h-full transition-opacity ${
+                  isActive 
+                    ? 'opacity-100 z-[1]' 
+                    : 'opacity-0 z-[0]'
                 }`}
-              />
-            ))
-          }
+                style={{
+                  transitionDuration: '1500ms',
+                  transitionTimingFunction: 'ease-in-out',
+                }}
+              >
+                <img
+                  src={src}
+                  alt={`Banner ${index + 1}`}
+                  className={`w-full h-full object-cover ${
+                    isActive ? 'animate-smoothKenBurns' : ''
+                  }`}
+                />
+                {/* Gradient overlay for better text visibility */}
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/10 to-black/40 pointer-events-none" />
+              </div>
+            );
+          })}
         </div>
-        <div className="absolute bottom-64 left-1/2 -translate-x-1/2 flex space-x-2 z-10">
+        
+        {/* Indicators */}
+        <div className="absolute bottom-64 left-1/2 -translate-x-1/2 flex items-center gap-3 z-20">
           {images.map((_, index) => (
             <button
               type="button"
               key={index}
-              onClick={() => setCurrIndex(index)}
-              className={`w-3 h-3 rounded-full transition-all duration-500 ease-in-out ${
-                index === currIndex ? "bg-white scale-125" : "bg-white/50 hover:bg-white/70"
-              }`}
-            />
+              onClick={() => handleIndicatorClick(index)}
+              className="relative group"
+              aria-label={`Go to slide ${index + 1}`}
+            >
+              <div
+                className={`w-12 h-1 rounded-full transition-all duration-700 ${
+                  index === currIndex 
+                    ? "bg-white" 
+                    : "bg-white/30 hover:bg-white/50"
+                }`}
+              >
+                {index === currIndex && (
+                  <div className="h-full bg-white/80 rounded-full animate-slideProgress" />
+                )}
+              </div>
+            </button>
           ))}
+        </div>
+        
+        {/* Navigation arrows for desktop */}
+        <div className="hidden md:block">
+          <button
+            onClick={handlePrev}
+            className="absolute left-8 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 transition-all duration-300 group"
+            aria-label="Previous slide"
+          >
+            <svg className="w-6 h-6 group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <button
+            onClick={handleNext}
+            className="absolute right-8 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 transition-all duration-300 group"
+            aria-label="Next slide"
+          >
+            <svg className="w-6 h-6 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
         </div>
       </>
     );
@@ -88,12 +209,9 @@ const HeroSection = () => {
       {/* Slideshow Banner */}
       <SlideshowBanner />
       
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-black/20" />
-      
       {/* Hero Content */}
-      <div className="flex-1 flex items-center -mt-[390px]">
-        <div className="container mx-auto px-6 py-20 relative z-10">
+      <div className="flex-1 flex items-center -mt-[390px] relative z-30">
+        <div className="container mx-auto px-6 py-20 relative">
           <div className="text-center text-white space-y-8 max-w-4xl mx-auto">
             <div className={`space-y-6 transition-all duration-1000 transform ${
               isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
@@ -122,6 +240,7 @@ const HeroSection = () => {
               <Button 
                 size="lg" 
                 className="group bg-white text-primary hover:bg-white/90 text-lg px-10 py-7 rounded-full shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-105"
+                onClick={() => handlePhoneCall("1600-9762")}
               >
                 <Phone className="mr-2 h-5 w-5 group-hover:animate-pulse" />
                 바로 상담받기
@@ -130,6 +249,12 @@ const HeroSection = () => {
                 variant="outline" 
                 size="lg"
                 className="glass text-white border-white/30 hover:bg-white/20 text-lg px-10 py-7 rounded-full backdrop-blur-md transition-all duration-300 hover:scale-105"
+                onClick={() => {
+                  const element = document.getElementById('quick-inquiry');
+                  if (element) {
+                    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  }
+                }}
               >
                 <MessageCircle className="mr-2 h-5 w-5" />
                 온라인 문의
@@ -145,7 +270,7 @@ const HeroSection = () => {
       </div>
 
       {/* AboutSection as Overlay at Bottom */}
-      <div className="absolute bottom-[0px] left-0 right-0 z-20">
+      <div className="absolute bottom-[0px] left-0 right-0 z-40">
         <div className="bg-gradient-to-t from-white via-white/95 to-white/0 backdrop-blur-sm">
           <div className="container mx-auto px-6 pb-12 pt-12">
             <div className="text-center mb-8">
@@ -187,15 +312,18 @@ const HeroSection = () => {
         </div>
       </div>
       
-      {/* Floating Contact Buttons - Horizontal Layout */}
-      <div className="fixed bottom-8 right-8 z-50 flex items-center gap-3 bg-white/90 backdrop-blur-md rounded-full p-2 shadow-2xl border border-gray-200">
+      {/* Floating Contact Buttons - Vertical Layout */}
+      <div className="fixed bottom-8 right-8 z-50 flex flex-col items-center gap-3 bg-white/90 backdrop-blur-md rounded-2xl p-3 shadow-2xl border border-gray-200">
         <Button className="group w-14 h-14 rounded-full bg-yellow-400 hover:bg-yellow-500 text-black shadow-md hover:shadow-lg transition-all duration-300 hover:scale-110 flex-shrink-0">
           <div className="text-center">
             <div className="text-xs font-bold">TALK</div>
             <div className="text-[10px]">카톡</div>
           </div>
         </Button>
-        <Button className="group w-14 h-14 rounded-full bg-gradient-to-br from-primary to-secondary hover:from-primary-dark hover:to-secondary text-white shadow-md hover:shadow-lg transition-all duration-300 hover:scale-110 flex-shrink-0">
+        <Button 
+          className="group w-14 h-14 rounded-full bg-gradient-to-br from-primary to-secondary hover:from-primary-dark hover:to-secondary text-white shadow-md hover:shadow-lg transition-all duration-300 hover:scale-110 flex-shrink-0"
+          onClick={() => handlePhoneCall("1600-9762")}
+        >
           <div className="text-center">
             <Phone className="h-4 w-4 mx-auto mb-0.5 group-hover:animate-pulse" />
             <div className="text-[10px]">전화</div>

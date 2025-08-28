@@ -35,7 +35,7 @@ const serviceCategories = [
   {
     title: "작업후기",
     icon: MessageSquare,
-    services: ["고객후기", "실제 작업사례"],
+    services: ["고객후기", "시공사례"],
     popular: false
   }
 ];

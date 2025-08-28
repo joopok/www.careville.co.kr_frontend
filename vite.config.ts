@@ -43,8 +43,16 @@ export default defineConfig(({ mode }) => ({
       output: {
         manualChunks: {
           'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'ui-vendor': ['framer-motion', 'swiper', '@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu'],
-          'utils': ['clsx', 'tailwind-merge', 'date-fns'],
+          'ui-vendor': [
+            '@radix-ui/react-accordion',
+            '@radix-ui/react-dialog',
+            '@radix-ui/react-dropdown-menu',
+            '@radix-ui/react-tabs',
+            '@radix-ui/react-tooltip',
+            'framer-motion',
+            'swiper'
+          ],
+          'utils': ['clsx', 'tailwind-merge', 'lucide-react', 'date-fns'],
         },
         // Asset naming for better caching
         chunkFileNames: (chunkInfo) => {
@@ -77,7 +85,14 @@ export default defineConfig(({ mode }) => ({
   },
   // Optimize dependencies
   optimizeDeps: {
-    include: ['react', 'react-dom', 'react-router-dom'],
+    include: [
+      'react',
+      'react-dom',
+      'react-router-dom',
+      '@tanstack/react-query',
+      'framer-motion',
+      'lucide-react'
+    ],
     exclude: ['@vite/client', '@vite/env'],
   },
 }))

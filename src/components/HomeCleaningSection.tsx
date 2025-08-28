@@ -100,20 +100,6 @@ const HomeCleaningSection = () => {
               </Card>
             ))}
           </div>
-
-          <div className="mt-12 text-center">
-            <Card className="inline-block p-6 bg-gradient-to-r from-primary/10 to-secondary/10">
-              <div className="flex items-center gap-4">
-                <Clock className="h-8 w-8 text-primary" />
-                <div className="text-left">
-                  <div className="font-semibold">빠른 예약 안내</div>
-                  <div className="text-sm text-muted-foreground">
-                    전화 한 통으로 24시간 내 방문 상담 가능
-                  </div>
-                </div>
-              </div>
-            </Card>
-          </div>
         </div>
       </section>
       <ContactModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />

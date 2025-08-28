@@ -31,7 +31,7 @@ const BusinessCleaningSection = () => {
   ];
 
   return (
-    <section id="business-cleaning" className="py-20 bg-white">
+    <section id="business-cleaning" className="py-12 bg-white">
       <div className="container mx-auto px-6">
         <div className="text-center mb-12 animate-fadeIn">
           <div className="inline-flex items-center gap-2 bg-secondary/10 px-4 py-2 rounded-full mb-4">

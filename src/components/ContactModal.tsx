@@ -6,15 +6,16 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button }   from "@/components/ui/button";
+import { Input }    from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Card } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { useForm } from "react-hook-form";
+import { Card }     from "@/components/ui/card";
+import { Label }    from "@/components/ui/label";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { toast } from "sonner";
+import * as z       from "zod";
+import { toast }    from "sonner";
 
 interface ContactModalProps {
   isOpen: boolean;
@@ -27,7 +28,7 @@ const formSchema = z.object({
   tel2: z.string().optional(),
   adres1: z.string().min(1, "주소1을 입력해주세요."),
   adres2: z.string().optional(),
-  zip: z.string().min(1, "우편번호를 입력해주세요."),
+  zip: z.string().optional(),
   svcCnCd: z.string().min(1, "서비스 내용을 선택해주세요."),
   hopeDay: z.string().min(1, "희망일자를 선택해주세요."),
   inqryCn: z.string().min(1, "상담 내용을 입력해주세요."),
@@ -36,6 +37,30 @@ const formSchema = z.object({
 type ContactFormValues = z.infer<typeof formSchema>;
 
 const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
+  const getTodayDate = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const todayDate = getTodayDate();
+
+  const serviceOptions = [
+    { label: "에어컨 케어 및 세척",   value: "001" },
+    { label: "설치/교체 서비스",      value: "002" },
+    { label: "상가/사무실 시공",      value: "003" },
+    { label: "메트리스 청소(케어)",   value: "004" },
+    { label: "세탁키 케어",          value: "005" },
+    { label: "욕실 전문 시공",       value: "006" },
+    { label: "환풍기 설치",          value: "007" },
+    { label: "프리미엄 주방케어",     value: "008" },
+    { label: "특수청소",             value: "009" },
+    { label: "주방상판",             value: "010" },
+    { label: "층간소음매트",         value: "011" },
+  ];
+
   const form = useForm<ContactFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -53,18 +78,25 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
 
   const onSubmit = async (values: ContactFormValues) => {
     const url = "http://211.236.162.104:8081/cnsltReg.do";
-    const formData = new URLSearchParams();
-    for (const key in values) {
-      formData.append(key, values[key as keyof ContactFormValues] || "");
+    const dataToSend = { ...values };
+
+    // Remove hyphens from hopeDay
+    if (dataToSend.hopeDay) {
+      dataToSend.hopeDay = dataToSend.hopeDay.replace(/-/g, "");
     }
 
+    const formData = new URLSearchParams();
+    for (const key in dataToSend) {
+      formData.append(key, dataToSend[key as keyof ContactFormValues] || "");
+    }
+
+    const finalUrl = `${url}?${formData.toString()}`;
+
+    console.log("Sending POST request to:", finalUrl);
+
     try {
-      const response = await fetch(url, {
+      const response = await fetch(finalUrl, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: formData.toString(),
       });
 
       if (!response.ok) {
@@ -73,9 +105,12 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
 
       const result = await response.json();
 
-      if (result.isError === false) {
+      if (result.isError == "false") {
         toast.success("상담 신청이 성공적으로 접수되었습니다.");
         onClose(); // Close the modal after successful submission
+      } else if (result.isError == "true") {
+        toast.error(`상담 신청 실패: ${result.excpMsg || result.excpCdMsg || "알 수 없는 오류"}`);
+        console.error("Submission error:", result);
       } else {
         toast.error("상담 신청에 실패했습니다. 다시 시도해주세요.");
         console.error("Submission error:", result);
@@ -88,7 +123,7 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[600px] max-h-[85vh] overflow-y-auto">
         <DialogHeader className="mb-0">
           <DialogTitle>상담 신청</DialogTitle>
           <DialogDescription className="py-0 mb-0">
@@ -121,6 +156,7 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
               <Label htmlFor="tel2">연락처2 (선택)</Label>
               <Input id="tel2" placeholder="추가 연락처" {...form.register("tel2")} />
             </div>
+            {/*
             <div>
               <Label htmlFor="zip">우편번호</Label>
               <Input id="zip" placeholder="우편번호" {...form.register("zip")} />
@@ -130,6 +166,7 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
                 </p>
               )}
             </div>
+            */}
             <div>
               <Label htmlFor="adres1">주소1</Label>
               <Input id="adres1" placeholder="기본 주소" {...form.register("adres1")} />
@@ -145,7 +182,24 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
             </div>
             <div>
               <Label htmlFor="svcCnCd">서비스 내용</Label>
-              <Input id="svcCnCd" placeholder="예: 홈클리닝, 사업장클리닝" {...form.register("svcCnCd")} />
+              <Controller
+                name="svcCnCd"
+                control={form.control}
+                render={({ field }) => (
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <SelectTrigger id="svcCnCd">
+                      <SelectValue placeholder="서비스를 선택해주세요" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {serviceOptions.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
               {form.formState.errors.svcCnCd && (
                 <p className="text-red-500 text-sm">
                   {form.formState.errors.svcCnCd.message}
@@ -154,7 +208,7 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
             </div>
             <div>
               <Label htmlFor="hopeDay">희망일자</Label>
-              <Input id="hopeDay" type="date" {...form.register("hopeDay")} />
+              <Input id="hopeDay" type="date" min={todayDate} {...form.register("hopeDay")} />
               {form.formState.errors.hopeDay && (
                 <p className="text-red-500 text-sm">
                   {form.formState.errors.hopeDay.message}

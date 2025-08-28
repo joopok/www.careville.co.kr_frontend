@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { AirVent, Wrench, Shield, CheckCircle2, Clock, Phone, Snowflake } from "lucide-react";
 import { motion } from "framer-motion";
+import { handlePhoneCall } from "@/lib/utils";
 
 const AirConditionerSection = () => {
   const services = [
@@ -124,7 +125,11 @@ const AirConditionerSection = () => {
                 <p className="text-3xl font-bold mb-2">1600-9762</p>
                 <p className="text-blue-200 mb-4">연중무휴 24시간 상담 가능</p>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center md:justify-end">
-                  <Button size="lg" className="bg-white text-blue-600 hover:bg-white/90">
+                  <Button 
+                    size="lg" 
+                    className="bg-white text-blue-600 hover:bg-white/90"
+                    onClick={() => handlePhoneCall("1600-9762")}
+                  >
                     <Phone className="w-4 h-4 mr-2" />
                     전화 상담
                   </Button>
