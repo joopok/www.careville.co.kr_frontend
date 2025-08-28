@@ -57,8 +57,9 @@ const ReviewsSection = () => {
         }        
         
         const data = await response.json();
-        console.log(data.svcCnCdList);
-        setSvcCnCdList(data.svcCnCdList);        
+        //console.log(data.svcCnCdList);
+        setSvcCnCdList(data.svcCnCdList);    
+        console.log(JSON.stringify(data.data));    
         setReviews(data.data);
       } catch (error: any) {
         setError(error.message);
@@ -73,7 +74,7 @@ const ReviewsSection = () => {
 
   const [newReview, setNewReview] = useState({
     reviewNm: "",
-    svcCnNm: "",
+    svcCnCd: "",
     starRate: 0, // Set initial to 0 to force user selection
     reviewCn: "",
   });
@@ -95,9 +96,9 @@ const ReviewsSection = () => {
   };
 
   const handleServiceChange = (value: string) => {
-    setNewReview(prev => ({ ...prev, svcCnNm: value }));
+    setNewReview(prev => ({ ...prev, svcCnCd: value }));
     if (errors.svcCnNm) {
-      setErrors(prev => ({ ...prev, svcCnNm: "" }));
+      setErrors(prev => ({ ...prev, svcCnCd: "" }));
     }
   };
 
@@ -109,11 +110,11 @@ const ReviewsSection = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+    e.preventDefault();  
+   
     const newErrors = {
       reviewNm: newReview.reviewNm.trim() === "" ? "이름을 입력해주세요." : "",
-      svcCnNm: newReview.svcCnNm.trim() === "" ? "서비스를 선택해주세요." : "",
+      svcCnNm: newReview.svcCnCd.trim() === "" ? "서비스를 선택해주세요." : "",
       reviewCn: newReview.reviewCn.trim() === "" ? "내용을 입력해주세요." : "",
       starRate: newReview.starRate === 0 ? "별점을 선택해주세요." : "",
     };
@@ -127,7 +128,7 @@ const ReviewsSection = () => {
     setIsSubmitting(true);
    
     try {
-      const response = await fetch('/api/reviews', {
+      const response = await fetch('http://211.236.162.104:8081/api/reviews', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -139,10 +140,15 @@ const ReviewsSection = () => {
         throw new Error('Failed to submit review');
       }
 
-      const savedReview = await response.json();
-
-      setReviews(prev => [savedReview, ...prev]);
-      setNewReview({ reviewNm: "", svcCnNm: "", starRate: 0, reviewCn: "" });
+      //저장이 되면 저장된 신규 데이터 받아서 가져오기
+      //const savedReview = await response.json();           
+      //setReviews(prev => [savedReview, ...prev]);
+      const name = categories.find(c => c.id === newReview.svcCnCd)?.name ?? "알 수 없음";
+      const today = new Date();
+      const formatted = today.toISOString().split('T')[0];
+      
+      setReviews(prev => [{svcCnNm: name, reviewSeq: "", svcDate: "", dispYn: "", svcCnCd: newReview.svcCnCd, reviewNm: newReview.reviewNm, rgsDt: formatted, reviewCn: newReview.reviewCn, starRate: newReview.starRate+""}, ...prev]);
+      setNewReview({ reviewNm: "", svcCnCd: "", starRate: 0, reviewCn: "" });
       setIsDialogOpen(false);
     } catch (error) {
       console.error(error);
@@ -281,7 +287,7 @@ const ReviewsSection = () => {
                       서비스
                     </Label>
                     <div className="col-span-3">
-                      <Select onValueChange={handleServiceChange} value={newReview.svcCnNm}>
+                      <Select onValueChange={handleServiceChange} value={newReview.svcCnCd}>
                         <SelectTrigger className={errors.svcCnNm ? 'border-red-500' : ''}>
                           <SelectValue placeholder="서비스를 선택하세요" />
                         </SelectTrigger>
@@ -379,7 +385,7 @@ const ReviewsSection = () => {
                       서비스
                     </Label>
                     <div className="col-span-3">
-                      <Select onValueChange={handleServiceChange} value={newReview.svcCnNm}>
+                      <Select onValueChange={handleServiceChange} value={newReview.svcCnCd}>
                         <SelectTrigger className={errors.svcCnNm ? 'border-red-500' : ''}>
                           <SelectValue placeholder="서비스를 선택하세요" />
                         </SelectTrigger>
@@ -447,17 +453,17 @@ const ReviewsSection = () => {
           ))}
         </div>
 
-        <div className="relative max-w-6xl mx-auto mt-8">
+        <div className="relative max-w-6xl mx-auto">
           {/* Custom Navigation Buttons */}
           <button
             onClick={() => swiperRef.current?.slidePrev()}
-            className="absolute left-0 md:-left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-white/80 backdrop-blur-sm rounded-full shadow-lg flex items-center justify-center hover:bg-white transition-colors"
+            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 md:-translate-x-12 z-10 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-colors"
           >
             <ChevronLeft className="w-6 h-6 text-gray-600" />
           </button>
           <button
             onClick={() => swiperRef.current?.slideNext()}
-            className="absolute right-0 md:-right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-white/80 backdrop-blur-sm rounded-full shadow-lg flex items-center justify-center hover:bg-white transition-colors"
+            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 md:translate-x-12 z-10 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-colors"
           >
             <ChevronRight className="w-6 h-6 text-gray-600" />
           </button>
@@ -513,4 +519,4 @@ const ReviewsSection = () => {
   );
 };
 
-export default memo(ReviewsSection););
+export default memo(ReviewsSection);
