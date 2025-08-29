@@ -145,7 +145,7 @@
 /* Side navigation styling */
 @media (min-width: 768px) {
   .reviews-swiper .swiper-wrapper {
-    justify-content: center;
+    /* justify-content: center; */
   }
   
   /* Better positioning for desktop */
