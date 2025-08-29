@@ -1,211 +1,80 @@
-import { useState, memo, useMemo, useCallback } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useState, memo, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Check, Star, Sparkles } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const PricingSection = () => {
-  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [category, setCategory]                 = useState([]); // 카테고리 목록
+  const [pricingData, setPricingData]           = useState([]); // 전체 상품 데이터
+  const [selectedCategory, setSelectedCategory] = useState(""); // 선택된 카테고리
+  const [displayData, setDisplayData]           = useState([]); // 화면에 보여 줄 해당 카테고리의 상품 데이터
 
-  const pricingData = {
-    home: [
-      {
-        id: 1,
-        name: "원룸/오피스텔 청소",
-        description: "전문 장비를 활용한 깔끔한 원룸 청소",
-        price: "50,000",
-        originalPrice: "70,000",
-        discount: "29%",
-        features: [
-          "거실, 주방, 욕실 전체 청소",
-          "바닥 걸레질 및 진공청소",
-          "창문 및 창틀 청소",
-          "기본 정리정돈"
-        ],
-        duration: "2-3시간",
-        popular: false
-      },
-      {
-        id: 2,
-        name: "아파트 기본 청소",
-        description: "20-30평형 아파트 전문 청소",
-        price: "80,000",
-        originalPrice: "100,000",
-        discount: "20%",
-        features: [
-          "전 구역 청소 (거실, 방, 주방, 욕실)",
-          "바닥 및 걸레질",
-          "먼지 제거 및 진공청소",
-          "주방 기기 외부 청소",
-          "욕실 타일 및 위생도기 청소"
-        ],
-        duration: "3-4시간",
-        popular: true
-      },
-      {
-        id: 3,
-        name: "대형 아파트 청소",
-        description: "40평 이상 대형 아파트 청소",
-        price: "120,000",
-        originalPrice: "150,000",
-        discount: "20%",
-        features: [
-          "전 구역 디테일 청소",
-          "베란다 청소 포함",
-          "수납공간 정리",
-          "대형 가전 외부 청소",
-          "추가 욕실 청소"
-        ],
-        duration: "4-5시간",
-        popular: false
+  const [loading, setLoading]                   = useState(true);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setLoading(true);
+      try {
+        const resp = await fetch('http://211.236.162.104:8081/api/v1/category-products.do', { method: 'GET' });
+        const data = await resp.json();
+
+        setCategory(data?.categories);
+
+        // includeArray 파싱해서 features 항목으로 추가
+        const processedProducts = data?.products?.map((item) => {
+          try {
+            const includeArray = JSON.parse(item?.serviceIncludes || '[]');
+            console.log('includeArray', includeArray);
+            return {
+              ...item,
+              features: includeArray
+            };
+
+          } catch (error) {
+            console.error('Error parsing serviceIncludes for item:', item, error); // TODO: Integrate with a proper logging system
+            return {
+              ...item,
+              features: []
+            };
+          }
+        });
+        setPricingData(processedProducts);
+        
+      } catch (error) {
+        console.error('Error fetching products:', error);
+        setCategory([]);
+        setPricingData([]);
+      } finally {
+        if (selectedCategory === "" ) setSelectedCategory("001");
+        setLoading(false);
       }
-    ],
-    special: [
-      {
-        id: 4,
-        name: "에어컨 설치 및 수리 전문",
-        description: "천장형, 벽걸이형, 스탠드형 에어컨 설치, 수리, 청소 통합 서비스",
-        price: "90,000",
-        originalPrice: "120,000",
-        discount: "25%",
-        features: [
-          "신규 에어컨 전문 설치",
-          "고장 진단 및 수리",
-          "냉매 충전 서비스",
-          "완전 분해 세척",
-          "1년 A/S 보증"
-        ],
-        duration: "2-3시간",
-        popular: true
-      },
-      {
-        id: 5,
-        name: "주방 UV 코팅",
-        description: "상판 UV코팅, 크랙보수, 실리콘 마감",
-        price: "280,000",
-        originalPrice: "350,000",
-        discount: "20%",
-        features: [
-          "상판 완벽 UV 코팅",
-          "크랙 및 스크래치 보수",
-          "실리콘 재시공",
-          "싱크대 연마 및 코팅",
-          "3년 품질 보증"
-        ],
-        duration: "4-5시간",
-        popular: false
-      },
-      {
-        id: 6,
-        name: "욕실 나노 코팅",
-        description: "나노코팅, 줄눈시공, 곰팡이제거",
-        price: "350,000",
-        originalPrice: "450,000",
-        discount: "22%",
-        features: [
-          "욕실 전체 나노 코팅",
-          "줄눈 완벽 재시공",
-          "곰팡이 완전 제거",
-          "타일 광택 복원",
-          "5년 품질 보증"
-        ],
-        duration: "6-7시간",
-        popular: true
-      },
-      {
-        id: 7,
-        name: "주방 시공",
-        description: "주방 리모델링 및 싱크대 교체 전문",
-        price: "450,000",
-        originalPrice: "550,000",
-        discount: "18%",
-        features: [
-          "싱크대 완전 교체",
-          "상부장/하부장 설치",
-          "수전 및 배관 교체",
-          "타일 시공 가능",
-          "2년 시공 보증"
-        ],
-        duration: "1-2일",
-        popular: false
-      },
-      {
-        id: 8,
-        name: "층간소음 매트 시공",
-        description: "프리미엄 층간소음 방지 매트 설치",
-        price: "180,000",
-        originalPrice: "220,000",
-        discount: "18%",
-        features: [
-          "고밀도 흡음재 사용",
-          "전문가 정밀 시공",
-          "바닥 평탄화 작업",
-          "친환경 인증 자재",
-          "10년 품질 보증"
-        ],
-        duration: "4-5시간",
-        popular: true
-      }
-    ],
-    business: [
-      {
-        id: 9,
-        name: "소형 사무실 청소",
-        description: "30평 이하 사무실 정기 청소",
-        price: "150,000",
-        originalPrice: "200,000",
-        discount: "25%",
-        features: [
-          "사무실 전체 청소",
-          "회의실 및 휴게실 청소",
-          "카펫 청소",
-          "유리창 청소",
-          "화장실 청소"
-        ],
-        duration: "3-4시간",
-        popular: false
-      },
-      {
-        id: 10,
-        name: "매장 전문 청소",
-        description: "카페, 음식점, 소매점 청소",
-        price: "200,000",
-        originalPrice: "250,000",
-        discount: "20%",
-        features: [
-          "매장 전체 청소",
-          "주방 및 조리 공간 청소",
-          "홀 및 테이블 청소",
-          "화장실 특별 청소",
-          "입구 및 간판 청소"
-        ],
-        duration: "4-5시간",
-        popular: true
-      },
-      {
-        id: 11,
-        name: "대형 사무실 청소",
-        description: "100평 이상 사무실 청소",
-        price: "400,000",
-        originalPrice: "500,000",
-        discount: "20%",
-        features: [
-          "전 층 청소 서비스",
-          "서버실 및 특수 구역 청소",
-          "대형 회의실 청소",
-          "휴게 공간 및 식당 청소",
-          "주차장 청소"
-        ],
-        duration: "8시간+",
-        popular: false
-      }
-    ]
+    };
+
+    fetchProducts();
+  }, []);
+
+  // selectedCategory가 변경될 때마다 해당하는 상품 데이터 배열을 displayData에 업데이트
+  useEffect(() => {
+    const filteredData = pricingData.filter(item => item.serviceCd === selectedCategory);
+    setDisplayData(filteredData);
+  }, [selectedCategory]);
+
+  // 숫자 세 자리마다 콤마(,) 추가
+  const formatNumberComma = (value: number | string): string => {
+    if (value === null || value === undefined || isNaN(Number(value))) {
+      return "";
+    }
+    const [integerPart, decimalPart]  = String(value).split('.');
+    const formattedInteger            = Number(integerPart).toLocaleString('ko-KR');
+    if (decimalPart) {
+      return `${formattedInteger}.${decimalPart}`;
+    }
+    return formattedInteger;
   };
-
-  const allPricing = [...pricingData.home, ...pricingData.special, ...pricingData.business];
-  const displayData = selectedCategory === "all" ? allPricing : pricingData[selectedCategory as keyof typeof pricingData];
 
   return (
     <section className="py-20 bg-gradient-to-b from-background to-accent/5">
@@ -229,76 +98,96 @@ const PricingSection = () => {
           </p>
         </motion.div>
 
-        <Tabs defaultValue="all" className="w-full mb-8">
-          <TabsList className="grid w-full max-w-lg mx-auto grid-cols-4">
-            <TabsTrigger value="all" onClick={() => setSelectedCategory("all")}>
-              전체
-            </TabsTrigger>
-            <TabsTrigger value="home" onClick={() => setSelectedCategory("home")}>
-              가정 청소
-            </TabsTrigger>
-            <TabsTrigger value="special" onClick={() => setSelectedCategory("special")}>
-              특수 청소
-            </TabsTrigger>
-            <TabsTrigger value="business" onClick={() => setSelectedCategory("business")}>
-              사업장
-            </TabsTrigger>
+        <Tabs defaultValue="001" className="w-full mb-8">
+          <TabsList className="flex flex-wrap justify-center w-full mx-auto gap-2 rounded-md bg-muted p-1">
+            {category?.map((item, index) => (
+              <TabsTrigger key={item?.serviceCd} value={item?.serviceCd} onClick={() => setSelectedCategory(item?.serviceCd)}>
+                {item?.serviceNm}
+              </TabsTrigger>
+            ))
+            }
           </TabsList>
         </Tabs>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {displayData.map((item, index) => (
-            <motion.div
-              key={item.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-            >
-              <Card className={`relative h-full transition-all duration-300 hover:border-primary hover:shadow-xl ${item.popular ? 'border-gray-200' : 'border-gray-200'} group`}>
-                {item.popular && (
-                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
-                    <Badge className="bg-primary text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <Star className="w-3 h-3 mr-1 fill-current" />
-                      인기 서비스
-                    </Badge>
-                  </div>
-                )}
-                
-                <CardHeader className="pb-4">
-                  <CardTitle className="text-xl">{item.name}</CardTitle>
-                  <CardDescription className="mt-2">{item.description}</CardDescription>
+          {loading ? (
+            Array.from({ length: 3 }).map((_, index) => (
+              <Card key={index} className="h-full">
+                <CardHeader>
+                  <Skeleton className="h-6 w-3/4 mb-2" />
+                  <Skeleton className="h-4 w-1/2" />
                 </CardHeader>
-                
                 <CardContent>
-                  <div className="mb-6">
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-3xl font-bold text-foreground group-hover:text-primary transition-colors duration-300">{item.price}원</span>
-                      <span className="text-lg text-muted-foreground line-through">{item.originalPrice}원</span>
-                      <Badge variant="destructive" className="ml-auto">
-                        {item.discount} 할인
-                      </Badge>
-                    </div>
-                    <p className="text-sm text-muted-foreground mt-2">
-                      소요시간: {item.duration}
-                    </p>
+                  <Skeleton className="h-8 w-1/3 mb-4" />
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-full" />
                   </div>
-
-                  <div className="space-y-3 mb-6">
-                    {item.features.map((feature, idx) => (
-                      <div key={idx} className="flex items-start gap-2">
-                        <Check className="w-5 h-5 text-gray-400 group-hover:text-primary mt-0.5 flex-shrink-0 transition-colors duration-300" />
-                        <span className="text-sm">{feature}</span>
-                      </div>
-                    ))}
-                  </div>
-
-                  <Button className="w-full group-hover:bg-primary group-hover:text-white transition-all duration-300" variant="outline">
-                    예약하기
-                  </Button>
+                  <Skeleton className="h-10 w-full mt-6" />
                 </CardContent>
               </Card>
-            </motion.div>
-          ))}
+            ))
+          ) : displayData?.length === 0 ? (
+            <div className="col-span-full text-center py-10 text-muted-foreground">
+              <p className="text-lg">해당하는 서비스가 없습니다.</p>
+            </div>
+          ) : (
+            displayData?.map((item, index) => (
+              <motion.div
+                key={item.productNo}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+              >
+                <Card className={`relative h-full transition-all duration-300 hover:border-primary hover:shadow-xl ${item.popular ? 'border-gray-200' : 'border-gray-200'} group`}>
+                  {item.popular && (
+                    <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
+                      <Badge className="bg-primary text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <Star className="w-3 h-3 mr-1 fill-current" />
+                        인기 서비스
+                      </Badge>
+                    </div>
+                  )}
+                  
+                  <CardHeader className="pb-4">
+                    <CardTitle className="text-xl">{item.productNm}</CardTitle>
+                    <CardDescription className="mt-2">{item.productDesc}</CardDescription>
+                  </CardHeader>
+                  
+                  <CardContent>
+                    <div className="mb-6">
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-3xl font-bold text-foreground group-hover:text-primary transition-colors duration-300">{formatNumberComma(item.salePrice)}원</span>
+                        <span className="text-lg text-muted-foreground line-through">{formatNumberComma(item.originalPrice)}원</span>
+                        {item?.saleYn === 'Y' && 
+                        <Badge variant="destructive" className="ml-auto">
+                          {item.discountRate}% 할인
+                        </Badge>
+                        }
+                      </div>
+                      <p className="text-sm text-muted-foreground mt-2">
+                        소요시간: {item.serviceTime}
+                      </p>
+                    </div>
+
+                    <div className="space-y-3 mb-6">
+                      {item.features?.map((feature, idx) => (
+                        <div key={idx} className="flex items-start gap-2">
+                          <Check className="w-5 h-5 text-gray-400 group-hover:text-primary mt-0.5 flex-shrink-0 transition-colors duration-300" />
+                          <span className="text-sm">{feature}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    <Button className="w-full group-hover:bg-primary group-hover:text-white transition-all duration-300" variant="outline">
+                      예약하기
+                    </Button>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))
+          )}
         </div>
 
         <motion.div

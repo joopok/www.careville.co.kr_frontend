@@ -2,7 +2,7 @@ import { Card } from "@/components/ui/card";
 import { Star, Quote, ThumbsUp, MessageSquare, ChevronLeft, ChevronRight } from "lucide-react";
 import { useState, useRef, memo, useEffect } from "react";
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Pagination, Grid, Autoplay } from 'swiper/modules';
+import { Navigation, Grid, Autoplay } from 'swiper/modules';
 import type { Swiper as SwiperType } from 'swiper';
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -15,7 +15,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 // Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/navigation';
-import 'swiper/css/pagination';
 import 'swiper/css/grid';
 import './ReviewsSection.css';
 
@@ -78,8 +77,7 @@ const ReviewsSection = () => {
     svcCnCd: "",
     starRate: 0, // Set initial to 0 to force user selection
     reviewCn: "",
-    svcDate:"",
-    pw:""
+    svcDate:""
   });
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -89,28 +87,11 @@ const ReviewsSection = () => {
     svcCnCd:"",
     reviewCn: "",
     starRate: "",
-    svcDate: "",
-    pw:""
+    svcDate: ""
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setNewReview(prev => ({ ...prev, [name]: value }));
-    if (errors[name as keyof typeof errors]) {
-      setErrors(prev => ({ ...prev, [name]: "" }));
-    }
-  };
-
-  const NumInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-
-    if (name === "pw") {
-      const onlyNumberMax8 = /^\d{0,8}$/;
-      if (!onlyNumberMax8.test(value)) {
-        setErrors(prev => ({ ...prev, [name]: "숫자만 입력 가능하며 최대 8자리까지 가능합니다." }));
-        return;
-      }
-    }
     setNewReview(prev => ({ ...prev, [name]: value }));
     if (errors[name as keyof typeof errors]) {
       setErrors(prev => ({ ...prev, [name]: "" }));
@@ -149,7 +130,6 @@ const ReviewsSection = () => {
       reviewCn: newReview.reviewCn.trim() === "" ? "내용을 입력해주세요." : "",
       starRate: newReview.starRate === 0 ? "별점을 선택해주세요." : "",
       svcDate: newReview.svcDate === "" ? "서비스 날짜를 선택해주세요." : "",
-      pw: newReview.pw === "" ? "비밀번호를 입력해주세요." : "",
     };
 
     if (Object.values(newErrors).some(error => error !== "")) {
@@ -157,7 +137,7 @@ const ReviewsSection = () => {
       return;
     }
  
-    setErrors({ reviewNm: "", svcCnNm: "", reviewCn: "", starRate: "" ,svcDate:"", svcCnCd:"", pw:""});
+    setErrors({ reviewNm: "", svcCnNm: "", reviewCn: "", starRate: "" ,svcDate:"", svcCnCd:""});
     setIsSubmitting(true);
     //날짜 하이픈 제거
     newReview.svcDate = newReview.svcDate.replace(/-/g, "");    
@@ -188,7 +168,7 @@ const ReviewsSection = () => {
         svcCnNm: name, reviewSeq: "", svcDate: "", dispYn: "", svcCnCd: newReview.svcCnCd, reviewNm: newReview.reviewNm,
          rgsDt: formatted, reviewCn: newReview.reviewCn, starRate: newReview.starRate},
           ...prev]);
-      setNewReview({ reviewNm: "", svcCnCd: "", starRate: 0, reviewCn: "", svcDate: "", pw:"" });
+      setNewReview({ reviewNm: "", svcCnCd: "", starRate: 0, reviewCn: "", svcDate: "" });
       setIsDialogOpen(false);
     } catch (error) {
       console.error(error);
@@ -213,29 +193,28 @@ const ReviewsSection = () => {
     ? reviews 
     : reviews.filter(r => r.svcCnCd === selectedCategory);
 
-  const [selectedReview, setSelectedReview] = useState<typeof reviews[0] | null>(null);
-  
-
-  const ReviewCard = ({ review }: { review: typeof reviews[0] }) => (    
-    <Card className="h-full p-6 hover:shadow-lg transition-all duration-300 bg-white">      
-      <div className="flex items-start gap-4" onClick={() => {setSelectedReview(review); setIsDialogOpen(true)}}>
+  const ReviewCard = ({ review }: { review: typeof reviews[0] }) => (
+    <Card className="h-full review-card p-6 hover:shadow-lg transition-all duration-300 bg-white">
+      <div className="flex items-start gap-4 flex-1">
         <Quote className="h-8 w-8 text-primary/20 flex-shrink-0" />
-        <div className="flex-1">
+        <div className="flex-1 flex flex-col">
           <div className="flex items-start justify-between mb-3">
-            <div>
-              <div className="font-semibold text-lg">{review.reviewNm}</div>
-              <div className="text-sm text-muted-foreground">
-                {review.svcCnNm} • {review.rgsDt}
+            <div className="flex-1 min-w-0">
+              <div className="font-semibold text-lg review-title">{review.reviewNm}</div>
+              <div className="text-sm text-muted-foreground flex items-center gap-1">
+                <span className="review-service">{review.svcCnNm}</span>
+                <span>•</span>
+                <span className="whitespace-nowrap">{review.rgsDt}</span>
               </div>
             </div>
-            <div className="flex gap-0.5">
+            <div className="flex gap-0.5 flex-shrink-0 ml-2">
               {[...Array(review.starRate)].map((_, i) => (
                 <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
               ))}
             </div>
           </div>
           
-          <p className="text-gray-700 mb-4 leading-relaxed line-clamp-3">
+          <p className="text-gray-700 mb-4 leading-relaxed review-content">
             {review.reviewCn}
           </p>    
         </div>
@@ -261,18 +240,22 @@ const ReviewsSection = () => {
           </div>
           <div className="grid md:grid-cols-2 gap-8">
             {[...Array(4)].map((_, i) => (
-              <Card key={i} className="p-6 bg-white">
-                <div className="flex items-start gap-4">
-                  <Skeleton className="h-12 w-12 rounded-full" />
-                  <div className="flex-1 space-y-3 mt-1">
-                    <Skeleton className="h-4 w-32" />
-                    <Skeleton className="h-4 w-24" />
+              <Card key={i} className="h-full review-card p-6 bg-white">
+                <div className="flex items-start gap-4 flex-1">
+                  <Skeleton className="h-8 w-8 rounded" />
+                  <div className="flex-1 flex flex-col">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex-1">
+                        <Skeleton className="h-5 w-32 mb-2" />
+                        <Skeleton className="h-4 w-40" />
+                      </div>
+                      <Skeleton className="h-4 w-20" />
+                    </div>
+                    <div className="space-y-2">
+                      <Skeleton className="h-4 w-full" />
+                      <Skeleton className="h-4 w-4/5" />
+                    </div>
                   </div>
-                </div>
-                <div className="space-y-2 mt-4">
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-4/5" />
                 </div>
               </Card>
             ))}
@@ -315,8 +298,7 @@ const ReviewsSection = () => {
                 </DialogDescription>
               </DialogHeader>
               <form onSubmit={handleSubmit}>
-                <div className="grid gap-4 py-4">            
-
+                <div className="grid gap-4 py-4">
                   <div className="grid grid-cols-4 items-center gap-4">
                     <Label htmlFor="reviewNm" className="text-right">
                       이름
@@ -326,17 +308,6 @@ const ReviewsSection = () => {
                       {errors.reviewNm && <p className="text-red-500 text-xs mt-1">{errors.reviewNm}</p>}
                     </div>
                   </div>
-
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="reviewNm" className="text-right">
-                      비밀번호
-                    </Label>
-                    <div className="col-span-3">
-                      <Input id="pw" name="pw" value={newReview.pw} onChange={NumInputChange} className={errors.pw ? 'border-red-500' : ''} />
-                      {errors.reviewNm && <p className="text-red-500 text-xs mt-1">{errors.pw}</p>}
-                    </div>
-                  </div>
-
                   <div className="grid grid-cols-4 items-center gap-4">
                     <Label htmlFor="svcCnCd" className="text-right">
                       서비스
@@ -413,14 +384,7 @@ const ReviewsSection = () => {
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
             케어빌을 경험하신 고객님들의 진솔한 이야기를 들어보세요
           </p>
-          <Dialog open={isDialogOpen} onOpenChange={(open) => {
-              setIsDialogOpen(open);
-              if (!open) {
-                // 다이얼로그 닫힐 때 초기화  
-                setSelectedReview(null); 
-                setNewReview({ reviewNm: "", svcCnCd: "", starRate: 0, reviewCn: "", svcDate: "", pw:"" }); 
-              }
-            }}>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <Button className="mt-4">후기 작성하기</Button>
             </DialogTrigger>
@@ -433,18 +397,6 @@ const ReviewsSection = () => {
               </DialogHeader>
               <form onSubmit={handleSubmit}>
                 <div className="grid gap-4 py-4">
-                    {/* 리스트값 불러오기 */}
-                    
-                    {selectedReview && (
-                      <>                
-                      {newReview.reviewNm =selectedReview.reviewNm}
-                      {newReview.svcCnCd =selectedReview.svcCnCd}
-                      {newReview.svcDate =selectedReview.svcDate}
-                      {newReview.reviewCn =selectedReview.reviewCn}
-                      {newReview.starRate =selectedReview.starRate}
-                      </>                     
-                    )}                
-
                   <div className="grid grid-cols-4 items-center gap-4">
                     <Label htmlFor="reviewNm" className="text-right">
                       이름
@@ -454,17 +406,6 @@ const ReviewsSection = () => {
                       {errors.reviewNm && <p className="text-red-500 text-xs mt-1">{errors.reviewNm}</p>}
                     </div>
                   </div>
-
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="reviewNm" className="text-right">
-                      비밀번호
-                    </Label>
-                    <div className="col-span-3">
-                      <Input id="pw" name="pw" value={newReview.pw} type="password" onChange={NumInputChange} className={errors.pw ? 'border-red-500' : ''} />
-                      {errors.reviewNm && <p className="text-red-500 text-xs mt-1">{errors.pw}</p>}
-                    </div>
-                  </div>
-
                   <div className="grid grid-cols-4 items-center gap-4">
                     <Label htmlFor="svcCnCd" className="text-right">
                       서비스
@@ -553,31 +494,29 @@ const ReviewsSection = () => {
           {/* Custom Navigation Buttons */}
           <button
             onClick={() => swiperRef.current?.slidePrev()}
-            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 md:-translate-x-12 z-10 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-colors"
+            className="absolute left-0 top-[50%] -translate-y-[50%] -translate-x-6 md:-translate-x-14 z-10 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 hover:shadow-xl transition-all duration-300 group"
+            aria-label="Previous reviews"
           >
-            <ChevronLeft className="w-6 h-6 text-gray-600" />
+            <ChevronLeft className="w-6 h-6 text-gray-600 group-hover:text-primary transition-colors" />
           </button>
           <button
             onClick={() => swiperRef.current?.slideNext()}
-            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 md:translate-x-12 z-10 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-colors"
+            className="absolute right-0 top-[50%] -translate-y-[50%] translate-x-6 md:translate-x-14 z-10 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 hover:shadow-xl transition-all duration-300 group"
+            aria-label="Next reviews"
           >
-            <ChevronRight className="w-6 h-6 text-gray-600" />
+            <ChevronRight className="w-6 h-6 text-gray-600 group-hover:text-primary transition-colors" />
           </button>
 
           <Swiper
             onBeforeInit={(swiper) => {
               swiperRef.current = swiper;
             }}
-            modules={[Navigation, Pagination, Grid, Autoplay]}
+            modules={[Navigation, Grid, Autoplay]}
             spaceBetween={20}
             slidesPerView={1}
             grid={{
               rows: 2,
               fill: 'row'
-            }}
-            pagination={{
-              clickable: true,
-              dynamicBullets: true,
             }}
             autoplay={{
               delay: 5000,
@@ -592,14 +531,7 @@ const ReviewsSection = () => {
                 }
               }
             }}
-            className="reviews-swiper pb-12"
-            style={{
-              '--swiper-pagination-color': 'hsl(var(--primary))',
-              '--swiper-pagination-bullet-inactive-color': '#e5e7eb',
-              '--swiper-pagination-bullet-inactive-opacity': '1',
-              '--swiper-pagination-bullet-size': '8px',
-              '--swiper-pagination-bullet-horizontal-gap': '6px'
-            } as React.CSSProperties}
+            className="reviews-swiper"
           >
             {filteredReviews.map((review) => (
               <SwiperSlide key={review.reviewSeq}>
