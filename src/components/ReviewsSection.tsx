@@ -78,7 +78,8 @@ const ReviewsSection = () => {
     svcCnCd: "",
     starRate: 0, // Set initial to 0 to force user selection
     reviewCn: "",
-    svcDate:""
+    svcDate:"",
+    pw:""
   });
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -88,11 +89,28 @@ const ReviewsSection = () => {
     svcCnCd:"",
     reviewCn: "",
     starRate: "",
-    svcDate: ""
+    svcDate: "",
+    pw:""
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
+    setNewReview(prev => ({ ...prev, [name]: value }));
+    if (errors[name as keyof typeof errors]) {
+      setErrors(prev => ({ ...prev, [name]: "" }));
+    }
+  };
+
+  const NumInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+
+    if (name === "pw") {
+      const onlyNumberMax8 = /^\d{0,8}$/;
+      if (!onlyNumberMax8.test(value)) {
+        setErrors(prev => ({ ...prev, [name]: "숫자만 입력 가능하며 최대 8자리까지 가능합니다." }));
+        return;
+      }
+    }
     setNewReview(prev => ({ ...prev, [name]: value }));
     if (errors[name as keyof typeof errors]) {
       setErrors(prev => ({ ...prev, [name]: "" }));
@@ -131,6 +149,7 @@ const ReviewsSection = () => {
       reviewCn: newReview.reviewCn.trim() === "" ? "내용을 입력해주세요." : "",
       starRate: newReview.starRate === 0 ? "별점을 선택해주세요." : "",
       svcDate: newReview.svcDate === "" ? "서비스 날짜를 선택해주세요." : "",
+      pw: newReview.pw === "" ? "비밀번호를 입력해주세요." : "",
     };
 
     if (Object.values(newErrors).some(error => error !== "")) {
@@ -138,7 +157,7 @@ const ReviewsSection = () => {
       return;
     }
  
-    setErrors({ reviewNm: "", svcCnNm: "", reviewCn: "", starRate: "" ,svcDate:"", svcCnCd:""});
+    setErrors({ reviewNm: "", svcCnNm: "", reviewCn: "", starRate: "" ,svcDate:"", svcCnCd:"", pw:""});
     setIsSubmitting(true);
     //날짜 하이픈 제거
     newReview.svcDate = newReview.svcDate.replace(/-/g, "");    
@@ -169,7 +188,7 @@ const ReviewsSection = () => {
         svcCnNm: name, reviewSeq: "", svcDate: "", dispYn: "", svcCnCd: newReview.svcCnCd, reviewNm: newReview.reviewNm,
          rgsDt: formatted, reviewCn: newReview.reviewCn, starRate: newReview.starRate},
           ...prev]);
-      setNewReview({ reviewNm: "", svcCnCd: "", starRate: 0, reviewCn: "", svcDate: "" });
+      setNewReview({ reviewNm: "", svcCnCd: "", starRate: 0, reviewCn: "", svcDate: "", pw:"" });
       setIsDialogOpen(false);
     } catch (error) {
       console.error(error);
@@ -194,9 +213,12 @@ const ReviewsSection = () => {
     ? reviews 
     : reviews.filter(r => r.svcCnCd === selectedCategory);
 
-  const ReviewCard = ({ review }: { review: typeof reviews[0] }) => (
-    <Card className="h-full p-6 hover:shadow-lg transition-all duration-300 bg-white">
-      <div className="flex items-start gap-4">
+  const [selectedReview, setSelectedReview] = useState<typeof reviews[0] | null>(null);
+  
+
+  const ReviewCard = ({ review }: { review: typeof reviews[0] }) => (    
+    <Card className="h-full p-6 hover:shadow-lg transition-all duration-300 bg-white">      
+      <div className="flex items-start gap-4" onClick={() => {setSelectedReview(review); setIsDialogOpen(true)}}>
         <Quote className="h-8 w-8 text-primary/20 flex-shrink-0" />
         <div className="flex-1">
           <div className="flex items-start justify-between mb-3">
@@ -293,7 +315,8 @@ const ReviewsSection = () => {
                 </DialogDescription>
               </DialogHeader>
               <form onSubmit={handleSubmit}>
-                <div className="grid gap-4 py-4">
+                <div className="grid gap-4 py-4">            
+
                   <div className="grid grid-cols-4 items-center gap-4">
                     <Label htmlFor="reviewNm" className="text-right">
                       이름
@@ -303,6 +326,17 @@ const ReviewsSection = () => {
                       {errors.reviewNm && <p className="text-red-500 text-xs mt-1">{errors.reviewNm}</p>}
                     </div>
                   </div>
+
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="reviewNm" className="text-right">
+                      비밀번호
+                    </Label>
+                    <div className="col-span-3">
+                      <Input id="pw" name="pw" value={newReview.pw} onChange={NumInputChange} className={errors.pw ? 'border-red-500' : ''} />
+                      {errors.reviewNm && <p className="text-red-500 text-xs mt-1">{errors.pw}</p>}
+                    </div>
+                  </div>
+
                   <div className="grid grid-cols-4 items-center gap-4">
                     <Label htmlFor="svcCnCd" className="text-right">
                       서비스
@@ -379,7 +413,14 @@ const ReviewsSection = () => {
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
             케어빌을 경험하신 고객님들의 진솔한 이야기를 들어보세요
           </p>
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <Dialog open={isDialogOpen} onOpenChange={(open) => {
+              setIsDialogOpen(open);
+              if (!open) {
+                // 다이얼로그 닫힐 때 초기화  
+                setSelectedReview(null); 
+                setNewReview({ reviewNm: "", svcCnCd: "", starRate: 0, reviewCn: "", svcDate: "", pw:"" }); 
+              }
+            }}>
             <DialogTrigger asChild>
               <Button className="mt-4">후기 작성하기</Button>
             </DialogTrigger>
@@ -392,6 +433,18 @@ const ReviewsSection = () => {
               </DialogHeader>
               <form onSubmit={handleSubmit}>
                 <div className="grid gap-4 py-4">
+                    {/* 리스트값 불러오기 */}
+                    
+                    {selectedReview && (
+                      <>                
+                      {newReview.reviewNm =selectedReview.reviewNm}
+                      {newReview.svcCnCd =selectedReview.svcCnCd}
+                      {newReview.svcDate =selectedReview.svcDate}
+                      {newReview.reviewCn =selectedReview.reviewCn}
+                      {newReview.starRate =selectedReview.starRate}
+                      </>                     
+                    )}                
+
                   <div className="grid grid-cols-4 items-center gap-4">
                     <Label htmlFor="reviewNm" className="text-right">
                       이름
@@ -401,6 +454,17 @@ const ReviewsSection = () => {
                       {errors.reviewNm && <p className="text-red-500 text-xs mt-1">{errors.reviewNm}</p>}
                     </div>
                   </div>
+
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="reviewNm" className="text-right">
+                      비밀번호
+                    </Label>
+                    <div className="col-span-3">
+                      <Input id="pw" name="pw" value={newReview.pw} type="password" onChange={NumInputChange} className={errors.pw ? 'border-red-500' : ''} />
+                      {errors.reviewNm && <p className="text-red-500 text-xs mt-1">{errors.pw}</p>}
+                    </div>
+                  </div>
+
                   <div className="grid grid-cols-4 items-center gap-4">
                     <Label htmlFor="svcCnCd" className="text-right">
                       서비스
