@@ -28,9 +28,14 @@ const SectionLoader = () => (
   </div>
 );
 
+import SEO from "@/components/SEO";
+import StructuredData from "@/components/StructuredData";
+
 const OptimizedIndex = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-accent/5 to-background">
+      <SEO />
+      <StructuredData />
       <Header />
       <HeroSection />
       <ServiceMenuSection />

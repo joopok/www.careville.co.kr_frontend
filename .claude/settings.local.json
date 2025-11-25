@@ -14,7 +14,8 @@
       "Bash(npx vite:*)",
       "Bash(npx playwright test-hero-animation.js)",
       "Bash(node:*)",
-      "Bash(npx playwright test:*)"
+      "Bash(npx playwright test:*)",
+      "Bash(git remote add:*)"
     ],
     "deny": [],
     "ask": []

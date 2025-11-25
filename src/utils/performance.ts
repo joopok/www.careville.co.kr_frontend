@@ -2,6 +2,20 @@
 
 export const measurePerformance = () => {
   if (typeof window === 'undefined') return;
+
+  interface LargestContentfulPaint extends PerformanceEntry {
+    renderTime: number;
+    loadTime: number;
+  }
+
+  interface PerformanceEventTiming extends PerformanceEntry {
+    processingStart: number;
+  }
+
+  interface LayoutShift extends PerformanceEntry {
+    value: number;
+    hadRecentInput: boolean;
+  }
   
   // Web Vitals
   if ('PerformanceObserver' in window) {
@@ -9,7 +23,7 @@ export const measurePerformance = () => {
     try {
       const lcpObserver = new PerformanceObserver((entryList) => {
         const entries = entryList.getEntries();
-        const lastEntry = entries[entries.length - 1];
+        const lastEntry = entries[entries.length - 1] as unknown as LargestContentfulPaint;
         console.log('LCP:', lastEntry.renderTime || lastEntry.loadTime);
       });
       lcpObserver.observe({ type: 'largest-contentful-paint', buffered: true });
@@ -23,7 +37,8 @@ export const measurePerformance = () => {
         const entries = entryList.getEntries();
         entries.forEach((entry) => {
           if (entry.entryType === 'first-input') {
-            const delay = entry.processingStart - entry.startTime;
+            const fidEntry = entry as unknown as PerformanceEventTiming;
+            const delay = fidEntry.processingStart - fidEntry.startTime;
             console.log('FID:', delay);
           }
         });
@@ -35,15 +50,16 @@ export const measurePerformance = () => {
 
     // Cumulative Layout Shift (CLS)
     let clsValue = 0;
-    let clsEntries: PerformanceEntry[] = [];
+    const clsEntries: PerformanceEntry[] = [];
     
     try {
       const clsObserver = new PerformanceObserver((entryList) => {
         const entries = entryList.getEntries();
-        entries.forEach((entry: any) => {
-          if (!entry.hadRecentInput) {
-            clsValue += entry.value;
-            clsEntries.push(entry);
+        entries.forEach((entry) => {
+          const layoutShift = entry as unknown as LayoutShift;
+          if (!layoutShift.hadRecentInput) {
+            clsValue += layoutShift.value;
+            clsEntries.push(layoutShift);
           }
         });
       });
@@ -102,7 +118,7 @@ export const debounce = <T extends (...args: any[]) => any>(
   func: T,
   wait: number
 ): ((...args: Parameters<T>) => void) => {
-  let timeout: NodeJS.Timeout;
+  let timeout: ReturnType<typeof setTimeout>;
   
   return (...args: Parameters<T>) => {
     clearTimeout(timeout);

@@ -19,7 +19,7 @@ const PricingSection = () => {
     const fetchProducts = async () => {
       setLoading(true);
       try {
-        const resp = await fetch('http://211.236.162.104:8081/api/v1/category-products.do', { method: 'GET' });
+        const resp = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/category-products.do`, { method: 'GET' });
         const data = await resp.json();
 
         setCategory(data?.categories);

@@ -46,7 +46,7 @@ const ReviewsSection = () => {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const response = await fetch('http://211.236.162.104:8081/api/reviews/all',{
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/reviews/all`,{
            method: 'GET',
            headers: {
             'Content-Type': 'application/json'
@@ -164,7 +164,7 @@ const ReviewsSection = () => {
       console.log((newReview));
 
     try {
-      const response = await fetch('http://211.236.162.104:8081/api/reviews', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/reviews`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

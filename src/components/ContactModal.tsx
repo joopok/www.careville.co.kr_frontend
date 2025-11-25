@@ -6,16 +6,22 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Button }   from "@/components/ui/button";
-import { Input }    from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Card }     from "@/components/ui/card";
-import { Label }    from "@/components/ui/label";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { Card } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z       from "zod";
-import { toast }    from "sonner";
+import * as z from "zod";
+import { toast } from "sonner";
 
 interface ContactModalProps {
   isOpen: boolean;
@@ -40,25 +46,25 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
   const getTodayDate = () => {
     const today = new Date();
     const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
-    const day = String(today.getDate()).padStart(2, '0');
+    const month = String(today.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
+    const day = String(today.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   };
 
   const todayDate = getTodayDate();
 
   const serviceOptions = [
-    { label: "에어컨 케어 및 세척",   value: "001" },
-    { label: "설치/교체 서비스",      value: "002" },
-    { label: "상가/사무실 시공",      value: "003" },
-    { label: "메트리스 청소(케어)",   value: "004" },
-    { label: "세탁키 케어",          value: "005" },
-    { label: "욕실 전문 시공",       value: "006" },
-    { label: "환풍기 설치",          value: "007" },
-    { label: "프리미엄 주방케어",     value: "008" },
-    { label: "특수청소",             value: "009" },
-    { label: "주방상판",             value: "010" },
-    { label: "층간소음매트",         value: "011" },
+    { label: "에어컨 케어 및 세척", value: "001" },
+    { label: "설치/교체 서비스", value: "002" },
+    { label: "상가/사무실 시공", value: "003" },
+    { label: "메트리스 청소(케어)", value: "004" },
+    { label: "세탁키 케어", value: "005" },
+    { label: "욕실 전문 시공", value: "006" },
+    { label: "환풍기 설치", value: "007" },
+    { label: "프리미엄 주방케어", value: "008" },
+    { label: "특수청소", value: "009" },
+    { label: "주방상판", value: "010" },
+    { label: "층간소음매트", value: "011" },
   ];
 
   const form = useForm<ContactFormValues>({
@@ -77,7 +83,7 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
   });
 
   const onSubmit = async (values: ContactFormValues) => {
-    const url = "http://211.236.162.104:8081/cnsltReg.do";
+    const url = `${import.meta.env.VITE_API_URL}/cnsltReg.do`;
     const dataToSend = { ...values };
 
     // Remove hyphens from hopeDay
@@ -109,7 +115,11 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
         toast.success("상담 신청이 성공적으로 접수되었습니다.");
         onClose(); // Close the modal after successful submission
       } else if (result.isError == "true") {
-        toast.error(`상담 신청 실패: ${result.excpMsg || result.excpCdMsg || "알 수 없는 오류"}`);
+        toast.error(
+          `상담 신청 실패: ${
+            result.excpMsg || result.excpCdMsg || "알 수 없는 오류"
+          }`
+        );
         console.error("Submission error:", result);
       } else {
         toast.error("상담 신청에 실패했습니다. 다시 시도해주세요.");
@@ -144,7 +154,11 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
               </div>
               <div>
                 <Label htmlFor="tel1">연락처1</Label>
-                <Input id="tel1" placeholder="010-XXXX-XXXX" {...form.register("tel1")} />
+                <Input
+                  id="tel1"
+                  placeholder="010-XXXX-XXXX"
+                  {...form.register("tel1")}
+                />
                 {form.formState.errors.tel1 && (
                   <p className="text-red-500 text-sm">
                     {form.formState.errors.tel1.message}
@@ -154,7 +168,11 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
             </div>
             <div>
               <Label htmlFor="tel2">연락처2 (선택)</Label>
-              <Input id="tel2" placeholder="추가 연락처" {...form.register("tel2")} />
+              <Input
+                id="tel2"
+                placeholder="추가 연락처"
+                {...form.register("tel2")}
+              />
             </div>
             {/*
             <div>
@@ -169,7 +187,11 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
             */}
             <div>
               <Label htmlFor="adres1">주소1</Label>
-              <Input id="adres1" placeholder="기본 주소" {...form.register("adres1")} />
+              <Input
+                id="adres1"
+                placeholder="기본 주소"
+                {...form.register("adres1")}
+              />
               {form.formState.errors.adres1 && (
                 <p className="text-red-500 text-sm">
                   {form.formState.errors.adres1.message}
@@ -178,7 +200,11 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
             </div>
             <div>
               <Label htmlFor="adres2">주소2 (상세 주소)</Label>
-              <Input id="adres2" placeholder="상세 주소" {...form.register("adres2")} />
+              <Input
+                id="adres2"
+                placeholder="상세 주소"
+                {...form.register("adres2")}
+              />
             </div>
             <div>
               <Label htmlFor="svcCnCd">서비스 내용</Label>
@@ -208,7 +234,12 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
             </div>
             <div>
               <Label htmlFor="hopeDay">희망일자</Label>
-              <Input id="hopeDay" type="date" min={todayDate} {...form.register("hopeDay")} />
+              <Input
+                id="hopeDay"
+                type="date"
+                min={todayDate}
+                {...form.register("hopeDay")}
+              />
               {form.formState.errors.hopeDay && (
                 <p className="text-red-500 text-sm">
                   {form.formState.errors.hopeDay.message}
