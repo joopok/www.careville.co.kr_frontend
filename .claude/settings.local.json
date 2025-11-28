@@ -24,7 +24,11 @@
       "Bash(git config:*)",
       "Bash(git add:*)",
       "Bash(git commit -m \"$(cat <<''EOF''\n프로젝트 가이드 문서 추가\n\n- CLAUDE.md 파일 생성 (Claude Code를 위한 프로젝트 가이드)\n- 개발 명령어 및 환경 설정 문서화\n- 성능 최적화 아키텍처 설명\n- SEO 및 메타 관리 가이드\n- 컴포넌트 구조 및 라우팅 패턴 정리\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
-      "Bash(git branch:*)"
+      "Bash(git branch:*)",
+      "Bash(cat:*)",
+      "Bash(ssh:*)",
+      "Bash(sftp:*)",
+      "Bash(chmod:*)"
     ],
     "deny": [],
     "ask": []
