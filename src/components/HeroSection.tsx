@@ -213,7 +213,7 @@ const SlideshowBanner = () => {
       <SlideshowBanner />
       
       {/* Hero Content */}
-      <div className="flex-1 flex items-center -mt-[490px] relative z-30">
+      <div className="flex-1 flex items-center -mt-[590px] relative z-30">
         <div className="container mx-auto px-6 py-20 relative">
           <div className="text-center text-white space-y-8 max-w-4xl mx-auto">
             <div className={`space-y-6 transition-all duration-1000 transform ${
@@ -270,7 +270,7 @@ const SlideshowBanner = () => {
       </div>
 
       {/* AboutSection as Overlay at Bottom */}
-      <div className="absolute bottom-[0px] left-0 right-0 z-40">
+      <div className="absolute bottom-[100px] left-0 right-0 z-40">
         {/* Scroll Indicator */}
         <div className="absolute -top-12 left-1/2 -translate-x-1/2 animate-bounce">
           <ArrowDown className="h-6 w-6 text-white/80 drop-shadow-md" />

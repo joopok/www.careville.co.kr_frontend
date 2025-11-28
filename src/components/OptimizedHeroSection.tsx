@@ -39,7 +39,14 @@ const SlideshowBanner = memo(() => {
 
     const startInterval = () => {
       interval = setInterval(() => {
-        setCurrIndex((prev) => (prev + 1) % images.length);
+        setCurrIndex((prev) => {
+          // Scroll up 100px when slide changes
+          window.scrollBy({
+            top: -100,
+            behavior: 'smooth'
+          });
+          return (prev + 1) % images.length;
+        });
       }, 7000);
     };
 
