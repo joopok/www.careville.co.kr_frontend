@@ -28,7 +28,14 @@
       "Bash(cat:*)",
       "Bash(ssh:*)",
       "Bash(sftp:*)",
-      "Bash(chmod:*)"
+      "Bash(chmod:*)",
+      "Bash(timeout 5 ssh:*)",
+      "Bash(whois:*)",
+      "Bash(nslookup:*)",
+      "Bash(nc:*)",
+      "WebFetch(domain:help.cafe24.com)",
+      "WebSearch",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []
