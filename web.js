@@ -1,11 +1,36 @@
-const express = require('express');
+import express from 'express';
+import compression from 'compression';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const app = express();
-// Cafe24에서 지정한 포트 사용 (환경변수에서 가져옴)
 const PORT = process.env.PORT || 8001;
-app.get('/', (req, res) => {
-    res.send('안녕하세요! Node.js 서버가 실행 중이에요!');
+
+// Gzip 압축 활성화 (성능 최적화)
+app.use(compression());
+
+// dist 폴더의 정적 파일 서빙
+app.use(express.static(path.join(__dirname, 'dist'), {
+  maxAge: '1y', // 정적 자산 캐시 1년
+  etag: true,
+  setHeaders: (res, filepath) => {
+    // HTML 파일은 캐시하지 않음
+    if (filepath.endsWith('.html')) {
+      res.setHeader('Cache-Control', 'no-cache');
+    }
+  }
+}));
+
+// React Router 지원 - 모든 경로를 index.html로 처리
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
 app.listen(PORT, () => {
-    console.log(`서버가 ${PORT} 포트에서 실행 중입니다.`);
+  console.log(`🚀 CareVille 서버가 포트 ${PORT}에서 실행 중입니다.`);
+  console.log(`📦 환경: ${process.env.NODE_ENV || 'production'}`);
+  console.log(`📂 정적 파일 경로: ${path.join(__dirname, 'dist')}`);
 });
