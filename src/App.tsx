@@ -29,7 +29,7 @@ const PageLoader = () => (
 const App = () => {
   useEffect(() => {
     // Initialize performance monitoring
-    measurePerformance();
+    // measurePerformance();
   }, []);
 
   return (

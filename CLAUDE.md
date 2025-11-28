@@ -105,6 +105,102 @@ The Vite config includes aggressive optimizations:
 - Email: `seung0910@cafe24.com`
 - Remote: `cafe24` pointing to `seung0910@seung0910.cafe24app.com:seung0910_seung0910`
 
+## Cafe24 Node.js Hosting
+
+### Hosting Information
+- **App URL**: http://seung0910.cafe24app.com
+- **Git Repository**: `seung0910@seung0910.cafe24app.com:seung0910_seung0910`
+- **App PORT**: 8001
+- **Entry Point**: `web.js` (required by Cafe24)
+
+### Git Remote Configuration
+```bash
+# Two remotes required
+origin  → GitHub (https://github.com/KCS-PROJECT/www.careville.co.kr_frontend.git)
+cafe24  → Cafe24 Git Server (seung0910@seung0910.cafe24app.com:seung0910_seung0910)
+```
+
+### Deployment Workflow
+
+**1. Build Production Assets**
+```bash
+npm run build
+# Generates optimized files in dist/ folder
+```
+
+**2. Commit Changes**
+```bash
+git add .
+git commit -m "Your commit message"
+```
+
+**3. Deploy to GitHub (Optional - for backup/collaboration)**
+```bash
+git push origin master
+```
+
+**4. Deploy to Cafe24**
+```bash
+git push cafe24 master
+# Pushes code + dist folder to Cafe24 Git server
+```
+
+**5. Restart App (Required!)**
+- Go to Cafe24 hosting management page
+- Navigate: 나의 서비스 관리 → 호스팅 관리 → 기본 관리 → 앱 생성/관리
+- Select `seung0910` app
+- Click **"중지"** (Stop) → Wait → Click **"실행"** (Start)
+
+### SSH Public Key Setup
+
+**Required for Git push to work!**
+
+1. Your SSH public key location: `~/.ssh/id_rsa.pub`
+2. Register in Cafe24:
+   - Login: https://hosting.cafe24.com/
+   - Navigate: 좌측 메뉴 → **"Public Key 관리"**
+   - Paste entire contents of `id_rsa.pub`
+   - Save
+3. Wait 5-10 minutes for system to propagate the key
+4. Test: `ssh -T seung0910@seung0910.cafe24app.com`
+
+### web.js Server Configuration
+
+The `web.js` file is the entry point for Cafe24 Node.js hosting:
+- Uses ES Module syntax (`import` instead of `require`)
+- Serves static files from `dist/` folder using Express
+- Supports React Router (SPA routing) with wildcard catch-all
+- Enables Gzip compression for performance
+- Listens on port 8001 as required by Cafe24
+
+### Important Notes
+
+1. **dist folder in Git**: Unlike typical React projects, the `dist/` folder MUST be committed to Git for Cafe24 deployment (it's uncommented in `.gitignore`)
+
+2. **Dependencies**: Express and compression are in `dependencies` (not devDependencies) because they're needed in production
+
+3. **No GitHub Integration**: Cafe24 doesn't support automatic deployment from GitHub. You must push directly to Cafe24's Git server.
+
+4. **Environment Variables**: Set in Cafe24 hosting panel, not in code
+
+5. **Logs**: Check app logs in Cafe24 management page for debugging errors
+
+### Troubleshooting
+
+**SSH Connection Timeout**
+- Ensure Public Key is registered in Cafe24
+- Wait 5-10 minutes after registration
+- Test SSH connection: `ssh -T seung0910@seung0910.cafe24app.com`
+
+**503 Service Unavailable**
+- App crashed or not running
+- Check logs in Cafe24 management page
+- Restart the app manually
+
+**ES Module Errors**
+- Ensure `package.json` has `"type": "module"`
+- Ensure `web.js` uses `import` syntax, not `require`
+
 ## Technology Stack
 
 **Core**: React 18, TypeScript 5, Vite 5

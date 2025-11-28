@@ -35,7 +35,19 @@
       "Bash(nc:*)",
       "WebFetch(domain:help.cafe24.com)",
       "WebSearch",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(for port in 22222 2222 8022 10022 33000)",
+      "Bash(do echo \"Testing port $port...\")",
+      "Bash(timeout 3 bash -c \"nc -zv seung0910.cafe24app.com $port 2>&1\")",
+      "Bash(echo:*)",
+      "Bash(done)",
+      "WebFetch(domain:velog.io)",
+      "Bash(ping:*)",
+      "Bash(/sbin/ping -c 3 seung0910.cafe24app.com)",
+      "Bash(GIT_SSH_COMMAND=\"ssh -v\" git push cafe24 master)",
+      "Bash(GIT_TRACE=1 GIT_SSH_COMMAND=\"ssh -v\" git push:*)",
+      "Bash(ssh-keygen:*)",
+      "Bash(GIT_SSH_COMMAND=\"ssh -v\" git ls-remote:*)"
     ],
     "deny": [],
     "ask": []

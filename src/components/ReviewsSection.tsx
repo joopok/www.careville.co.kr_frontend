@@ -583,7 +583,8 @@ const ReviewsSection = () => {
             }}
             autoplay={{
               delay: 5000,
-              disableOnInteraction: false,
+              disableOnInteraction: true,
+              pauseOnMouseEnter: true,
             }}
             breakpoints={{
               768: {

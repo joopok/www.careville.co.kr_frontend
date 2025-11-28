@@ -29,8 +29,33 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
-app.listen(PORT, () => {
+// 에러 핸들링
+app.use((err, req, res, next) => {
+  console.error('Server error:', err);
+  res.status(500).send('Internal Server Error');
+});
+
+// Graceful shutdown
+process.on('SIGTERM', () => {
+  console.log('SIGTERM received, closing server gracefully...');
+  server.close(() => {
+    console.log('Server closed');
+    process.exit(0);
+  });
+});
+
+// 포트 충돌 처리
+const server = app.listen(PORT, () => {
   console.log(`🚀 CareVille 서버가 포트 ${PORT}에서 실행 중입니다.`);
   console.log(`📦 환경: ${process.env.NODE_ENV || 'production'}`);
   console.log(`📂 정적 파일 경로: ${path.join(__dirname, 'dist')}`);
+}).on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`❌ 포트 ${PORT}가 이미 사용 중입니다.`);
+    console.log('🔄 기존 프로세스를 종료하거나 다른 포트를 사용하세요.');
+    process.exit(1);
+  } else {
+    console.error('서버 에러:', err);
+    process.exit(1);
+  }
 });

@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState, useRef } from "react";
 import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
 
@@ -24,8 +24,12 @@ const LoadingSpinner = () => (
 // Progressive loading component
 const ProgressiveSection = ({ children }: { children: React.ReactNode }) => {
   const [isVisible, setIsVisible] = useState(false);
+  const sentinelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -41,19 +45,15 @@ const ProgressiveSection = ({ children }: { children: React.ReactNode }) => {
       }
     );
 
-    const sentinel = document.createElement('div');
-    sentinel.style.height = '1px';
-    document.body.appendChild(sentinel);
     observer.observe(sentinel);
 
     return () => {
       observer.disconnect();
-      sentinel.remove();
     };
   }, []);
 
   if (!isVisible) {
-    return <div style={{ minHeight: '200px' }} />;
+    return <div ref={sentinelRef} style={{ minHeight: '200px' }} />;
   }
 
   return <>{children}</>;

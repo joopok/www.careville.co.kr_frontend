@@ -8,14 +8,21 @@ const Header = () => {
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
+    let ticking = false;
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setIsScrolled(window.scrollY > 20);
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
-    window.addEventListener('scroll', handleScroll);
-    
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
     // Trigger load animation
     setTimeout(() => setIsLoaded(true), 100);
-    
+
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 

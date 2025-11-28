@@ -34,17 +34,36 @@ const SlideshowBanner = memo(() => {
 
   // Auto-advance slideshow
   useEffect(() => {
-    const interval = setInterval(() => {
-      if (!isTransitioning) {
-        setIsTransitioning(true);
-        setTimeout(() => {
-          setCurrIndex((prev) => (prev + 1) % images.length);
-          setIsTransitioning(false);
-        }, 50);
+    let interval: NodeJS.Timeout | null = null;
+    let isPaused = false;
+
+    const startInterval = () => {
+      interval = setInterval(() => {
+        setCurrIndex((prev) => (prev + 1) % images.length);
+      }, 7000);
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        if (interval) {
+          clearInterval(interval);
+          interval = null;
+        }
+        isPaused = true;
+      } else if (isPaused) {
+        startInterval();
+        isPaused = false;
       }
-    }, 7000);
-    return () => clearInterval(interval);
-  }, [currIndex, isTransitioning]);
+    };
+
+    startInterval();
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      if (interval) clearInterval(interval);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, []);
 
   const handleIndicatorClick = useCallback((index: number) => {
     if (!isTransitioning && index !== currIndex) {
@@ -194,7 +213,7 @@ const OptimizedHeroSection = () => {
                 className="group bg-white text-primary hover:bg-white/90 text-lg px-10 py-7 rounded-full shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-105"
                 onClick={() => handlePhoneCall("1600-9762")}
               >
-                <Phone className="mr-2 h-5 w-5 group-hover:animate-pulse" />
+                <Phone className="mr-2 h-5 w-5" />
                 바로 상담받기
               </Button>
               <Button 
@@ -208,8 +227,8 @@ const OptimizedHeroSection = () => {
               </Button>
             </div>
 
-            <div className="mt-16 animate-bounce">
-              <ArrowDown className="h-6 w-6 text-white/60 mx-auto" />
+            <div className="mt-16">
+              <ArrowDown className="h-6 w-6 text-white/60 mx-auto animate-pulse" />
             </div>
           </div>
         </div>
@@ -259,7 +278,7 @@ const OptimizedHeroSection = () => {
             <div className="text-center">
               {btn.icon ? (
                 <>
-                  <btn.icon className="h-4 w-4 mx-auto mb-0.5 group-hover:animate-pulse" />
+                  <btn.icon className="h-4 w-4 mx-auto mb-0.5" />
                   <div className="text-[10px]">{btn.text[0]}</div>
                 </>
               ) : (
