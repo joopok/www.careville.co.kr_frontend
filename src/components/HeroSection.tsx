@@ -158,7 +158,7 @@ const SlideshowBanner = () => {
       </div>
       
       {/* Indicators */}
-      <div className="absolute bottom-64 left-1/2 -translate-x-1/2 flex items-center gap-3 z-20">
+      <div className="absolute bottom-[520px] left-1/2 -translate-x-1/2 flex items-center gap-3 z-20">
         {images.map((_, index) => (
           <button
             type="button"
@@ -270,7 +270,7 @@ const SlideshowBanner = () => {
       </div>
 
       {/* AboutSection as Overlay at Bottom */}
-      <div className="absolute bottom-[100px] left-0 right-0 z-40">
+      <div className="absolute bottom-[200px] left-0 right-0 z-40">
         {/* Scroll Indicator */}
         <div className="absolute -top-12 left-1/2 -translate-x-1/2 animate-bounce">
           <ArrowDown className="h-6 w-6 text-white/80 drop-shadow-md" />
@@ -315,6 +315,9 @@ const SlideshowBanner = () => {
           </div>
         </div>
       </div>
+      
+      {/* White background filler to cover the bottom area */}
+      <div className="absolute bottom-0 left-0 right-0 h-[200px] bg-white z-30" />
       
       {/* Floating Contact Buttons - Vertical Layout */}
       <div className="fixed bottom-8 right-8 z-50 flex flex-col items-center gap-3 bg-white/90 backdrop-blur-md rounded-2xl p-3 shadow-2xl border border-gray-200">

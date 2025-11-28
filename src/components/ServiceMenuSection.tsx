@@ -66,7 +66,7 @@ const features = [
 const ServiceMenuSection = () => {
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
   return (
-    <section id="services" className="py-20 -mt-10 bg-gradient-to-b from-background to-accent/10">
+    <section id="services" className="py-20 -mt-[140px] bg-white relative z-40">
       <div className="container mx-auto px-6">
         {/* Section Title */}
         <div className="text-center mb-12 animate-fadeIn">

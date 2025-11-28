@@ -47,7 +47,8 @@
       "Bash(GIT_SSH_COMMAND=\"ssh -v\" git push cafe24 master)",
       "Bash(GIT_TRACE=1 GIT_SSH_COMMAND=\"ssh -v\" git push:*)",
       "Bash(ssh-keygen:*)",
-      "Bash(GIT_SSH_COMMAND=\"ssh -v\" git ls-remote:*)"
+      "Bash(GIT_SSH_COMMAND=\"ssh -v\" git ls-remote:*)",
+      "Bash(do)"
     ],
     "deny": [],
     "ask": []
