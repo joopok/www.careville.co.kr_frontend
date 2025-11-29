@@ -35,15 +35,6 @@ app.use((err, req, res, next) => {
   res.status(500).send('Internal Server Error');
 });
 
-// Graceful shutdown
-process.on('SIGTERM', () => {
-  console.log('SIGTERM received, closing server gracefully...');
-  server.close(() => {
-    console.log('Server closed');
-    process.exit(0);
-  });
-});
-
 // 포트 충돌 처리
 const server = app.listen(PORT, () => {
   console.log(`🚀 CareVille 서버가 포트 ${PORT}에서 실행 중입니다.`);
@@ -58,4 +49,21 @@ const server = app.listen(PORT, () => {
     console.error('서버 에러:', err);
     process.exit(1);
   }
+});
+
+// Graceful shutdown (server 정의 후에 등록)
+process.on('SIGTERM', () => {
+  console.log('SIGTERM received, closing server gracefully...');
+  server.close(() => {
+    console.log('Server closed');
+    process.exit(0);
+  });
+});
+
+process.on('SIGINT', () => {
+  console.log('SIGINT received, closing server gracefully...');
+  server.close(() => {
+    console.log('Server closed');
+    process.exit(0);
+  });
 });
