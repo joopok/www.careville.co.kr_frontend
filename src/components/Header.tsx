@@ -47,7 +47,7 @@ const Header = () => {
   };
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-30 transition-all duration-500 ${
+    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
       isScrolled 
         ? 'bg-white/95 backdrop-blur-lg shadow-lg border-b border-purple-100' 
         : 'bg-gradient-to-b from-black/70 via-black/40 to-transparent backdrop-blur-md border-b border-white/20'
@@ -76,24 +76,31 @@ const Header = () => {
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-6 absolute left-1/2 -translate-x-1/2">
+          <nav className="hidden lg:flex items-center absolute left-1/2 -translate-x-1/2 whitespace-nowrap">
             {menuItems.map((item, index) => (
-              <button
-                key={item.name}
-                onClick={() => scrollToSection(item.href)}
-                className={`font-medium text-sm transition-all duration-300 hover:scale-105 ${
-                  isScrolled 
-                    ? 'text-foreground hover:text-primary' 
-                    : 'text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)] hover:text-white hover:drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]'
-                } ${
-                  isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
-                }`}
-                style={{
-                  transitionDelay: isLoaded ? `${100 + index * 50}ms` : '0ms'
-                }}
-              >
-                {item.name}
-              </button>
+              <div key={item.name} className="flex items-center">
+                <button
+                  type="button"
+                  onClick={() => scrollToSection(item.href)}
+                  className={`font-medium text-[17px] transition-all duration-300 hover:scale-105 ${
+                    isScrolled 
+                      ? 'text-foreground hover:text-primary' 
+                      : 'text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)] hover:text-white hover:drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]'
+                  } ${
+                    isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
+                  }`}
+                  style={{
+                    transitionDelay: isLoaded ? `${100 + index * 50}ms` : '0ms'
+                  }}
+                >
+                  {item.name}
+                </button>
+                {index < menuItems.length - 1 && (
+                  <span className={`mx-3 text-xs ${
+                    isScrolled ? 'text-gray-300' : 'text-white/40'
+                  }`}>|</span>
+                )}
+              </div>
             ))}
           </nav>
 

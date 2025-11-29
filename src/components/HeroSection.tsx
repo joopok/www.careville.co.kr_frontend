@@ -31,15 +31,15 @@ const HeroSection = () => {
     }
   ];
 
-const SlideshowBanner = () => {
-  const images = [
-    "images/banner1.png",
-    "images/banner2.png",
-    "images/banner3.png",
-    "images/banner4.png",
-    "images/banner5.png"
-  ];
+const SLIDESHOW_IMAGES = [
+  "images/banner1.png",
+  "images/banner2.png",
+  "images/banner3.png",
+  "images/banner4.png",
+  "images/banner5.png"
+];
 
+const SlideshowBanner = () => {
   const [currIndex, setCurrIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const touchStart = useRef(0);
@@ -47,7 +47,7 @@ const SlideshowBanner = () => {
 
   // Preload images for smoother transitions
   useEffect(() => {
-    images.forEach((src) => {
+    SLIDESHOW_IMAGES.forEach((src) => {
       const img = new Image();
       img.src = src;
     });
@@ -59,13 +59,13 @@ const SlideshowBanner = () => {
       handleNext();
     }, 7000);
     return () => clearInterval(interval);
-  }, [currIndex]);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleNext = () => {
     if (!isTransitioning) {
       setIsTransitioning(true);
       setTimeout(() => {
-        setCurrIndex((prev) => (prev + 1) % images.length);
+        setCurrIndex((prev) => (prev + 1) % SLIDESHOW_IMAGES.length);
         setIsTransitioning(false);
       }, 50);
     }
@@ -75,7 +75,7 @@ const SlideshowBanner = () => {
     if (!isTransitioning) {
       setIsTransitioning(true);
       setTimeout(() => {
-        setCurrIndex((prev) => (prev - 1 + images.length) % images.length);
+        setCurrIndex((prev) => (prev - 1 + SLIDESHOW_IMAGES.length) % SLIDESHOW_IMAGES.length);
         setIsTransitioning(false);
       }, 50);
     }
@@ -127,7 +127,7 @@ const SlideshowBanner = () => {
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        {images.map((src, index) => {
+        {SLIDESHOW_IMAGES.map((src, index) => {
           const isActive = index === currIndex;
           
           return (
@@ -159,7 +159,7 @@ const SlideshowBanner = () => {
       
       {/* Indicators */}
       <div className="absolute bottom-[520px] left-1/2 -translate-x-1/2 flex items-center gap-3 z-20">
-        {images.map((_, index) => (
+        {SLIDESHOW_IMAGES.map((_, index) => (
           <button
             type="button"
             key={index}
