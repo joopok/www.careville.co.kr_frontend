@@ -1,9 +1,9 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { 
-  Home, 
-  Building2, 
-  Zap, 
-  MessageSquare, 
+import {
+  Home,
+  Building2,
+  Zap,
+  MessageSquare,
   Star,
   Users,
   Calendar,
@@ -11,7 +11,6 @@ import {
   Sparkles,
   TrendingUp
 } from "lucide-react";
-import { useState } from "react";
 
 const serviceCategories = [
   {
@@ -64,7 +63,6 @@ const features = [
 ];
 
 const ServiceMenuSection = () => {
-  const [hoveredCard, setHoveredCard] = useState<number | null>(null);
   return (
     <section id="services" className="py-20 -mt-[140px] bg-white relative z-40">
       <div className="container mx-auto px-6">
@@ -80,59 +78,38 @@ const ServiceMenuSection = () => {
         {/* Service Categories */}
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
           {serviceCategories.map((category, index) => (
-            <Card 
+            <Card
               key={index}
-              onMouseEnter={() => setHoveredCard(index)}
-              onMouseLeave={() => setHoveredCard(null)}
-              className={`group relative overflow-hidden transition-all duration-500 cursor-pointer border-2 ${
-                hoveredCard === index 
-                  ? 'shadow-2xl -translate-y-3 border-primary/50 scale-105' 
-                  : 'hover:shadow-xl hover:-translate-y-2 hover:border-primary/30'
-              }`}
+              className="service-card group relative overflow-hidden transition-all duration-300 cursor-pointer border-2 hover:shadow-2xl hover:-translate-y-3 hover:border-primary/50 hover:scale-[1.02]"
               style={{ animationDelay: `${index * 100}ms` }}
             >
               {/* Background Gradient on Hover */}
-              <div className={`absolute inset-0 bg-gradient-to-br from-primary/10 to-secondary/10 transition-opacity duration-500 ${
-                hoveredCard === index ? 'opacity-100' : 'opacity-0'
-              }`} />
-              
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-secondary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
               <CardContent className="relative p-6 text-center">
-                <div className={`w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center mx-auto mb-4 transition-all duration-500 ${
-                  hoveredCard === index ? 'scale-125 rotate-12' : 'group-hover:scale-110'
-                }`}>
+                <div className="w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center mx-auto mb-4 transition-all duration-300 group-hover:scale-110 group-hover:rotate-6">
                   <category.icon className="h-8 w-8 text-white" />
                 </div>
-                
-                <h3 className={`text-xl font-bold mb-3 transition-colors duration-300 ${
-                  hoveredCard === index ? 'text-primary' : 'text-foreground group-hover:text-primary'
-                }`}>
+
+                <h3 className="text-xl font-bold mb-3 transition-colors duration-200 text-foreground group-hover:text-primary">
                   {category.title}
                 </h3>
-                
+
                 <ul className="space-y-2 text-sm">
                   {category.services.map((service, serviceIndex) => (
-                    <li 
-                      key={serviceIndex} 
-                      className={`transition-all duration-300 cursor-pointer ${
-                        hoveredCard === index 
-                          ? 'text-foreground translate-x-1' 
-                          : 'text-muted-foreground hover:text-primary'
-                      }`}
-                      style={{ transitionDelay: `${serviceIndex * 50}ms` }}
+                    <li
+                      key={serviceIndex}
+                      className="transition-all duration-200 text-muted-foreground group-hover:text-foreground hover:text-primary"
                     >
                       <span className="inline-block mr-2">•</span>
                       {service}
                     </li>
                   ))}
                 </ul>
-                
+
                 {category.popular && (
                   <div className="mt-4">
-                    <span className={`inline-flex items-center gap-1 px-4 py-2 rounded-full text-xs font-semibold transition-all duration-300 ${
-                      hoveredCard === index 
-                        ? 'bg-primary text-white scale-110' 
-                        : 'bg-primary/10 text-primary'
-                    }`}>
+                    <span className="inline-flex items-center gap-1 px-4 py-2 rounded-full text-xs font-semibold transition-all duration-200 bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white group-hover:scale-105">
                       <Sparkles className="h-3 w-3" />
                       인기 서비스
                     </span>

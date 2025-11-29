@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Phone, MessageCircle, ArrowDown, Sparkles, Check, Award, Shield, Clock } from "lucide-react";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { handlePhoneCall } from "@/lib/utils";
 
 const HeroSection = () => {
@@ -44,24 +44,20 @@ const SlideshowBanner = () => {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const touchStart = useRef(0);
   const touchEnd = useRef(0);
+  const intervalRef = useRef<number | null>(null);
 
-  // Preload images for smoother transitions
+  // Lazy preload images (only next/prev)
   useEffect(() => {
-    SLIDESHOW_IMAGES.forEach((src) => {
+    const nextIndex = (currIndex + 1) % SLIDESHOW_IMAGES.length;
+    const prevIndex = (currIndex - 1 + SLIDESHOW_IMAGES.length) % SLIDESHOW_IMAGES.length;
+
+    [nextIndex, prevIndex].forEach((index) => {
       const img = new Image();
-      img.src = src;
+      img.src = SLIDESHOW_IMAGES[index];
     });
-  }, []);
+  }, [currIndex]);
 
-  // Auto-advance slideshow
-  useEffect(() => {
-    const interval = setInterval(() => {
-      handleNext();
-    }, 7000);
-    return () => clearInterval(interval);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     if (!isTransitioning) {
       setIsTransitioning(true);
       setTimeout(() => {
@@ -69,9 +65,9 @@ const SlideshowBanner = () => {
         setIsTransitioning(false);
       }, 50);
     }
-  };
+  }, [isTransitioning]);
 
-  const handlePrev = () => {
+  const handlePrev = useCallback(() => {
     if (!isTransitioning) {
       setIsTransitioning(true);
       setTimeout(() => {
@@ -79,7 +75,15 @@ const SlideshowBanner = () => {
         setIsTransitioning(false);
       }, 50);
     }
-  };
+  }, [isTransitioning]);
+
+  // Auto-advance slideshow with proper cleanup
+  useEffect(() => {
+    intervalRef.current = window.setInterval(handleNext, 7000);
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, [handleNext]);
 
   // Touch handlers for mobile swipe
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -121,7 +125,7 @@ const SlideshowBanner = () => {
 
   return (
     <>
-      <div 
+      <div
         className="absolute inset-0 overflow-hidden"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
@@ -129,26 +133,33 @@ const SlideshowBanner = () => {
       >
         {SLIDESHOW_IMAGES.map((src, index) => {
           const isActive = index === currIndex;
-          
+          const isAdjacent =
+            index === (currIndex + 1) % SLIDESHOW_IMAGES.length ||
+            index === (currIndex - 1 + SLIDESHOW_IMAGES.length) % SLIDESHOW_IMAGES.length;
+
+          // Only render active + adjacent images (for smooth transitions)
+          if (!isActive && !isAdjacent) return null;
+
           return (
             <div
               key={index}
               className={`absolute inset-0 w-full h-full transition-opacity ${
-                isActive 
-                  ? 'opacity-100 z-[1]' 
+                isActive
+                  ? 'opacity-100 z-[1]'
                   : 'opacity-0 z-[0]'
               }`}
               style={{
-                transitionDuration: '1500ms',
+                transitionDuration: '1200ms',
                 transitionTimingFunction: 'ease-in-out',
               }}
             >
               <img
                 src={src}
                 alt={`Banner ${index + 1}`}
-                className={`w-full h-full object-cover will-change-transform ${
-                  isActive ? 'animate-smoothKenBurns' : ''
+                className={`w-full h-full object-cover ${
+                  isActive ? 'will-change-transform animate-smoothKenBurns' : ''
                 }`}
+                loading={isActive ? 'eager' : 'lazy'}
               />
               {/* Gradient overlay for better text visibility */}
               <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/60 pointer-events-none" />

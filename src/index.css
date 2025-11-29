@@ -163,17 +163,17 @@ All colors MUST be HSL.
     @apply bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent;
   }
 
-  /* Smooth Ken Burns effect for hero images */
+  /* Smooth Ken Burns effect for hero images - Optimized */
   .animate-smoothKenBurns {
-    animation: smoothKenBurns 10s ease-in-out;
+    animation: smoothKenBurns 8s ease-in-out;
   }
 
   @keyframes smoothKenBurns {
     0% {
-      transform: scale(1.05) translate(0, 0);
+      transform: scale(1.03) translateZ(0);
     }
     100% {
-      transform: scale(1.08) translate(-1%, -1%);
+      transform: scale(1.06) translate(-0.5%, -0.5%) translateZ(0);
     }
   }
 
