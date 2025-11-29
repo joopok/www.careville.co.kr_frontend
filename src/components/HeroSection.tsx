@@ -46,16 +46,13 @@ const SlideshowBanner = () => {
   const touchEnd = useRef(0);
   const intervalRef = useRef<number | null>(null);
 
-  // Lazy preload images (only next/prev)
+  // Preload all images on mount
   useEffect(() => {
-    const nextIndex = (currIndex + 1) % SLIDESHOW_IMAGES.length;
-    const prevIndex = (currIndex - 1 + SLIDESHOW_IMAGES.length) % SLIDESHOW_IMAGES.length;
-
-    [nextIndex, prevIndex].forEach((index) => {
+    SLIDESHOW_IMAGES.forEach((src) => {
       const img = new Image();
-      img.src = SLIDESHOW_IMAGES[index];
+      img.src = src;
     });
-  }, [currIndex]);
+  }, []);
 
   const handleNext = useCallback(() => {
     if (!isTransitioning) {

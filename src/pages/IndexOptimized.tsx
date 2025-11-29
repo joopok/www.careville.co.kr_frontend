@@ -60,29 +60,7 @@ const ProgressiveSection = ({ children }: { children: React.ReactNode }) => {
 };
 
 const IndexOptimized = () => {
-  useEffect(() => {
-    // Preload critical fonts
-    const link = document.createElement('link');
-    link.rel = 'preload';
-    link.as = 'font';
-    link.href = 'https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap';
-    document.head.appendChild(link);
 
-    // Prefetch images
-    const imagesToPreload = [
-      'images/banner1.png',
-      'images/banner2.png'
-    ];
-
-    imagesToPreload.forEach(src => {
-      const img = new Image();
-      img.src = src;
-    });
-
-    return () => {
-      document.head.removeChild(link);
-    };
-  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-accent/5 to-background">

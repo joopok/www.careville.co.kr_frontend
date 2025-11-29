@@ -7,7 +7,7 @@ import { lazy, Suspense, useEffect } from "react";
 import { measurePerformance } from "./utils/performance";
 
 // Use optimized version
-const Index = lazy(() => import("./pages/OptimizedIndex"));
+const Index = lazy(() => import("./pages/IndexOptimized"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient({

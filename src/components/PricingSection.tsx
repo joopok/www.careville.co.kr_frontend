@@ -49,19 +49,20 @@ const PricingSection = () => {
         setCategory([]);
         setPricingData([]);
       } finally {
-        if (selectedCategory === "" ) setSelectedCategory("001");
+        // 초기 카테고리 설정 (항상 001로 시작)
+        setSelectedCategory("001");
         setLoading(false);
       }
     };
 
     fetchProducts();
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // selectedCategory가 변경될 때마다 해당하는 상품 데이터 배열을 displayData에 업데이트
   useEffect(() => {
     const filteredData = pricingData.filter(item => item.serviceCd === selectedCategory);
     setDisplayData(filteredData);
-  }, [selectedCategory]);
+  }, [selectedCategory, pricingData]);
 
   // 숫자 세 자리마다 콤마(,) 추가
   const formatNumberComma = (value: number | string): string => {
