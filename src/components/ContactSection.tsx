@@ -21,7 +21,7 @@ const ContactSection = () => {
     {
       icon: MapPin,
       title: "본사 위치",
-      content: "서울특별시 강남구",
+      content: "경기도 고양시 일산동구 정발산로 31-10, 806",
       description: "전국 서비스 가능"
     },
     {

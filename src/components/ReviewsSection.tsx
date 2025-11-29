@@ -199,14 +199,13 @@ const ReviewsSection = () => {
 
   const categories = [
     { id: "all", name: "전체", count: reviews.length },
-    { id: "001", name: "에어컨 케어 및 세척", count: reviews.filter(r => r.serviceCd === "001").length },
-    { id: "002", name: "설치/교체 서비스", count: reviews.filter(r => r.serviceCd === "002").length },
-    { id: "003", name: "상가/사무실 시공", count: reviews.filter(r => r.serviceCd === "003").length },
-    { id: "004", name: "메트리스 청소(케어)", count: reviews.filter(r => r.serviceCd === "004").length },
-    { id: "005", name: "세탁키 케어", count: reviews.filter(r => r.serviceCd === "005").length },
-    { id: "006", name: "욕실 전문 시공", count: reviews.filter(r => r.serviceCd === "006").length },
-    { id: "007", name: "환풍기 설치", count: reviews.filter(r => r.serviceCd === "007").length },
-    { id: "008", name: "프리미엄 주방케어", count: reviews.filter(r => r.serviceCd === "008").length }
+    ...serviceCdList
+      .filter(service => service.serviceCd && service.serviceNm) // 유효한 데이터만
+      .map(service => ({
+        id: service.serviceCd,
+        name: service.serviceNm,
+        count: reviews.filter(r => r.serviceCd === service.serviceCd).length
+      }))
   ];
   const filteredReviews = selectedCategory === "all" 
     ? reviews 

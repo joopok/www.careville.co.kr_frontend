@@ -151,7 +151,7 @@ const SlideshowBanner = () => {
                 }`}
               />
               {/* Gradient overlay for better text visibility */}
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/10 to-black/40 pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/60 pointer-events-none" />
             </div>
           );
         })}
@@ -213,17 +213,17 @@ const SlideshowBanner = () => {
       <SlideshowBanner />
       
       {/* Hero Content */}
-      <div className="flex-1 flex items-center -mt-[590px] relative z-30">
+      <div className="flex-1 flex items-center -mt-[690px] relative z-30">
         <div className="container mx-auto px-6 py-20 relative">
           <div className="text-center text-white space-y-8 max-w-4xl mx-auto">
             <div className={`space-y-6 transition-all duration-1000 transform ${
               isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
             }`}>
-              <p className="text-lg md:text-xl font-medium opacity-90 animate-slideInLeft">
+              <p className="text-lg md:text-xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] animate-slideInLeft">
                 당신의 소중한 공간, 전문가에게 맡기세요
               </p>
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight animate-fadeIn">
-                깨끗함의 새로운 기준 <span className="text-white drop-shadow-2xl">케어빌</span>
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight animate-fadeIn drop-shadow-[0_4px_6px_rgba(0,0,0,0.8)]">
+                깨끗함의 새로운 기준 <span className="text-white">케어빌</span>
               </h1>
             </div>
             
@@ -231,8 +231,8 @@ const SlideshowBanner = () => {
             <div className={`flex justify-center mt-2.5 transition-all duration-1000 delay-300 transform ${
               isVisible ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
             }`}>
-              <Badge className="glass text-white border-white/30 px-8 py-3 text-lg font-semibold flex items-center gap-2 hover:scale-105 transition-transform cursor-pointer">
-                <Sparkles className="h-5 w-5 animate-pulse" />
+              <Badge className="bg-black/40 backdrop-blur-md text-white border-white/50 px-8 py-3 text-lg font-semibold flex items-center gap-2 hover:scale-105 transition-transform cursor-pointer shadow-lg">
+                <Sparkles className="h-5 w-5 animate-pulse text-yellow-400" />
                 프리미엄 청소업체 케어빌
               </Badge>
             </div>

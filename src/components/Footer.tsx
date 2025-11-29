@@ -119,27 +119,31 @@ const Footer = () => {
               <div className="flex flex-col space-y-2">
                 <div className="flex items-start gap-2">
                   <span className="font-semibold min-w-[80px]">상호명:</span>
-                  <span>(주)케어빌</span>
+                  <span>주식회사 케이빌</span>
                 </div>
                 <div className="flex items-start gap-2">
                   <span className="font-semibold min-w-[80px]">대표이사:</span>
-                  <span>홍길동</span>
+                  <span>이경숙</span>
                 </div>
                 <div className="flex items-start gap-2">
                   <span className="font-semibold min-w-[80px]">사업자번호:</span>
-                  <span>123-45-67890</span>
+                  <span>276-87-03677</span>
                 </div>
                 <div className="flex items-start gap-2">
-                  <span className="font-semibold min-w-[80px]">통신판매업:</span>
-                  <span>제2024-서울강남-1234호</span>
+                  <span className="font-semibold min-w-[80px]">사업종류:</span>
+                  <span>서비스, 건설업, 도소매</span>
                 </div>
                 <div className="flex items-start gap-2">
-                  <span className="font-semibold min-w-[80px]">주소:</span>
-                  <span>서울특별시 강남구 테헤란로 123, 케어빌타워 5층</span>
+                  <span className="font-semibold min-w-[80px]">본사주소:</span>
+                  <span>경기도 고양시 일산동구 정발산로 31-10, 806(장홍동,파크프라자)</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="font-semibold min-w-[80px]">서울주소:</span>
+                  <span>서울 강서구 공항대로 426 VIP빌딩 9층 14호</span>
                 </div>
                 <div className="flex items-start gap-2">
                   <span className="font-semibold min-w-[80px]">개인정보:</span>
-                  <span>김철수 (privacy@careville.co.kr)</span>
+                  <span>김승목 (privacy@careville.co.kr)</span>
                 </div>
               </div>
             </div>
