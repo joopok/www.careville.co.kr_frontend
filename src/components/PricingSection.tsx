@@ -1,11 +1,13 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { useState, memo, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Check, Star, Sparkles, AlertTriangle } from "lucide-react";
+import { Check, Star, Sparkles, AlertTriangle, Info, X } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import BookingModal from "@/components/BookingModal";
 
 const PricingSection = () => {
   const [category, setCategory]                 = useState([]); // 카테고리 목록
@@ -15,6 +17,14 @@ const PricingSection = () => {
 
   const [loading, setLoading]                   = useState(true);
   const [error, setError]                       = useState<string | null>(null); // 에러 메시지
+
+  // 예약 모달 상태
+  const [isModalOpen, setIsModalOpen]           = useState(false);
+  const [selectedService, setSelectedService]   = useState<any>(null);
+
+  // 상세보기 다이얼로그 상태
+  const [isDetailOpen, setIsDetailOpen]         = useState(false);
+  const [detailService, setDetailService]       = useState<any>(null);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -44,7 +54,6 @@ const PricingSection = () => {
         const processedProducts = data?.products?.map((item) => {
           try {
             const includeArray = JSON.parse(item?.serviceIncludes || '[]');
-            console.log('includeArray', includeArray);
             return {
               ...item,
               features: includeArray
@@ -224,9 +233,29 @@ const PricingSection = () => {
                       ))}
                     </div>
 
-                    <Button className="w-full group-hover:bg-primary group-hover:text-white transition-all duration-300" variant="outline">
-                      예약하기
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button
+                        className="flex-1 group-hover:border-primary transition-all duration-300"
+                        variant="outline"
+                        onClick={() => {
+                          setDetailService(item);
+                          setIsDetailOpen(true);
+                        }}
+                      >
+                        <Info className="w-4 h-4 mr-1" />
+                        상세보기
+                      </Button>
+                      <Button
+                        className="flex-1 group-hover:bg-primary group-hover:text-white transition-all duration-300"
+                        variant="outline"
+                        onClick={() => {
+                          setSelectedService(item);
+                          setIsModalOpen(true);
+                        }}
+                      >
+                        예약하기
+                      </Button>
+                    </div>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -247,10 +276,20 @@ const PricingSection = () => {
                 특별한 요구사항이나 대규모 프로젝트의 경우 무료 맞춤 견적을 제공해 드립니다.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button size="lg">
+                <Button
+                  size="lg"
+                  onClick={() => {
+                    setSelectedService(null);
+                    setIsModalOpen(true);
+                  }}
+                >
                   무료 견적 받기
                 </Button>
-                <Button size="lg" variant="outline">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  onClick={() => window.location.href = 'tel:1577-8282'}
+                >
                   전화 상담: 1577-8282
                 </Button>
               </div>
@@ -258,6 +297,114 @@ const PricingSection = () => {
           </Card>
         </motion.div>
       </div>
+
+      {/* 예약 모달 */}
+      <BookingModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        selectedService={selectedService}
+      />
+
+      {/* 상세보기 다이얼로그 */}
+      <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          {detailService && (
+            <>
+              <button
+                onClick={() => setIsDetailOpen(false)}
+                className="absolute right-4 top-4 z-50 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground"
+              >
+                <X className="h-4 w-4" />
+                <span className="sr-only">닫기</span>
+              </button>
+
+              <DialogHeader>
+                <DialogTitle className="text-2xl font-bold pr-8">
+                  {detailService.productNm}
+                </DialogTitle>
+              </DialogHeader>
+
+              <div className="space-y-6 mt-6">
+                {/* 가격 정보 */}
+                <div className="bg-primary/5 p-6 rounded-lg">
+                  <div className="flex items-baseline gap-3 mb-2">
+                    <span className="text-4xl font-bold text-primary">
+                      {formatNumberComma(detailService.salePrice)}원
+                    </span>
+                    {detailService.saleYn === 'Y' && (
+                      <span className="text-xl text-muted-foreground line-through">
+                        {formatNumberComma(detailService.originalPrice)}원
+                      </span>
+                    )}
+                  </div>
+                  {detailService.saleYn === 'Y' && (
+                    <Badge variant="destructive" className="text-base px-3 py-1">
+                      {detailService.discountRate}% 특별 할인
+                    </Badge>
+                  )}
+                </div>
+
+                {/* 서비스 정보 */}
+                <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
+                  <div>
+                    <p className="text-sm text-muted-foreground mb-1">서비스 분류</p>
+                    <p className="font-semibold">
+                      {category.find(cat => cat.serviceCd === detailService.serviceCd)?.serviceNm}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground mb-1">소요 시간</p>
+                    <p className="font-semibold">{detailService.serviceTime}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground mb-1">대상 면적/규모</p>
+                    <p className="font-semibold">{detailService.areaType}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground mb-1">할인 상태</p>
+                    <p className="font-semibold">
+                      {detailService.saleYn === 'Y' ? '할인 중' : '정상가'}
+                    </p>
+                  </div>
+                </div>
+
+                {/* 서비스 설명 */}
+                <div>
+                  <h3 className="font-semibold text-lg mb-3">서비스 설명</h3>
+                  <p className="text-muted-foreground leading-relaxed">
+                    {detailService.productDesc}
+                  </p>
+                </div>
+
+                {/* 포함 서비스 */}
+                <div>
+                  <h3 className="font-semibold text-lg mb-3">포함 서비스</h3>
+                  <div className="space-y-2">
+                    {detailService.features?.map((feature, idx) => (
+                      <div key={idx} className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+                        <Check className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                        <span className="text-sm">{feature}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 닫기 버튼 */}
+                <div className="flex justify-center pt-4 border-t">
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    onClick={() => setIsDetailOpen(false)}
+                    className="min-w-[120px]"
+                  >
+                    닫기
+                  </Button>
+                </div>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </section>
   );
 };

@@ -43,7 +43,7 @@ const features = [
   {
     icon: Star,
     title: "국내 1위",
-    description: "프리미엄 청소 서비스"
+    description: "프리미엄 케어 서비스"
   },
   {
     icon: Users,
@@ -69,7 +69,7 @@ const ServiceMenuSection = () => {
         {/* Section Title */}
         <div className="text-center mb-12 animate-fadeIn">
           <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gradient">
-            프리미엄 청소 서비스
+            프리미엄 케어 서비스
           </h2>
           <p className="text-muted-foreground text-lg">
             케어빌만의 차별화된 프리미엄 서비스를 경험해보세요

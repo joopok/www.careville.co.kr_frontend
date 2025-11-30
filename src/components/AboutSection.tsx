@@ -35,7 +35,7 @@ const AboutSection = () => {
         <div className="grid md:grid-cols-2 gap-8 mb-12">
           <div className="space-y-6 animate-slideInLeft">
             <h3 className="text-2xl font-bold text-foreground">
-              프리미엄 청소 서비스의 기준
+              프리미엄 케어 서비스의 기준
             </h3>
             <p className="text-muted-foreground leading-relaxed">
               우리는 고객 한 분 한 분의 공간을 정성껏 돌보고, 신뢰로 책임지는 생활관리 파트너가 되고자 합니다.

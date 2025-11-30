@@ -48,7 +48,13 @@
       "Bash(GIT_TRACE=1 GIT_SSH_COMMAND=\"ssh -v\" git push:*)",
       "Bash(ssh-keygen:*)",
       "Bash(GIT_SSH_COMMAND=\"ssh -v\" git ls-remote:*)",
-      "Bash(do)"
+      "Bash(do)",
+      "Bash(./mvnw clean test:*)",
+      "Bash(java:*)",
+      "Bash(open http://localhost:8002)",
+      "Bash(open http://localhost:8003)",
+      "Bash(./mvnw spring-boot:run:*)",
+      "Bash(python3:*)"
     ],
     "deny": [],
     "ask": []

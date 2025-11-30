@@ -80,10 +80,10 @@ const AdditionalSection = () => {
 
         <div className="mt-12 bg-gradient-to-r from-primary to-secondary rounded-2xl p-8 text-white text-center">
           <h3 className="text-2xl font-bold mb-4">
-            청소 + 부가서비스 패키지 할인
+            케어 + 부가서비스 패키지 할인
           </h3>
           <p className="mb-6 text-white/90">
-            청소 서비스와 부가 서비스를 함께 이용하시면 
+            케어 서비스와 부가 서비스를 함께 이용하시면
             최대 20% 할인 혜택을 받으실 수 있습니다
           </p>
           <Button size="lg" className="bg-white text-primary hover:bg-white/90">

@@ -1,20 +1,52 @@
-import { useState, memo } from "react";
+import { useState, memo, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { 
-  Home, 
-  Building2, 
-  Sparkles, 
-  Calendar, 
-  MapPin, 
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Home,
+  Building2,
+  Sparkles,
+  Calendar,
+  MapPin,
   Eye,
   ChevronRight,
   X,
-  ArrowRight
+  ArrowRight,
+  AlertTriangle
 } from "lucide-react";
 import { motion } from "framer-motion";
 
+// 백엔드 API 응답 타입
+interface CaseApiResponse {
+  list: CaseItem[];
+  pagination: {
+    currPage: number;
+    totalPages: number;
+    totalRows: number;
+  };
+  caseSvcCdList: ServiceCode[];
+}
+
+interface CaseItem {
+  caseSeq: number;
+  serviceCd: string | null;
+  serviceNm: string | null;
+  caseSj: string;
+  caseCn: string;
+  regNm: string;
+  fileSeq: number;
+  viewfileseq: string;  // 백엔드가 소문자로 반환
+  hashtag: string;
+  rgsDt: string;
+}
+
+interface ServiceCode {
+  serviceCd: string;
+  serviceNm: string;
+}
+
+// 프론트엔드 Portfolio 타입
 interface Portfolio {
   id: number;
   category: string;
@@ -30,13 +62,8 @@ interface Portfolio {
   tags: string[];
 }
 
-const PortfolioSection = () => {
-  const [selectedCategory, setSelectedCategory] = useState("all");
-  const [selectedPortfolio, setSelectedPortfolio] = useState<Portfolio | null>(null);
-  const [visibleCount, setVisibleCount] = useState(9);
-  const [imageType, setImageType] = useState<'before' | 'after'>('after');
-
-  const portfolios: Portfolio[] = [
+// 더미 데이터 (폴백용)
+const DUMMY_PORTFOLIOS: Portfolio[] = [
     {
       id: 1,
       category: "home",
@@ -205,7 +232,65 @@ const PortfolioSection = () => {
       description: "펜션 성수기 전 완벽한 대청소를 진행했습니다.",
       tags: ["펜션", "대청소", "80평"]
     }
-  ];
+];
+
+// 서비스 코드 매핑 (백엔드 serviceCd → 프론트 category)
+const SERVICE_CODE_MAP: Record<string, string> = {
+  "001": "home",     // 에어컨 → 주거공간으로 매핑
+  "002": "home",
+  "003": "office",   // 상가/사무실
+  "004": "home",
+  "005": "home",
+  "006": "home",
+  "007": "home",
+  "008": "home",
+  "009": "special",  // 특수청소
+  "010": "home",
+  "011": "home",
+};
+
+// 백엔드 데이터를 프론트 Portfolio로 변환
+const convertCaseToPortfolio = (caseItem: CaseItem): Portfolio => {
+  // serviceCd가 null일 수 있으므로 null 체크 추가
+  const category = caseItem.serviceCd
+    ? (SERVICE_CODE_MAP[caseItem.serviceCd] || "special")
+    : "special";
+  const tags = caseItem.hashtag ? caseItem.hashtag.split(',').map(tag => tag.trim()) : [];
+
+  // 이미지 URL 생성 (viewfileseq 사용 - 백엔드가 소문자로 반환)
+  const imageUrl = caseItem.viewfileseq
+    ? (import.meta.env.DEV
+        ? `/fileView.do?fileSeq=${caseItem.viewfileseq}`
+        : `${import.meta.env.VITE_API_URL}/fileView.do?fileSeq=${caseItem.viewfileseq}`)
+    : "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600";
+
+  return {
+    id: caseItem.caseSeq,
+    category,
+    title: caseItem.caseSj,
+    location: "서울시", // 백엔드에 location 필드 없음
+    date: caseItem.rgsDt,
+    area: tags.find(tag => tag.includes('평')) || "", // 태그에서 면적 추출
+    type: caseItem.serviceNm || "특수청소", // null일 경우 기본값
+    mainImage: imageUrl,
+    beforeImage: imageUrl, // 백엔드에 before/after 구분 없음
+    afterImage: imageUrl,
+    description: caseItem.caseCn.replace(/<[^>]*>/g, '').substring(0, 100), // HTML 태그 제거 후 100자
+    tags
+  };
+};
+
+const PortfolioSection = () => {
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedPortfolio, setSelectedPortfolio] = useState<Portfolio | null>(null);
+  const [imageType, setImageType] = useState<'before' | 'after'>('after');
+
+  // API 상태 관리
+  const [portfolios, setPortfolios] = useState<Portfolio[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
 
   const categories = [
     { id: "all", name: "전체", icon: Sparkles },
@@ -214,15 +299,99 @@ const PortfolioSection = () => {
     { id: "special", name: "특수청소", icon: Sparkles }
   ];
 
-  const filteredPortfolios = selectedCategory === "all" 
-    ? portfolios 
+  // API 호출 함수
+  const fetchPortfolios = async (page: number = 1, category: string = "all") => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const apiUrl = import.meta.env.DEV
+        ? '/caseList.do'
+        : `${import.meta.env.VITE_API_URL}/caseList.do`;
+
+      // FormData로 POST 요청 (백엔드가 POST 메서드 사용)
+      const formData = new FormData();
+      formData.append('currPage', page.toString());
+
+      // 카테고리 필터링
+      if (category !== "all") {
+        // category를 serviceCd로 역변환
+        const serviceCd = Object.keys(SERVICE_CODE_MAP).find(
+          key => SERVICE_CODE_MAP[key] === category
+        );
+        if (serviceCd) {
+          formData.append('serviceCd', serviceCd);
+        }
+      }
+
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!response.ok) {
+        throw new Error(`API 오류: ${response.status}`);
+      }
+
+      const data: CaseApiResponse = await response.json();
+
+      if (data.list && data.list.length > 0) {
+        const convertedData = data.list.map(convertCaseToPortfolio);
+
+        if (page === 1) {
+          setPortfolios(convertedData);
+        } else {
+          setPortfolios(prev => [...prev, ...convertedData]);
+        }
+
+        setHasMore(data.pagination.currPage < data.pagination.totalPages);
+      } else {
+        // 데이터가 없으면 더미 데이터 사용
+        if (page === 1) {
+          setPortfolios(DUMMY_PORTFOLIOS);
+        }
+        setHasMore(false);
+      }
+    } catch (err) {
+      console.warn('시공사례 조회 실패 (더미 데이터 사용):', err);
+      // 에러 메시지는 설정하지 않음 (사용자에게 보이지 않음)
+      // setError(err instanceof Error ? err.message : '데이터를 불러오는데 실패했습니다.');
+
+      // 에러 발생 시 더미 데이터 사용
+      if (page === 1) {
+        setPortfolios(DUMMY_PORTFOLIOS);
+      }
+      setHasMore(false);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 초기 로드
+  useEffect(() => {
+    // 백엔드 API 시도, 실패 시 자동으로 더미 데이터 사용
+    fetchPortfolios(1, selectedCategory);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // 카테고리 변경 시 - 클라이언트 사이드 필터링으로 변경
+  const handleCategoryChange = (categoryId: string) => {
+    setSelectedCategory(categoryId);
+    setCurrentPage(1);
+  };
+
+  // 더보기 핸들러 - 클라이언트 사이드로 변경
+  const handleLoadMore = () => {
+    setCurrentPage(prev => prev + 1);
+  };
+
+  // 클라이언트 사이드 필터링 및 페이지네이션
+  const filteredPortfolios = selectedCategory === "all"
+    ? portfolios
     : portfolios.filter(p => p.category === selectedCategory);
 
-  const visiblePortfolios = filteredPortfolios.slice(0, visibleCount);
-
-  const handleLoadMore = () => {
-    setVisibleCount(prev => prev + 9);
-  };
+  const itemsPerPage = 9;
+  const visiblePortfolios = filteredPortfolios.slice(0, currentPage * itemsPerPage);
+  const hasMoreItems = visiblePortfolios.length < filteredPortfolios.length;
 
   return (
     <section id="portfolio" className="py-20 bg-gradient-to-b from-gray-50 to-white">
@@ -253,10 +422,7 @@ const PortfolioSection = () => {
             return (
               <button
                 key={category.id}
-                onClick={() => {
-                  setSelectedCategory(category.id);
-                  setVisibleCount(9);
-                }}
+                onClick={() => handleCategoryChange(category.id)}
                 className={`flex items-center gap-2 px-6 py-3 rounded-full font-medium transition-all duration-300 ${
                   selectedCategory === category.id
                     ? "bg-primary text-white shadow-lg"
@@ -270,9 +436,52 @@ const PortfolioSection = () => {
           })}
         </div>
 
+        {/* Error Message */}
+        {error && (
+          <div className="mb-12">
+            <Card className="border-destructive/50 bg-destructive/5">
+              <div className="p-8 text-center">
+                <div className="flex flex-col items-center gap-4">
+                  <div className="w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center">
+                    <AlertTriangle className="h-8 w-8 text-destructive" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-destructive mb-2">데이터 로드 실패</h3>
+                    <p className="text-muted-foreground mb-4">{error}</p>
+                    <p className="text-sm text-muted-foreground">샘플 데이터를 표시합니다.</p>
+                  </div>
+                </div>
+              </div>
+            </Card>
+          </div>
+        )}
+
         {/* Portfolio Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {visiblePortfolios.map((portfolio, index) => (
+          {loading ? (
+            // 로딩 스켈레톤
+            Array.from({ length: 9 }).map((_, index) => (
+              <Card key={index} className="overflow-hidden">
+                <Skeleton className="h-48 w-full" />
+                <div className="p-5 space-y-3">
+                  <Skeleton className="h-6 w-3/4" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-2/3" />
+                  <div className="flex gap-2">
+                    <Skeleton className="h-6 w-16" />
+                    <Skeleton className="h-6 w-16" />
+                  </div>
+                </div>
+              </Card>
+            ))
+          ) : visiblePortfolios.length === 0 ? (
+            // 데이터 없음
+            <div className="col-span-full text-center py-20">
+              <p className="text-lg text-muted-foreground">표시할 시공사례가 없습니다.</p>
+            </div>
+          ) : (
+            // 실제 데이터
+            visiblePortfolios.map((portfolio, index) => (
             <motion.div
               key={portfolio.id}
               initial={{ opacity: 0, y: 20 }}
@@ -328,11 +537,12 @@ const PortfolioSection = () => {
                 </div>
               </Card>
             </motion.div>
-          ))}
+          ))
+          )}
         </div>
 
         {/* Load More Button */}
-        {visiblePortfolios.length < filteredPortfolios.length && (
+        {!loading && hasMoreItems && visiblePortfolios.length > 0 && (
           <div className="text-center">
             <Button
               onClick={handleLoadMore}
@@ -351,16 +561,18 @@ const PortfolioSection = () => {
           <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
             {selectedPortfolio && (
               <>
+                <button
+                  onClick={() => setSelectedPortfolio(null)}
+                  className="absolute right-4 top-4 z-50 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground"
+                >
+                  <X className="h-4 w-4" />
+                  <span className="sr-only">닫기</span>
+                </button>
+
                 <DialogHeader>
-                  <DialogTitle className="text-2xl font-bold">
+                  <DialogTitle className="text-2xl font-bold pr-8">
                     {selectedPortfolio.title}
                   </DialogTitle>
-                  <button
-                    onClick={() => setSelectedPortfolio(null)}
-                    className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
                 </DialogHeader>
 
                 <div className="space-y-6 mt-6">
@@ -371,13 +583,13 @@ const PortfolioSection = () => {
                         variant={imageType === 'before' ? 'default' : 'outline'}
                         onClick={() => setImageType('before')}
                       >
-                        Before
+                        시공전
                       </Button>
                       <Button
                         variant={imageType === 'after' ? 'default' : 'outline'}
                         onClick={() => setImageType('after')}
                       >
-                        After
+                        시공후
                       </Button>
                     </div>
                   )}

@@ -208,7 +208,7 @@ const OptimizedHeroSection = () => {
             }`}>
               <Badge className="glass text-white border-white/30 px-8 py-3 text-lg font-semibold flex items-center gap-2 hover:scale-105 transition-transform cursor-pointer">
                 <Sparkles className="h-5 w-5" />
-                프리미엄 청소 서비스
+                프리미엄 케어 서비스
               </Badge>
             </div>
             

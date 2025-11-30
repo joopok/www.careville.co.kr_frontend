@@ -19,10 +19,25 @@ export default defineConfig(({ mode }) => ({
     },
     proxy: {
       '/api': {
-        target: 'http://ksm1779.cafe24.com',
+        target: 'http://localhost:8081',
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path
+      },
+      '/caseList.do': {
+        target: 'http://localhost:8081',
+        changeOrigin: true,
+        secure: false
+      },
+      '/caseView.do': {
+        target: 'http://localhost:8081',
+        changeOrigin: true,
+        secure: false
+      },
+      '/fileView.do': {
+        target: 'http://localhost:8081',
+        changeOrigin: true,
+        secure: false
       }
     }
   },
