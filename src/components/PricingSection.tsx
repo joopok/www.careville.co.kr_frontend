@@ -1,7 +1,7 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { useState, memo, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Check, Star, Sparkles } from "lucide-react";
+import { Check, Star, Sparkles, AlertTriangle } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -14,12 +14,28 @@ const PricingSection = () => {
   const [displayData, setDisplayData]           = useState([]); // 화면에 보여 줄 해당 카테고리의 상품 데이터
 
   const [loading, setLoading]                   = useState(true);
+  const [error, setError]                       = useState<string | null>(null); // 에러 메시지
 
   useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true);
+      setError(null);
       try {
-        const resp = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/category-products.do`, { method: 'GET' });
+        // 개발 환경에서는 프록시를 통해 API 호출, 프로덕션에서는 직접 호출
+        const apiUrl = import.meta.env.DEV
+          ? '/api/v1/category-products.do'
+          : `${import.meta.env.VITE_API_URL}/api/v1/category-products.do`;
+
+        const resp = await fetch(apiUrl, { method: 'GET' });
+
+        // 응답 상태 확인
+        if (!resp.ok) {
+          if (resp.status === 502) {
+            throw new Error('서버에 일시적인 문제가 발생했습니다. 잠시 후 다시 시도해주세요.');
+          }
+          throw new Error(`서버 오류가 발생했습니다 (${resp.status}). 관리자에게 문의해주세요.`);
+        }
+
         const data = await resp.json();
 
         setCategory(data?.categories);
@@ -35,7 +51,7 @@ const PricingSection = () => {
             };
 
           } catch (error) {
-            console.error('Error parsing serviceIncludes for item:', item, error); // TODO: Integrate with a proper logging system
+            console.error('Error parsing serviceIncludes for item:', item, error);
             return {
               ...item,
               features: []
@@ -43,9 +59,13 @@ const PricingSection = () => {
           }
         });
         setPricingData(processedProducts);
-        
+
       } catch (error) {
         console.error('Error fetching products:', error);
+        const errorMessage = error instanceof Error
+          ? error.message
+          : '데이터를 불러오는 중 오류가 발생했습니다. 네트워크 연결을 확인해주세요.';
+        setError(errorMessage);
         setCategory([]);
         setPricingData([]);
       } finally {
@@ -111,7 +131,30 @@ const PricingSection = () => {
         </Tabs>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {loading ? (
+          {error ? (
+            <div className="col-span-full">
+              <Card className="border-destructive/50 bg-destructive/5">
+                <CardContent className="p-8 text-center">
+                  <div className="flex flex-col items-center gap-4">
+                    <div className="w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center">
+                      <AlertTriangle className="h-8 w-8 text-destructive" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-destructive mb-2">데이터 로드 실패</h3>
+                      <p className="text-muted-foreground mb-4">{error}</p>
+                      <Button
+                        onClick={() => window.location.reload()}
+                        variant="outline"
+                        className="border-destructive text-destructive hover:bg-destructive hover:text-white"
+                      >
+                        새로고침
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          ) : loading ? (
             Array.from({ length: 3 }).map((_, index) => (
               <Card key={index} className="h-full">
                 <CardHeader>

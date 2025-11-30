@@ -16,6 +16,14 @@ export default defineConfig(({ mode }) => ({
     },
     watch: {
       usePolling: true
+    },
+    proxy: {
+      '/api': {
+        target: 'http://ksm1779.cafe24.com',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path
+      }
     }
   },
   plugins: [
