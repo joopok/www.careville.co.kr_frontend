@@ -9,6 +9,7 @@ const BusinessCleaningSection = lazy(() => import("@/components/BusinessCleaning
 const SpecialCleaningSection = lazy(() => import("@/components/SpecialCleaningSection"));
 const PricingSection = lazy(() => import("@/components/PricingSection"));
 const ReviewsSection = lazy(() => import("@/components/ReviewsSection"));
+const PortfolioSection = lazy(() => import("@/components/PortfolioSection"));
 const NoticeSection = lazy(() => import("@/components/NoticeSection"));
 const ContactSection = lazy(() => import("@/components/ContactSection"));
 const AdditionalSection = lazy(() => import("@/components/AdditionalSection"));
@@ -66,56 +67,71 @@ const IndexOptimized = () => {
     <div className="min-h-screen bg-gradient-to-b from-background via-accent/5 to-background">
       <Header />
       <HeroSection />
-      
+
       <Suspense fallback={<LoadingSpinner />}>
         <ServiceMenuSection />
       </Suspense>
 
+      {/* 1. 홈클리닝 */}
       <Suspense fallback={<LoadingSpinner />}>
         <ProgressiveSection>
           <HomeCleaningSection />
         </ProgressiveSection>
       </Suspense>
 
+      {/* 2. 사업장클리닝 */}
       <Suspense fallback={<LoadingSpinner />}>
         <ProgressiveSection>
           <BusinessCleaningSection />
         </ProgressiveSection>
       </Suspense>
 
+      {/* 3. 특수청소 */}
       <Suspense fallback={<LoadingSpinner />}>
         <ProgressiveSection>
           <SpecialCleaningSection />
         </ProgressiveSection>
       </Suspense>
 
+      {/* 4. 서비스가격 */}
       <Suspense fallback={<LoadingSpinner />}>
         <ProgressiveSection>
           <PricingSection />
         </ProgressiveSection>
       </Suspense>
 
+      {/* 5. 작업후기 */}
       <Suspense fallback={<LoadingSpinner />}>
         <ProgressiveSection>
           <ReviewsSection />
         </ProgressiveSection>
       </Suspense>
 
+      {/* 6. 시공사례 */}
       <Suspense fallback={<LoadingSpinner />}>
         <ProgressiveSection>
-          <NoticeSection />
+          <PortfolioSection />
         </ProgressiveSection>
       </Suspense>
 
+      {/* 7. CS 센터 */}
       <Suspense fallback={<LoadingSpinner />}>
         <ProgressiveSection>
           <ContactSection />
         </ProgressiveSection>
       </Suspense>
 
+      {/* 8. 부가서비스 */}
       <Suspense fallback={<LoadingSpinner />}>
         <ProgressiveSection>
           <AdditionalSection />
+        </ProgressiveSection>
+      </Suspense>
+
+      {/* 9. 질문 */}
+      <Suspense fallback={<LoadingSpinner />}>
+        <ProgressiveSection>
+          <NoticeSection />
         </ProgressiveSection>
       </Suspense>
 

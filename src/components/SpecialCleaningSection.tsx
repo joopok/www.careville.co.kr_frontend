@@ -71,7 +71,7 @@ const SpecialCleaningSection = () => {
         <div className="text-center mb-16 animate-fadeIn">
           <div className="inline-flex items-center gap-2 bg-white border border-destructive/20 px-5 py-2.5 rounded-full mb-6 shadow-sm">
             <Zap className="h-5 w-5 text-destructive fill-destructive/10" />
-            <span className="text-destructive font-bold tracking-wide">SPECIAL CLEANING</span>
+            <span className="text-destructive font-bold tracking-wide">특수청소</span>
           </div>
           <h2 className="text-4xl md:text-5xl font-bold mb-6 tracking-tight text-gray-900">
             어떤 상황도 <span className="text-primary relative inline-block">
