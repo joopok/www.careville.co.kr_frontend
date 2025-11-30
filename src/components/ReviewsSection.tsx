@@ -214,7 +214,7 @@ const ReviewsSection = () => {
     
 
   const ReviewCard = ({ review }: { review: typeof reviews[0] }) => (        
-    <Card className="h-full p-6 hover:shadow-lg transition-all duration-300 bg-white">      
+    <Card className="review-card p-6 hover:shadow-lg transition-all duration-300 bg-white">      
       <div className="flex items-start gap-4" onClick={() => {setNewReview({ reviewSeq: review.reviewSeq, reviewNm: review.reviewNm, serviceCd: review.serviceCd, starRate: review.starRate, reviewCn: review.reviewCn, svcDate: "2025-05-05", pw:"" }); review.reviewSeq; setIsDialogOpen(true)}}>
         <Quote className="h-8 w-8 text-primary/20 flex-shrink-0" />
         <div className="flex-1 flex flex-col">
@@ -598,7 +598,7 @@ const ReviewsSection = () => {
           >
             {filteredReviews.map((review) => (
               <SwiperSlide key={review.reviewSeq}>
-                <div className="h-full pb-2">
+                <div className="pb-2">
                   <ReviewCard review={review} />
                 </div>
               </SwiperSlide>
