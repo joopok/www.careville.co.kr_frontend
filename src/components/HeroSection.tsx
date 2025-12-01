@@ -324,13 +324,50 @@ const SlideshowBanner = () => {
             <div className="text-[10px]">전화</div>
           </div>
         </Button>
-        <Button className="group w-14 h-14 rounded-full bg-green-500 hover:bg-green-600 text-white shadow-md hover:shadow-lg transition-all duration-300 hover:scale-110 flex-shrink-0">
+        <Button 
+          className="group w-14 h-14 rounded-full bg-green-500 hover:bg-green-600 text-white shadow-md hover:shadow-lg transition-all duration-300 hover:scale-110 flex-shrink-0"
+          onClick={() => window.open('https://blog.naver.com/PostList.naver?blogId=on_totalcare&parentCategoryNo=1&skinType=&skinId=&from=menu&userSelectMenu=true', '_blank')}
+        >
           <div className="text-center">
             <div className="text-xs font-bold">blog</div>
             <div className="text-[10px]">후기</div>
           </div>
         </Button>
-        <Button className="group w-14 h-14 rounded-full bg-pink-500 hover:bg-pink-600 text-white shadow-md hover:shadow-lg transition-all duration-300 hover:scale-110 flex-shrink-0">
+        <Button 
+          className="group w-14 h-14 rounded-full bg-pink-500 hover:bg-pink-600 text-white shadow-md hover:shadow-lg transition-all duration-300 hover:scale-110 flex-shrink-0"
+          onClick={() => {
+            const scrollToQuickInquiry = () => {
+              const element = document.getElementById('quick-inquiry');
+              if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return true;
+              }
+              return false;
+            };
+
+            // Try to scroll immediately
+            if (!scrollToQuickInquiry()) {
+              // If element not found, scroll to contact section first to trigger lazy loading
+              const contactSection = document.getElementById('contact');
+              if (contactSection) {
+                contactSection.scrollIntoView({ behavior: 'smooth' });
+              } else {
+                // If contact section not loaded, scroll to bottom to trigger all lazy loading
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+              }
+              
+              // Retry multiple times to handle lazy loading
+              let attempts = 0;
+              const maxAttempts = 10;
+              const retryInterval = setInterval(() => {
+                attempts++;
+                if (scrollToQuickInquiry() || attempts >= maxAttempts) {
+                  clearInterval(retryInterval);
+                }
+              }, 200);
+            }
+          }}
+        >
           <div className="text-center">
             <MessageCircle className="h-4 w-4 mx-auto mb-0.5 group-hover:animate-pulse" />
             <div className="text-[10px]">상담</div>

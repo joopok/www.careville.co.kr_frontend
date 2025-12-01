@@ -54,7 +54,15 @@
       "Bash(open http://localhost:8002)",
       "Bash(open http://localhost:8003)",
       "Bash(./mvnw spring-boot:run:*)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "Bash(/usr/libexec/java_home:*)",
+      "Bash(brew install:*)",
+      "Bash(brew --prefix:*)",
+      "Bash(export JAVA_HOME=/usr/local/opt/openjdk@17:*)",
+      "Bash($JAVA_HOME/bin/java -version)",
+      "Bash(export PATH=$JAVA_HOME/bin:$PATH)",
+      "Bash(mvn clean package:*)",
+      "Bash(unzip:*)"
     ],
     "deny": [],
     "ask": []

@@ -255,7 +255,7 @@ const convertCaseToPortfolio = (caseItem: CaseItem): Portfolio => {
   const category = caseItem.serviceCd
     ? (SERVICE_CODE_MAP[caseItem.serviceCd] || "special")
     : "special";
-  const tags = caseItem.hashtag ? caseItem.hashtag.split(',').map(tag => tag.trim()) : [];
+  const tags = caseItem.hashtag ? caseItem.hashtag.split(',').map(tag => tag.trim().replace(/^#/, '')) : [];
 
   // 이미지 URL 생성 (viewfileseq 사용 - 백엔드가 소문자로 반환)
   const imageUrl = caseItem.viewfileseq
