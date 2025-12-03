@@ -8,7 +8,6 @@ import { promisify } from 'util';
 const execAsync = promisify(exec);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
 const app = express();
 const PORT = process.env.PORT || 8001;
 
@@ -75,7 +74,6 @@ async function startServer() {
     if (killed) {
       console.log(`🔄 포트 ${PORT} 정리 완료, 서버 시작 중...`);
     }
-
     // 서버 시작
     const server = app.listen(PORT, () => {
       console.log(`🚀 CareVille 서버가 포트 ${PORT}에서 실행 중입니다.`);
