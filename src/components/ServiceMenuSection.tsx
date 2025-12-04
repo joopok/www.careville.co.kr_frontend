@@ -2,7 +2,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import {
   Home,
   Building2,
-  Zap,
   MessageSquare,
   Star,
   Users,
@@ -14,25 +13,19 @@ import {
 
 const serviceCategories = [
   {
-    title: "홈클리닝",
+    title: "가전케어",
     icon: Home,
     services: ["입주 청소", "이사 청소", "거주 청소", "욕실정기서비스"],
     popular: true
   },
   {
-    title: "사업장클리닝", 
+    title: "키친케어", 
     icon: Building2,
     services: ["사무실,상가 청소", "준공 청소", "정기 청소"],
     popular: false
   },
   {
-    title: "특수청소",
-    icon: Zap,
-    services: ["에어컨 설치/수리", "식당 청소", "화재 청소", "침수 청소", "공장 청소"],
-    popular: true
-  },
-  {
-    title: "작업후기",
+    title: "사업장케어",
     icon: MessageSquare,
     services: ["고객후기", "시공사례"],
     popular: false
@@ -76,7 +69,7 @@ const ServiceMenuSection = () => {
           </p>
         </div>
         {/* Service Categories */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
           {serviceCategories.map((category, index) => (
             <Card
               key={index}

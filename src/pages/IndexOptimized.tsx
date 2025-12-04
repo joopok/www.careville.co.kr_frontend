@@ -6,7 +6,6 @@ import HeroSection from "@/components/HeroSection";
 const ServiceMenuSection = lazy(() => import("@/components/ServiceMenuSection"));
 const HomeCleaningSection = lazy(() => import("@/components/HomeCleaningSection"));
 const BusinessCleaningSection = lazy(() => import("@/components/BusinessCleaningSection"));
-const SpecialCleaningSection = lazy(() => import("@/components/SpecialCleaningSection"));
 const PricingSection = lazy(() => import("@/components/PricingSection"));
 const ReviewsSection = lazy(() => import("@/components/ReviewsSection"));
 const PortfolioSection = lazy(() => import("@/components/PortfolioSection"));
@@ -86,14 +85,7 @@ const IndexOptimized = () => {
         </ProgressiveSection>
       </Suspense>
 
-      {/* 3. 특수청소 */}
-      <Suspense fallback={<LoadingSpinner />}>
-        <ProgressiveSection>
-          <SpecialCleaningSection />
-        </ProgressiveSection>
-      </Suspense>
-
-      {/* 4. 서비스가격 */}
+      {/* 3. 서비스가격 */}
       <Suspense fallback={<LoadingSpinner />}>
         <ProgressiveSection>
           <PricingSection />
@@ -121,14 +113,7 @@ const IndexOptimized = () => {
         </ProgressiveSection>
       </Suspense>
 
-      {/* 8. 부가서비스 */}
-      <Suspense fallback={<LoadingSpinner />}>
-        <ProgressiveSection>
-          <AdditionalSection />
-        </ProgressiveSection>
-      </Suspense>
-
-      {/* 9. 질문 */}
+      {/* 8. 질문 */}
       <Suspense fallback={<LoadingSpinner />}>
         <ProgressiveSection>
           <NoticeSection />

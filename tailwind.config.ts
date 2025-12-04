@@ -125,7 +125,7 @@ export default {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				'float': 'float 3s ease-in-out infinite',
-				'fadeIn': 'fadeIn 0.6s ease-out',
+				'fadeIn': 'fadeIn 0.6s ease-out forwards',
 				'slideInLeft': 'slideInLeft 0.6s ease-out',
 				'slideInRight': 'slideInRight 0.6s ease-out',
 				'pulse': 'pulse 2s ease-in-out infinite',

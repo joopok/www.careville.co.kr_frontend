@@ -233,29 +233,16 @@ const PricingSection = () => {
                       ))}
                     </div>
 
-                    <div className="flex gap-2">
-                      <Button
-                        className="flex-1 group-hover:border-primary transition-all duration-300"
-                        variant="outline"
-                        onClick={() => {
-                          setDetailService(item);
-                          setIsDetailOpen(true);
-                        }}
-                      >
-                        <Info className="w-4 h-4 mr-1" />
-                        상세보기
-                      </Button>
-                      <Button
-                        className="flex-1 group-hover:bg-primary group-hover:text-white transition-all duration-300"
-                        variant="outline"
-                        onClick={() => {
-                          setSelectedService(item);
-                          setIsModalOpen(true);
-                        }}
-                      >
-                        예약하기
-                      </Button>
-                    </div>
+                    <Button
+                      className="w-full group-hover:bg-primary group-hover:text-white transition-all duration-300"
+                      variant="outline"
+                      onClick={() => {
+                        setSelectedService(item);
+                        setIsModalOpen(true);
+                      }}
+                    >
+                      예약하기
+                    </Button>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -269,32 +256,7 @@ const PricingSection = () => {
           transition={{ duration: 0.6, delay: 0.8 }}
           className="mt-12 text-center"
         >
-          <Card className="max-w-3xl mx-auto bg-primary/5 border-primary/20">
-            <CardContent className="p-8">
-              <h3 className="text-2xl font-bold mb-4">맞춤 견적이 필요하신가요?</h3>
-              <p className="text-muted-foreground mb-6">
-                특별한 요구사항이나 대규모 프로젝트의 경우 무료 맞춤 견적을 제공해 드립니다.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button
-                  size="lg"
-                  onClick={() => {
-                    setSelectedService(null);
-                    setIsModalOpen(true);
-                  }}
-                >
-                  무료 견적 받기
-                </Button>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  onClick={() => window.location.href = 'tel:1577-8282'}
-                >
-                  전화 상담: 1577-8282
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+         
         </motion.div>
       </div>
 

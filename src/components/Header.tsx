@@ -28,14 +28,13 @@ const Header = () => {
 
   const menuItems = [
     // { name: "케어빌"      , href: "#about" }, // #about 섹션이 없어져서 주석 처리
-    { name: "홈클리닝"    , href: "#home-cleaning" },
-    { name: "사업장클리닝", href: "#business-cleaning" },
-    { name: "특수청소"    , href: "#special-cleaning" },
-    { name: "서비스가격"  , href: "#pricing" },
+    { name: "가전케어"    , href: "#home-cleaning" },
+    { name: "키친케어"    , href: "#business-cleaning" },
+    { name: "사업장케어"   , href: "#pricing" },
+    { name: "가격정책"    , href: "#pricing" },
     { name: "작업후기"    , href: "#reviews" },
     { name: "시공사례"    , href: "#portfolio" },
     { name: "CS 센터"     , href: "#contact" },
-    { name: "부가서비스"  , href: "#additional" },
     { name: "질문"        , href: "#notice" }
   ];
 

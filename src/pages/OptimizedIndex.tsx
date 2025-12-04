@@ -10,7 +10,6 @@ import ServiceMenuSection from "@/components/ServiceMenuSection";
 const AirConditionerSection = lazy(() => import("@/components/AirConditionerSection"));
 const HomeCleaningSection = lazy(() => import("@/components/HomeCleaningSection"));
 const BusinessCleaningSection = lazy(() => import("@/components/BusinessCleaningSection"));
-const SpecialCleaningSection = lazy(() => import("@/components/SpecialCleaningSection"));
 const PricingSection = lazy(() => import("@/components/PricingSection"));
 const ReviewsSection = lazy(() => import("@/components/ReviewsSection"));
 const NoticeSection = lazy(() => import("@/components/NoticeSection"));
@@ -50,10 +49,6 @@ const OptimizedIndex = () => {
       
       <Suspense fallback={<SectionLoader />}>
         <BusinessCleaningSection />
-      </Suspense>
-      
-      <Suspense fallback={<SectionLoader />}>
-        <SpecialCleaningSection />
       </Suspense>
       
       <Suspense fallback={<SectionLoader />}>
