@@ -34,7 +34,7 @@ const Header = () => {
     { name: "가격정책"    , href: "#pricing" },
     { name: "작업후기"    , href: "#reviews" },
     { name: "시공사례"    , href: "#portfolio" },
-    { name: "CS 센터"     , href: "#contact" },
+    { name: "CS센터"     , href: "#contact" },
     { name: "질문"        , href: "#notice" }
   ];
 
