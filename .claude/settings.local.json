@@ -63,7 +63,8 @@
       "Bash(export PATH=$JAVA_HOME/bin:$PATH)",
       "Bash(mvn clean package:*)",
       "Bash(unzip:*)",
-      "Bash(GIT_SSH_COMMAND=\"ssh -vvv\" git push:*)"
+      "Bash(GIT_SSH_COMMAND=\"ssh -vvv\" git push:*)",
+      "Skill(frontend-design)"
     ],
     "deny": [],
     "ask": []

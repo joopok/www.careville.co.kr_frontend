@@ -1,38 +1,43 @@
-import { useState } from "react";
+import { useState, useCallback, memo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Home, Sparkles, Shield, Clock, ArrowRight } from "lucide-react";
+import { Home, Star, Shield, Clock, ArrowRight } from "lucide-react";
 import ContactModal from "./ContactModal";
+
+// 서비스 데이터 상수 - 컴포넌트 외부로 이동하여 재생성 방지
+const SERVICES = [
+  {
+    title: "입주 청소",
+    description: "새 집 입주 전 완벽한 청소",
+    features: ["실내 전체 소독", "새집증후군 제거", "바닥 왁스 코팅"],
+    price: "30만원~",
+    popular: true
+  },
+  {
+    title: "이사 청소",
+    description: "이사 전후 깔끔한 정리",
+    features: ["짐 정리 후 청소", "생활 얼룩 제거", "원상복구 지원"],
+    price: "25만원~"
+  },
+  {
+    title: "거주 청소",
+    description: "살고 있는 집 대청소",
+    features: ["가구 이동 청소", "깊은 곳까지 청소", "정기 관리 가능"],
+    price: "20만원~"
+  },
+  {
+    title: "욕실 정기서비스",
+    description: "욕실 전문 정기 관리",
+    features: ["곰팡이 완벽 제거", "배수구 청소", "타일 틈새 청소"],
+    price: "10만원~"
+  }
+] as const;
 
 const HomeCleaningSection = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const services = [
-    {
-      title: "입주 청소",
-      description: "새 집 입주 전 완벽한 청소",
-      features: ["실내 전체 소독", "새집증후군 제거", "바닥 왁스 코팅"],
-      price: "30만원~",
-      popular: true
-    },
-    {
-      title: "이사 청소",
-      description: "이사 전후 깔끔한 정리",
-      features: ["짐 정리 후 청소", "생활 얼룩 제거", "원상복구 지원"],
-      price: "25만원~"
-    },
-    {
-      title: "거주 청소",
-      description: "살고 있는 집 대청소",
-      features: ["가구 이동 청소", "깊은 곳까지 청소", "정기 관리 가능"],
-      price: "20만원~"
-    },
-    {
-      title: "욕실 정기서비스",
-      description: "욕실 전문 정기 관리",
-      features: ["곰팡이 완벽 제거", "배수구 청소", "타일 틈새 청소"],
-      price: "10만원~"
-    }
-  ];
+
+  const openModal = useCallback(() => setIsModalOpen(true), []);
+  const closeModal = useCallback(() => setIsModalOpen(false), []);
 
   return (
     <>
@@ -53,18 +58,18 @@ const HomeCleaningSection = () => {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {services.map((service, index) => (
+            {SERVICES.map((service, index) => (
               <Card 
                 key={index}
                 className="relative overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-2 animate-fadeIn"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
                 {service.popular && (
-                  <div className="absolute top-4 right-4 z-10">
-                    <span className="bg-gradient-to-r from-primary to-secondary text-white px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
-                      <Sparkles className="h-3 w-3" />
+                  <div className="absolute top-0 right-0 z-10">
+                    <div className="bg-secondary text-white text-[11px] font-medium px-3 py-1.5 rounded-bl-xl flex items-center gap-1.5 shadow-md">
+                      <Star className="w-3 h-3 fill-current" />
                       인기
-                    </span>
+                    </div>
                   </div>
                 )}
                 
@@ -87,10 +92,10 @@ const HomeCleaningSection = () => {
                     <span className="text-2xl font-bold text-primary">
                       {service.price}
                     </span>
-                    <Button 
-                      size="sm" 
+                    <Button
+                      size="sm"
                       className="group bg-primary hover:bg-primary-dark"
-                      onClick={() => setIsModalOpen(true)}
+                      onClick={openModal}
                     >
                       상담하기
                       <ArrowRight className="ml-1 h-4 w-4 group-hover:translate-x-1 transition-transform" />
@@ -102,9 +107,9 @@ const HomeCleaningSection = () => {
           </div>
         </div>
       </section>
-      <ContactModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <ContactModal isOpen={isModalOpen} onClose={closeModal} />
     </>
   );
 };
 
-export default HomeCleaningSection;
+export default memo(HomeCleaningSection);

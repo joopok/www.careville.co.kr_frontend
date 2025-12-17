@@ -158,10 +158,11 @@ const ReviewsSection = () => {
  
     setErrors({ reviewNm: "", serviceNm: "", reviewCn: "", starRate: "" ,svcDate:"", serviceCd:"", pw:""});
     setIsSubmitting(true);
-    //날짜 하이픈 제거
-    newReview.svcDate = newReview.svcDate.replace(/-/g, "");    
-
-      console.log((newReview));
+    // 날짜 하이픈 제거 (불변성 유지)
+    const submitData = {
+      ...newReview,
+      svcDate: newReview.svcDate.replace(/-/g, "")
+    };
 
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/reviews`, {
@@ -169,7 +170,7 @@ const ReviewsSection = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(newReview),
+        body: JSON.stringify(submitData),
       });
 
       if (!response.ok) {

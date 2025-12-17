@@ -17,12 +17,16 @@ const PortfolioSection = lazy(() => import("@/components/PortfolioSection"));
 const ContactSection = lazy(() => import("@/components/ContactSection"));
 const AdditionalSection = lazy(() => import("@/components/AdditionalSection"));
 
-// Loading fallback component
+// Elegant loading fallback
 const SectionLoader = () => (
-  <div className="flex items-center justify-center py-20">
-    <div className="animate-pulse">
-      <div className="h-8 w-48 bg-gray-200 rounded mx-auto"></div>
-      <div className="h-4 w-64 bg-gray-200 rounded mx-auto mt-4"></div>
+  <div className="flex items-center justify-center py-24">
+    <div className="relative">
+      {/* Pulsing ring */}
+      <div className="absolute inset-0 w-16 h-16 border-2 border-primary/20 rounded-full animate-ping" />
+      {/* Static ring */}
+      <div className="w-16 h-16 border-2 border-primary/30 rounded-full flex items-center justify-center">
+        <div className="w-8 h-8 bg-primary/10 rounded-full animate-pulse" />
+      </div>
     </div>
   </div>
 );
@@ -32,49 +36,62 @@ import StructuredData from "@/components/StructuredData";
 
 const OptimizedIndex = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-accent/5 to-background">
+    <div className="min-h-screen bg-background">
       <SEO />
       <StructuredData />
       <Header />
+
+      {/* Hero - Full viewport, immersive */}
       <HeroSection />
+
+      {/* Services - Primary content */}
       <ServiceMenuSection />
-      
+
+      {/* Air Conditioner Services */}
       <Suspense fallback={<SectionLoader />}>
         <AirConditionerSection />
       </Suspense>
-      
+
+      {/* Home Cleaning */}
       <Suspense fallback={<SectionLoader />}>
         <HomeCleaningSection />
       </Suspense>
-      
+
+      {/* Business Cleaning */}
       <Suspense fallback={<SectionLoader />}>
         <BusinessCleaningSection />
       </Suspense>
-      
+
+      {/* Pricing */}
       <Suspense fallback={<SectionLoader />}>
         <PricingSection />
       </Suspense>
-      
+
+      {/* Reviews */}
       <Suspense fallback={<SectionLoader />}>
         <ReviewsSection />
       </Suspense>
-      
+
+      {/* Portfolio */}
       <Suspense fallback={<SectionLoader />}>
         <PortfolioSection />
       </Suspense>
-      
+
+      {/* Contact */}
       <Suspense fallback={<SectionLoader />}>
         <ContactSection />
       </Suspense>
-      
+
+      {/* Additional Services */}
       <Suspense fallback={<SectionLoader />}>
         <AdditionalSection />
       </Suspense>
-      
+
+      {/* Notice/FAQ */}
       <Suspense fallback={<SectionLoader />}>
         <NoticeSection />
       </Suspense>
-      
+
       <Footer />
     </div>
   );

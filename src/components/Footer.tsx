@@ -1,112 +1,139 @@
-import { 
-  Phone, 
-  Mail, 
-  MapPin, 
-  Clock, 
-  Facebook, 
-  Instagram, 
+import {
+  Phone,
+  Mail,
+  MapPin,
+  Clock,
+  Facebook,
+  Instagram,
   Youtube,
   MessageCircle,
-  ChevronRight,
   Shield,
   Award,
   Users,
-  Sparkles
+  Leaf,
+  ArrowUp
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
 
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
-    <footer className="bg-gradient-to-b from-background to-card border-t">
+    <footer className="bg-foreground text-white relative overflow-hidden">
+      {/* Decorative Elements */}
+      <div className="absolute top-0 left-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
+      <div className="absolute bottom-0 right-0 w-64 h-64 bg-secondary/10 rounded-full blur-3xl" />
+
       {/* Main Footer Content */}
-      <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12">
+      <div className="container mx-auto px-6 py-16 relative">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+
           {/* Company Info */}
-          <div className="space-y-5">
-            <div>
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center shadow-lg">
-                  <span className="text-white font-bold text-lg">C</span>
-                </div>
-                <div>
-                  <h2 className="text-2xl font-bold text-foreground">케어빌</h2>
-                  <p className="text-xs text-muted-foreground">CareVille Cleaning Service</p>
-                </div>
+          <div className="lg:col-span-2 space-y-6">
+            {/* Logo */}
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center">
+                <Leaf className="w-6 h-6 text-white" />
               </div>
-              <p className="text-muted-foreground leading-relaxed">
-                케어빌은 전문적이고 신뢰할 수 있는 청소 서비스를 제공합니다. 
-                고객님의 건강하고 깨끗한 생활 공간을 위해 최선을 다하겠습니다.
-              </p>
+              <div>
+                <h2 className="text-2xl font-bold text-white">케어빌</h2>
+                <p className="text-xs text-white/50 tracking-wider uppercase">CareVille Cleaning Service</p>
+              </div>
             </div>
 
+            <p className="text-white/70 leading-relaxed max-w-md">
+              케어빌은 전문적이고 신뢰할 수 있는 청소 서비스를 제공합니다.
+              고객님의 건강하고 깨끗한 생활 공간을 위해 최선을 다하겠습니다.
+            </p>
+
             {/* Trust Badges */}
-            <div className="flex flex-wrap gap-4">
-              <Badge variant="secondary" className="py-1.5 px-3">
-                <Shield className="w-3 h-3 mr-1" />
-                100% 안전 보장
-              </Badge>
-              <Badge variant="secondary" className="py-1.5 px-3">
-                <Award className="w-3 h-3 mr-1" />
-                전문 인증업체
-              </Badge>
-              <Badge variant="secondary" className="py-1.5 px-3">
-                <Users className="w-3 h-3 mr-1" />
-                50,000+ 고객
-              </Badge>
+            <div className="flex flex-wrap gap-3">
+              <div className="flex items-center gap-2 px-4 py-2 bg-white/10 rounded-full text-sm">
+                <Shield className="w-4 h-4 text-primary" />
+                <span className="text-white/80">100% 안전 보장</span>
+              </div>
+              <div className="flex items-center gap-2 px-4 py-2 bg-white/10 rounded-full text-sm">
+                <Award className="w-4 h-4 text-secondary" />
+                <span className="text-white/80">전문 인증업체</span>
+              </div>
+              <div className="flex items-center gap-2 px-4 py-2 bg-white/10 rounded-full text-sm">
+                <Users className="w-4 h-4 text-accent" />
+                <span className="text-white/80">50,000+ 고객</span>
+              </div>
             </div>
 
             {/* Social Links */}
-            <div className="flex gap-3">
-              <Button variant="outline" size="icon" className="rounded-full hover:bg-primary hover:text-white hover:border-primary transition-all">
-                <Facebook className="w-4 h-4" />
+            <div className="flex gap-3 pt-2">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="w-10 h-10 rounded-xl bg-white/10 hover:bg-primary hover:text-white text-white/70 transition-all duration-300"
+              >
+                <Facebook className="w-5 h-5" />
               </Button>
-              <Button variant="outline" size="icon" className="rounded-full hover:bg-primary hover:text-white hover:border-primary transition-all">
-                <Instagram className="w-4 h-4" />
+              <Button
+                variant="ghost"
+                size="icon"
+                className="w-10 h-10 rounded-xl bg-white/10 hover:bg-gradient-to-br hover:from-purple-600 hover:to-pink-500 hover:text-white text-white/70 transition-all duration-300"
+              >
+                <Instagram className="w-5 h-5" />
               </Button>
-              <Button variant="outline" size="icon" className="rounded-full hover:bg-primary hover:text-white hover:border-primary transition-all">
-                <Youtube className="w-4 h-4" />
+              <Button
+                variant="ghost"
+                size="icon"
+                className="w-10 h-10 rounded-xl bg-white/10 hover:bg-red-600 hover:text-white text-white/70 transition-all duration-300"
+              >
+                <Youtube className="w-5 h-5" />
               </Button>
-              <Button variant="outline" size="icon" className="rounded-full hover:bg-[#03C75A] hover:text-white hover:border-[#03C75A] transition-all">
-                <span className="font-bold text-xs">N</span>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="w-10 h-10 rounded-xl bg-white/10 hover:bg-[#03C75A] hover:text-white text-white/70 transition-all duration-300"
+              >
+                <span className="font-bold text-sm">N</span>
               </Button>
-              <Button variant="outline" size="icon" className="rounded-full hover:bg-[#FEE500] hover:text-black hover:border-[#FEE500] transition-all">
-                <MessageCircle className="w-4 h-4" />
+              <Button
+                variant="ghost"
+                size="icon"
+                className="w-10 h-10 rounded-xl bg-white/10 hover:bg-[#FEE500] hover:text-[#3C1E1E] text-white/70 transition-all duration-300"
+              >
+                <MessageCircle className="w-5 h-5" />
               </Button>
             </div>
           </div>
 
           {/* Contact Info */}
           <div>
-            <h4 className="font-bold text-foreground mb-6 text-lg">고객센터</h4>
+            <h4 className="font-bold text-white mb-6 text-lg">고객센터</h4>
             <ul className="space-y-4">
               <li>
-                <a href="tel:1577-8282" className="flex items-start gap-3 text-muted-foreground hover:text-primary transition-colors group">
-                  <Phone className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                <a href="tel:1600-9762" className="group flex items-start gap-3 text-white/70 hover:text-white transition-colors">
+                  <Phone className="w-5 h-5 mt-0.5 flex-shrink-0 text-primary" />
                   <div>
-                    <p className="font-semibold text-foreground group-hover:text-primary">1577-8282</p>
-                    <p className="text-sm">24시간 상담 가능</p>
+                    <p className="font-semibold text-white group-hover:text-primary transition-colors">1600-9762</p>
+                    <p className="text-sm text-white/50">24시간 상담 가능</p>
                   </div>
                 </a>
               </li>
               <li>
-                <a href="mailto:info@careville.co.kr" className="flex items-start gap-3 text-muted-foreground hover:text-primary transition-colors group">
-                  <Mail className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                <a href="mailto:info@careville.co.kr" className="group flex items-start gap-3 text-white/70 hover:text-white transition-colors">
+                  <Mail className="w-5 h-5 mt-0.5 flex-shrink-0 text-primary" />
                   <div>
-                    <p className="font-semibold text-foreground group-hover:text-primary">info@careville.co.kr</p>
-                    <p className="text-sm">이메일 문의</p>
+                    <p className="font-semibold text-white group-hover:text-primary transition-colors">info@careville.co.kr</p>
+                    <p className="text-sm text-white/50">이메일 문의</p>
                   </div>
                 </a>
               </li>
-              <li className="flex items-start gap-3 text-muted-foreground">
-                <Clock className="w-4 h-4 mt-0.5 flex-shrink-0" />
+              <li className="flex items-start gap-3 text-white/70">
+                <Clock className="w-5 h-5 mt-0.5 flex-shrink-0 text-primary" />
                 <div>
-                  <p className="font-semibold text-foreground">운영시간</p>
-                  <p className="text-sm">평일 09:00 - 18:00</p>
-                  <p className="text-sm">주말 09:00 - 15:00</p>
+                  <p className="font-semibold text-white">운영시간</p>
+                  <p className="text-sm text-white/50">평일 09:00 - 18:00</p>
+                  <p className="text-sm text-white/50">주말 09:00 - 15:00</p>
                 </div>
               </li>
             </ul>
@@ -114,51 +141,39 @@ const Footer = () => {
 
           {/* Company Details */}
           <div>
-            <h4 className="font-bold text-foreground mb-6 text-lg">사업자 정보</h4>
-            <div className="space-y-3 text-sm text-muted-foreground">
-              <div className="flex flex-col space-y-2">
-                <div className="flex items-start gap-2">
-                  <span className="font-semibold min-w-[80px]">상호명:</span>
-                  <span>주식회사 케이빌</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="font-semibold min-w-[80px]">대표이사:</span>
-                  <span>이경숙</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="font-semibold min-w-[80px]">사업자번호:</span>
-                  <span>276-87-03677</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="font-semibold min-w-[80px]">사업종류:</span>
-                  <span>서비스, 건설업, 도소매</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="font-semibold min-w-[80px]">본사주소:</span>
-                  <span>경기도 고양시 일산동구 정발산로 31-10, 806(장홍동,파크프라자)</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="font-semibold min-w-[80px]">서울주소:</span>
-                  <span>서울 강서구 공항대로 426 VIP빌딩 9층 14호</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="font-semibold min-w-[80px]">개인정보:</span>
-                  <span>김승목 (privacy@careville.co.kr)</span>
-                </div>
-              </div>
+            <h4 className="font-bold text-white mb-6 text-lg">사업자 정보</h4>
+            <div className="space-y-3 text-sm text-white/60">
+              <p><span className="text-white/80">상호명:</span> 주식회사 케이빌</p>
+              <p><span className="text-white/80">대표이사:</span> 이경숙</p>
+              <p><span className="text-white/80">사업자번호:</span> 276-87-03677</p>
+              <p><span className="text-white/80">사업종류:</span> 서비스, 건설업, 도소매</p>
+              <p className="pt-2">
+                <span className="text-white/80">본사:</span> 경기도 고양시 일산동구 정발산로 31-10, 806
+              </p>
+              <p>
+                <span className="text-white/80">서울:</span> 서울 강서구 공항대로 426 VIP빌딩 9층
+              </p>
             </div>
           </div>
         </div>
 
+        {/* Bottom Bar */}
+        <div className="mt-12 pt-8 border-t border-white/10">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className="text-sm text-white/50 text-center md:text-left">
+              Copyright © {currentYear} CareVille. All rights reserved.
+              본 사이트의 모든 콘텐츠는 저작권법의 보호를 받습니다.
+            </p>
 
-        {/* Enhanced Bottom Footer */}
-        <div className="mt-6">
-          {/* Legal Links Bar */}
-          <div className="border-t pt-4 pb-2">
-              <p className="text-xs text-muted-foreground">
-                Copyright &copy; {currentYear} CareVille. All rights reserved. 
-                본 사이트의 모든 콘텐츠는 저작권법의 보호를 받으며, 무단 전재 및 복사를 금합니다.
-              </p>
+            {/* Scroll to Top Button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={scrollToTop}
+              className="w-12 h-12 rounded-xl bg-white/10 hover:bg-primary text-white/70 hover:text-white transition-all duration-300"
+            >
+              <ArrowUp className="w-5 h-5" />
+            </Button>
           </div>
         </div>
       </div>

@@ -157,8 +157,6 @@ const BookingModal = ({ isOpen, onClose, selectedService }: BookingModalProps) =
         additionalRequests: bookingData.booking.additionalRequests
       };
 
-      console.log("예약 요청 데이터:", requestData);
-
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {

@@ -213,10 +213,10 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
                 control={form.control}
                 render={({ field }) => (
                   <Select onValueChange={field.onChange} value={field.value}>
-                    <SelectTrigger id="svcCnCd">
+                    <SelectTrigger id="svcCnCd" className="w-full">
                       <SelectValue placeholder="서비스를 선택해주세요" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="min-w-[280px]">
                       {serviceOptions.map((option) => (
                         <SelectItem key={option.value} value={option.value}>
                           {option.label}
