@@ -91,6 +91,71 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
     },
   });
 
+  const { setValue } = form;
+
+  // 전화번호 자동 하이픈 포맷터
+  const formatPhone = (value: string) => {
+    const digits = value.replace(/[^0-9]/g, '');
+    if (digits.length <= 3) return digits;
+    if (digits.length <= 7) return `${digits.slice(0,3)}-${digits.slice(3)}`;
+    return `${digits.slice(0,3)}-${digits.slice(3,7)}-${digits.slice(7,11)}`;
+  };
+
+  const handlePhoneChange = (field: 'tel1' | 'tel2') => (e: React.ChangeEvent<HTMLInputElement>) => {
+    setValue(field, formatPhone(e.target.value), { shouldValidate: true, shouldTouch: true });
+  };
+
+  // 간단 주소 검색 UI
+  const [isAddrSearchOpen, setIsAddrSearchOpen] = React.useState(false);
+  const [addrZip, setAddrZip] = React.useState("");
+  const [addrBase, setAddrBase] = React.useState("");
+  const applyAddress = () => {
+    if (addrBase.trim()) {
+      setValue('zip', addrZip.trim());
+      setValue('adres1', addrBase.trim(), { shouldValidate: true });
+      setIsAddrSearchOpen(false);
+    }
+  };
+
+  // 카카오/다음 우편번호 서비스 연동
+  const ensureDaumPostcodeScript = () => new Promise<void>((resolve, reject) => {
+    const w = window as unknown as { daum?: any };
+    if (w.daum && w.daum.Postcode) return resolve();
+    const script = document.createElement('script');
+    script.src = '//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
+    script.async = true;
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error('daum postcode script load failed'));
+    document.body.appendChild(script);
+  });
+
+  const openDaumPostcode = async () => {
+    setIsAddrSearchOpen(true);
+    try {
+      await ensureDaumPostcodeScript();
+      const w = window as unknown as { daum: any };
+      const container = document.getElementById('daum-postcode-container');
+      if (!container) return;
+      new w.daum.Postcode({
+        oncomplete: (data: any) => {
+          const road = data.roadAddress?.trim();
+          const jibun = data.jibunAddress?.trim();
+          const addr = road || jibun || '';
+          const zone = data.zonecode || '';
+          if (addr) setValue('adres1', addr, { shouldValidate: true });
+          if (zone) setValue('zip', zone);
+          setIsAddrSearchOpen(false);
+        },
+        width: '100%',
+        height: '360px'
+      }).embed(container);
+    } catch (e) {
+      // 스크립트 로드 실패 시 기존 간이 입력 UI 사용
+      console.warn('Daum postcode unavailable, fallback to manual input');
+      setIsAddrSearchOpen(true);
+    }
+  };
+
   const onSubmit = async (values: ContactFormValues) => {
     const url = `${import.meta.env.VITE_API_URL}/cnsltReg.do`;
     const dataToSend = { ...values };
@@ -165,8 +230,10 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
                 <Label htmlFor="tel1">연락처1</Label>
                 <Input
                   id="tel1"
-                  placeholder="010-XXXX-XXXX"
+                  placeholder="010-1234-5678"
+                  inputMode="tel"
                   {...form.register("tel1")}
+                  onChange={handlePhoneChange('tel1')}
                 />
                 {form.formState.errors.tel1 && (
                   <p className="text-red-500 text-sm">
@@ -180,7 +247,9 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
               <Input
                 id="tel2"
                 placeholder="추가 연락처"
+                inputMode="tel"
                 {...form.register("tel2")}
+                onChange={handlePhoneChange('tel2')}
               />
             </div>
             {/*
@@ -195,7 +264,25 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
             </div>
             */}
             <div>
-              <Label htmlFor="adres1">주소1</Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="adres1">주소1</Label>
+                <div className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    className="text-sm text-primary hover:underline"
+                    onClick={openDaumPostcode}
+                  >
+                    주소 검색
+                  </button>
+                  <button
+                    type="button"
+                    className="text-sm text-muted-foreground hover:underline"
+                    onClick={() => setIsAddrSearchOpen((v)=>!v)}
+                  >
+                    {isAddrSearchOpen ? '간이 입력 닫기' : '간이 입력'}
+                  </button>
+                </div>
+              </div>
               <Input
                 id="adres1"
                 placeholder="기본 주소"
@@ -206,6 +293,20 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
                   {form.formState.errors.adres1.message}
                 </p>
               )}
+              {isAddrSearchOpen && (
+                <div className="mt-3 p-3 border rounded-lg space-y-2">
+                  <div className="grid grid-cols-3 gap-2">
+                    <Input placeholder="우편번호" value={addrZip} onChange={(e) => setAddrZip(e.target.value)} />
+                    <div className="col-span-2 flex gap-2">
+                      <Input placeholder="주소 검색 결과 입력" value={addrBase} onChange={(e) => setAddrBase(e.target.value)} />
+                      <button type="button" className="px-3 py-2 rounded-md bg-primary text-white" onClick={applyAddress}>적용</button>
+                    </div>
+                  </div>
+                  <p className="text-xs text-muted-foreground">실 서비스 연동 전 간이 입력 창입니다.</p>
+                </div>
+              )}
+              {/* 다음 우편번호 embed 컨테이너 */}
+              <div id="daum-postcode-container" className="mt-3 border rounded-lg overflow-hidden" style={{ display: isAddrSearchOpen ? 'none' : undefined }} />
             </div>
             <div>
               <Label htmlFor="adres2">주소2 (상세 주소)</Label>

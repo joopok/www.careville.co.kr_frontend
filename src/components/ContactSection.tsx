@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback, memo } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,7 +19,44 @@ interface FormErrors {
   content?: string;
 }
 
-const ContactSection = () => {
+// Contact info moved outside component to prevent recreation on each render
+const contactInfo = [
+  {
+    icon: Phone,
+    title: "전화 상담",
+    content: "1600-9762",
+    description: "평일 09:00 - 18:00",
+    action: "tel:1600-9762",
+    highlight: true
+  },
+  {
+    icon: Mail,
+    title: "이메일 문의",
+    content: "seung0910@naver.com",
+    description: "24시간 접수 가능",
+    action: "mailto:seung0910@naver.com"
+  },
+  {
+    icon: MapPin,
+    title: "본사",
+    content: "경기 고양시 일산동구 정발산로 31-10",
+    description: "806호(장항동, 파크프라자)"
+  },
+  {
+    icon: MapPin,
+    title: "경기지사",
+    content: "경기도 고양시 으뜸로8,",
+    description: "덕은아이에스비즈타워신트럴 1차 504호"
+  },
+  {
+    icon: Clock,
+    title: "영업 시간",
+    content: "연중무휴",
+    description: "긴급 상황 24시간 대응"
+  }
+];
+
+const ContactSection = memo(() => {
   const [formData, setFormData] = useState<InquiryForm>({
     name: "",
     phone: "",
@@ -30,15 +67,13 @@ const ContactSection = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    if (errors[name as keyof FormErrors]) {
-      setErrors(prev => ({ ...prev, [name]: "" }));
-    }
-  };
+    setErrors(prev => ({ ...prev, [name]: "" }));
+  }, []);
 
-  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhoneChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     const numbers = value.replace(/[^0-9]/g, '');
     let formatted = numbers;
@@ -50,12 +85,10 @@ const ContactSection = () => {
     }
 
     setFormData(prev => ({ ...prev, phone: formatted }));
-    if (errors.phone) {
-      setErrors(prev => ({ ...prev, phone: "" }));
-    }
-  };
+    setErrors(prev => ({ ...prev, phone: "" }));
+  }, []);
 
-  const validateForm = (): boolean => {
+  const validateForm = useCallback((): boolean => {
     const newErrors: FormErrors = {};
 
     if (!formData.name.trim()) {
@@ -74,9 +107,9 @@ const ContactSection = () => {
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  };
+  }, [formData]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!validateForm()) return;
@@ -118,46 +151,10 @@ const ContactSection = () => {
     } finally {
       setIsSubmitting(false);
     }
-  };
+  }, [formData, validateForm]);
 
   // 상담 신청 모달 상태
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
-
-  const contactInfo = [
-    {
-      icon: Phone,
-      title: "전화 상담",
-      content: "1600-9762",
-      description: "평일 09:00 - 18:00",
-      action: "tel:1600-9762",
-      highlight: true
-    },
-    {
-      icon: Mail,
-      title: "이메일 문의",
-      content: "seung0910@naver.com",
-      description: "24시간 접수 가능",
-      action: "mailto:seung0910@naver.com"
-    },
-    {
-      icon: MapPin,
-      title: "본사",
-      content: "경기 고양시 일산동구 정발산로 31-10",
-      description: "806호(장항동, 파크프라자)"
-    },
-    {
-      icon: MapPin,
-      title: "경기지사",
-      content: "경기도 고양시 으뜸로8,",
-      description: "덕은아이에스비즈타워신트럴 1차 504호"
-    },
-    {
-      icon: Clock,
-      title: "영업 시간",
-      content: "연중무휴",
-      description: "긴급 상황 24시간 대응"
-    }
-  ];
 
   return (
     <section id="contact" className="section-padding bg-background relative overflow-hidden">
@@ -196,7 +193,7 @@ const ContactSection = () => {
               </div>
 
               {isSuccess ? (
-                <div className="py-12 text-center">
+                <div className="py-12 text-center" role="status" aria-live="polite">
                   <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     <CheckCircle className="w-8 h-8 text-green-600" />
                   </div>
@@ -354,6 +351,8 @@ const ContactSection = () => {
       </div>
     </section>
   );
-};
+});
+
+ContactSection.displayName = 'ContactSection';
 
 export default ContactSection;

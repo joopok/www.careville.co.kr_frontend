@@ -1,13 +1,10 @@
-import { useState } from "react";
+import { useState, memo, useCallback } from "react";
 import {
-  Home,
   Building2,
-  MessageSquare,
   Star,
   Users,
   Calendar,
   Award,
-  Sparkles,
   ArrowRight,
   Leaf,
   Wind,

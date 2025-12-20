@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState, useRef } from "react";
+import { lazy, Suspense, useState, useRef, useEffect, memo } from "react";
 import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
 
@@ -10,18 +10,18 @@ const ReviewsSection = lazy(() => import("@/components/ReviewsSection"));
 const PortfolioSection = lazy(() => import("@/components/PortfolioSection"));
 const NoticeSection = lazy(() => import("@/components/NoticeSection"));
 const ContactSection = lazy(() => import("@/components/ContactSection"));
-const AdditionalSection = lazy(() => import("@/components/AdditionalSection"));
 const Footer = lazy(() => import("@/components/Footer"));
 
-// Loading component
-const LoadingSpinner = () => (
+// Memoized loading component
+const LoadingSpinner = memo(() => (
   <div className="flex justify-center items-center py-20">
     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
   </div>
-);
+));
+LoadingSpinner.displayName = 'LoadingSpinner';
 
-// Progressive loading component
-const ProgressiveSection = ({ children }: { children: React.ReactNode }) => {
+// Memoized progressive loading component
+const ProgressiveSection = memo(({ children }: { children: React.ReactNode }) => {
   const [isVisible, setIsVisible] = useState(false);
   const sentinelRef = useRef<HTMLDivElement>(null);
 
@@ -45,9 +45,14 @@ const ProgressiveSection = ({ children }: { children: React.ReactNode }) => {
     );
 
     observer.observe(sentinel);
+    // Fallback: ensure render even if intersection doesn't fire (e.g., headless tests)
+    const fallback = setTimeout(() => {
+      setIsVisible((v) => v || true);
+    }, 1200);
 
     return () => {
       observer.disconnect();
+      clearTimeout(fallback);
     };
   }, []);
 
@@ -56,7 +61,8 @@ const ProgressiveSection = ({ children }: { children: React.ReactNode }) => {
   }
 
   return <>{children}</>;
-};
+});
+ProgressiveSection.displayName = 'ProgressiveSection';
 
 const IndexOptimized = () => {
 
