@@ -24,6 +24,11 @@ export default defineConfig(({ mode }) => ({
         secure: false,
         rewrite: (path) => path
       },
+      '/cnsltReg.do': {
+        target: 'http://ksm1779.cafe24.com',
+        changeOrigin: true,
+        secure: false
+      },
       '/caseList.do': {
         target: 'http://ksm1779.cafe24.com',
         changeOrigin: true,

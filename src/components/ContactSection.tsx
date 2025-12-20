@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Phone, Mail, MapPin, Clock, HeadphonesIcon, Send, ArrowRight, Loader2, CheckCircle } from "lucide-react";
+import ContactModal from "@/components/ContactModal";
 
 interface InquiryForm {
   name: string;
@@ -83,7 +84,10 @@ const ContactSection = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/inquiry`, {
+      const apiUrl = import.meta.env.DEV
+        ? '/api/inquiry'
+        : `${import.meta.env.VITE_API_URL}/api/inquiry`;
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -115,6 +119,9 @@ const ContactSection = () => {
       setIsSubmitting(false);
     }
   };
+
+  // 상담 신청 모달 상태
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
 
   const contactInfo = [
     {
@@ -257,6 +264,7 @@ const ContactSection = () => {
                     {errors.content && <p className="text-red-500 text-xs mt-1">{errors.content}</p>}
                   </div>
 
+                  <div className="flex gap-3">
                   <Button
                     type="submit"
                     disabled={isSubmitting}
@@ -275,6 +283,15 @@ const ContactSection = () => {
                       </>
                     )}
                   </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="h-14 rounded-xl"
+                    onClick={() => setIsContactModalOpen(true)}
+                  >
+                    상담 신청
+                  </Button>
+                  </div>
                 </form>
               )}
             </Card>
@@ -333,6 +350,7 @@ const ContactSection = () => {
             ))}
           </div>
         </div>
+        <ContactModal isOpen={isContactModalOpen} onClose={() => setIsContactModalOpen(false)} />
       </div>
     </section>
   );

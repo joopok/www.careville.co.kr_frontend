@@ -28,16 +28,25 @@ interface ContactModalProps {
   onClose: () => void;
 }
 
+const phoneRegex = /^[0-9-]{10,13}$/;
+
 const formSchema = z.object({
-  nm: z.string().min(1, "고객명을 입력해주세요."),
-  tel1: z.string().min(1, "연락처1을 입력해주세요."),
-  tel2: z.string().optional(),
-  adres1: z.string().min(1, "주소1을 입력해주세요."),
-  adres2: z.string().optional(),
-  zip: z.string().optional(),
+  nm: z.string().trim().min(1, "고객명을 입력해주세요."),
+  tel1: z.string().trim().min(10, "연락처1을 입력해주세요.").regex(phoneRegex, "연락처 형식이 올바르지 않습니다."),
+  tel2: z.string().trim().optional().refine((v) => !v || phoneRegex.test(v), { message: "연락처 형식이 올바르지 않습니다." }),
+  adres1: z.string().trim().min(1, "주소1을 입력해주세요."),
+  adres2: z.string().trim().optional(),
+  zip: z.string().trim().optional(),
   svcCnCd: z.string().min(1, "서비스 내용을 선택해주세요."),
-  hopeDay: z.string().min(1, "희망일자를 선택해주세요."),
-  inqryCn: z.string().min(1, "상담 내용을 입력해주세요."),
+  hopeDay: z.string().min(1, "희망일자를 선택해주세요.").refine((v) => {
+    if (!v) return false;
+    const today = new Date();
+    const target = new Date(v);
+    // Normalize to date-only comparison
+    today.setHours(0,0,0,0);
+    return target >= today;
+  }, { message: "희망일자는 오늘 이후 날짜를 선택해주세요." }),
+  inqryCn: z.string().trim().min(1, "상담 내용을 입력해주세요."),
 });
 
 type ContactFormValues = z.infer<typeof formSchema>;

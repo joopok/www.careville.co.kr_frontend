@@ -19,26 +19,25 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 import './ReviewsSection.css';
 
+type Review = {
+  serviceNm: string;
+  reviewSeq: string;
+  svcDate: string;
+  dispYn: string;
+  serviceCd: string;
+  starRate: number;
+  reviewNm: string;
+  rgsDt: string;
+  reviewCn: string;
+};
+
+type ServiceCdItem = { serviceCd: string; serviceNm: string };
+
 const ReviewsSection = () => {
   const swiperRef = useRef<SwiperType>(null);
-  const [reviews, setReviews] = useState([
-    {
-      serviceNm: "",
-      reviewSeq: "",
-      svcDate: "",
-      dispYn: "",
-      serviceCd: "",
-      starRate: 0,
-      reviewNm: "",      
-      rgsDt: "",
-      reviewCn: "",
-            
-    },
-  ]);
+  const [reviews, setReviews] = useState<Review[]>([]);
   
-  const [serviceCdList, setserviceCdList] = useState([{
-    serviceCd: "",  serviceNm: ""
-  }]);
+  const [serviceCdList, setserviceCdList] = useState<ServiceCdItem[]>([]);
 
   const [isLoadingReviews, setIsLoadingReviews] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -46,7 +45,10 @@ const ReviewsSection = () => {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/reviews/all`,{
+        const url = import.meta.env.DEV
+          ? '/api/reviews/all'
+          : `${import.meta.env.VITE_API_URL}/api/reviews/all`;
+        const response = await fetch(url, {
            method: 'GET',
            headers: {
             'Content-Type': 'application/json'
@@ -56,13 +58,14 @@ const ReviewsSection = () => {
           throw new Error('Failed to fetch reviews');
         }        
         
-        const data = await response.json();
+        const data: { serviceCdList: ServiceCdItem[]; data: Review[] } = await response.json();
         
         setserviceCdList(data.serviceCdList);         
            
         setReviews(data.data);
-      } catch (error: any) {
-        setError(error.message);
+      } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : 'Unknown error';
+        setError(message);
       } finally {
         setIsLoadingReviews(false);
       }
@@ -71,7 +74,15 @@ const ReviewsSection = () => {
     fetchReviews();
   }, []);
 
-  const [newReview, setNewReview] = useState({
+  const [newReview, setNewReview] = useState<{
+    reviewSeq: string;
+    reviewNm: string;
+    serviceCd: string;
+    starRate: number;
+    reviewCn: string;
+    svcDate: string;
+    pw: string;
+  }>({
     reviewSeq: "",
     reviewNm: "",
     serviceCd: "",
@@ -165,7 +176,10 @@ const ReviewsSection = () => {
     };
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/reviews`, {
+      const url = import.meta.env.DEV
+        ? '/api/reviews'
+        : `${import.meta.env.VITE_API_URL}/api/reviews`;
+      const response = await fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -211,9 +225,9 @@ const ReviewsSection = () => {
   
     
 
-  const ReviewCard = ({ review }: { review: typeof reviews[0] }) => (        
+  const ReviewCard = ({ review }: { review: Review }) => (        
     <Card className="review-card p-6 hover:shadow-lg transition-all duration-300 bg-white">      
-      <div className="flex items-start gap-4" onClick={() => {setNewReview({ reviewSeq: review.reviewSeq, reviewNm: review.reviewNm, serviceCd: review.serviceCd, starRate: review.starRate, reviewCn: review.reviewCn, svcDate: "2025-05-05", pw:"" }); review.reviewSeq; setIsDialogOpen(true)}}>
+      <div className="flex items-start gap-4" onClick={() => {setNewReview({ reviewSeq: review.reviewSeq, reviewNm: review.reviewNm, serviceCd: review.serviceCd, starRate: review.starRate, reviewCn: review.reviewCn, svcDate: "2025-05-05", pw:"" }); setIsDialogOpen(true)}}>
         <Quote className="h-8 w-8 text-primary/20 flex-shrink-0" />
         <div className="flex-1 flex flex-col">
           <div className="flex items-start justify-between mb-3">
@@ -590,5 +604,4 @@ const ReviewsSection = () => {
 };
 
 export default memo(ReviewsSection);
-
 

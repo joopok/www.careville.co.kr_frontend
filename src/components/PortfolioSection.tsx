@@ -361,7 +361,7 @@ const PortfolioSection = () => {
   useEffect(() => {
     // 백엔드 API 시도, 실패 시 자동으로 더미 데이터 사용
     fetchPortfolios(1, "all");
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   // 더보기 핸들러
   const handleLoadMore = () => {

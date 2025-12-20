@@ -8,6 +8,22 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import BookingModal from "@/components/BookingModal";
 
+type Category = { serviceCd: string; serviceNm: string };
+type Product = {
+  productNo: string;
+  productNm: string;
+  productDesc?: string;
+  salePrice: number | string;
+  originalPrice?: number | string;
+  saleYn?: 'Y' | 'N';
+  discountRate?: number;
+  serviceTime?: string;
+  serviceCd: string;
+  popular?: boolean;
+  features?: string[];
+  serviceIncludes?: string | null;
+};
+
 // JSON 파싱 캐시용 Map
 const parseCache = new Map<string, string[]>();
 
@@ -29,18 +45,18 @@ const parseServiceIncludes = (jsonString: string | null | undefined): string[] =
 };
 
 const PricingSection = () => {
-  const [category, setCategory] = useState([]);
-  const [pricingData, setPricingData] = useState([]);
+  const [category, setCategory] = useState<Category[]>([]);
+  const [pricingData, setPricingData] = useState<Product[]>([]);
   const [selectedCategory, setSelectedCategory] = useState("");
   
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedService, setSelectedService] = useState<any>(null);
+  const [selectedService, setSelectedService] = useState<Product | null>(null);
 
   const [isDetailOpen, setIsDetailOpen] = useState(false);
-  const [detailService, setDetailService] = useState<any>(null);
+  const [detailService, setDetailService] = useState<Product | null>(null);
 
   // Tab scroll functionality
   const tabsContainerRef = useRef<HTMLDivElement>(null);

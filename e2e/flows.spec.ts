@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 
 // Helpers to mock API endpoints
 const mockPricing = {
@@ -58,7 +58,7 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
-async function scrollUntil(page: any, predicate: () => Promise<boolean>, maxTries = 20) {
+async function scrollUntil(page: Page, predicate: () => Promise<boolean>, maxTries = 20) {
   for (let i = 0; i < maxTries; i++) {
     if (await predicate()) return true;
     await page.evaluate(() => window.scrollBy(0, window.innerHeight * 0.8));
