@@ -1,6 +1,8 @@
 {
   "permissions": {
     "allow": [
+      "Edit",
+      "Write",
       "Bash(lsof:*)",
       "Bash(npm run dev:*)",
       "WebFetch(domain:ontotalcare.co.kr)",
@@ -64,7 +66,8 @@
       "Bash(mvn clean package:*)",
       "Bash(unzip:*)",
       "Bash(GIT_SSH_COMMAND=\"ssh -vvv\" git push:*)",
-      "Skill(frontend-design)"
+      "Skill(frontend-design)",
+      "mcp__playwright__browser_run_code"
     ],
     "deny": [],
     "ask": []

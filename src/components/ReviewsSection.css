@@ -15,18 +15,28 @@
   position: relative;
 }
 
+/* Center slides */
+.reviews-swiper .swiper-wrapper {
+  justify-content: center;
+}
+
 /* Ensure equal heights for all slides in the same row */
 .reviews-swiper .swiper-slide {
   height: auto !important;
   display: flex;
+  justify-content: center;
   transition: opacity 0.4s ease, transform 0.4s ease;
 }
 
-/* Ensure slide content takes full height */
+/* Ensure slide content takes full width and height */
 .reviews-swiper .swiper-slide > div {
   height: 100%;
+  width: 100%;
   display: flex;
   flex-direction: column;
+}
+
+.reviews-swiper .swiper-slide .review-card {
   width: 100%;
 }
 

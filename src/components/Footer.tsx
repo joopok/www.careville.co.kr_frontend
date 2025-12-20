@@ -10,10 +10,10 @@ import {
   Shield,
   Award,
   Users,
-  Leaf,
   ArrowUp
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Logo from "@/components/Logo";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -35,15 +35,7 @@ const Footer = () => {
           {/* Company Info */}
           <div className="lg:col-span-2 space-y-6">
             {/* Logo */}
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center">
-                <Leaf className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h2 className="text-2xl font-bold text-white">케어빌</h2>
-                <p className="text-xs text-white/50 tracking-wider uppercase">CareVille Cleaning Service</p>
-              </div>
-            </div>
+            <Logo variant="full" size="md" darkBg={true} />
 
             <p className="text-white/70 leading-relaxed max-w-md">
               케어빌은 전문적이고 신뢰할 수 있는 청소 서비스를 제공합니다.
@@ -120,10 +112,10 @@ const Footer = () => {
                 </a>
               </li>
               <li>
-                <a href="mailto:info@careville.co.kr" className="group flex items-start gap-3 text-white/70 hover:text-white transition-colors">
+                <a href="mailto:seung0910@naver.com" className="group flex items-start gap-3 text-white/70 hover:text-white transition-colors">
                   <Mail className="w-5 h-5 mt-0.5 flex-shrink-0 text-primary" />
                   <div>
-                    <p className="font-semibold text-white group-hover:text-primary transition-colors">info@careville.co.kr</p>
+                    <p className="font-semibold text-white group-hover:text-primary transition-colors">seung0910@naver.com</p>
                     <p className="text-sm text-white/50">이메일 문의</p>
                   </div>
                 </a>
@@ -147,11 +139,11 @@ const Footer = () => {
               <p><span className="text-white/80">대표이사:</span> 이경숙</p>
               <p><span className="text-white/80">사업자번호:</span> 276-87-03677</p>
               <p><span className="text-white/80">사업종류:</span> 서비스, 건설업, 도소매</p>
-              <p className="pt-2">
-                <span className="text-white/80">본사:</span> 경기도 고양시 일산동구 정발산로 31-10, 806
-              </p>
               <p>
-                <span className="text-white/80">서울:</span> 서울 강서구 공항대로 426 VIP빌딩 9층
+                <span className="text-white/80">본사:</span> 경기 고양시 일산동구 정발산로 31-10, 806호(장항동, 파크프라자)
+              </p>
+              <p className="pt-2">
+                <span className="text-white/80">경기지사:</span> 경기 고양시 으뜸로8, 504호(덕은아이에스비즈타워센트럴 1차)
               </p>
             </div>
           </div>

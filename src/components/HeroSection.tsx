@@ -8,7 +8,10 @@ const SLIDESHOW_IMAGES = [
   "images/banner2.png",
   "images/banner3.png",
   "images/banner4.png",
-  "images/banner5.png"
+  "images/banner5.png",
+  "images/aircon1.jpg",
+  "images/aircon2.jpg",
+  "images/aircon3.jpg"
 ];
 
 const HeroSection = () => {
@@ -151,10 +154,40 @@ const HeroSection = () => {
                   size="lg"
                   className="group h-14 bg-primary hover:bg-primary-dark text-white px-8 rounded-full shadow-xl shadow-primary/30 hover:shadow-2xl hover:shadow-primary/40 transition-all duration-300 hover:scale-105 font-semibold"
                   onClick={() => {
-                    const element = document.getElementById('quick-inquiry');
-                    if (element) {
-                      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }
+                    const targetId = 'quick-inquiry';
+                    const headerOffset = 80;
+
+                    const scrollToElement = () => {
+                      const element = document.getElementById(targetId);
+                      if (element) {
+                        const elementRect = element.getBoundingClientRect();
+                        const absoluteTop = elementRect.top + window.pageYOffset - headerOffset;
+                        window.scrollTo({
+                          top: Math.max(0, absoluteTop),
+                          behavior: 'smooth'
+                        });
+                        return true;
+                      }
+                      return false;
+                    };
+
+                    if (scrollToElement()) return;
+
+                    // lazy-loading 트리거를 위해 한 번만 페이지 끝으로 이동
+                    window.scrollTo({ top: document.body.scrollHeight, behavior: 'auto' });
+
+                    // 로드 완료 후 타겟으로 부드럽게 스크롤 (재시도 시 끝으로 이동 안함)
+                    let attempts = 0;
+                    const maxAttempts = 15;
+                    const checkAndScroll = () => {
+                      attempts++;
+                      if (scrollToElement()) return;
+                      if (attempts < maxAttempts) {
+                        setTimeout(checkAndScroll, 100);
+                      }
+                    };
+
+                    setTimeout(checkAndScroll, 300);
                   }}
                 >
                   <MessageCircle className="mr-2 h-5 w-5" />

@@ -4,9 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
-  Home,
   Building2,
-  Sparkles,
   Calendar,
   MapPin,
   Eye,
@@ -281,7 +279,6 @@ const convertCaseToPortfolio = (caseItem: CaseItem): Portfolio => {
 };
 
 const PortfolioSection = () => {
-  const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedPortfolio, setSelectedPortfolio] = useState<Portfolio | null>(null);
   const [imageType, setImageType] = useState<'before' | 'after'>('after');
 
@@ -291,13 +288,6 @@ const PortfolioSection = () => {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-
-  const categories = [
-    { id: "all", name: "전체", icon: Sparkles },
-    { id: "home", name: "주거공간", icon: Home },
-    { id: "office", name: "상업공간", icon: Building2 },
-    { id: "special", name: "특수청소", icon: Sparkles }
-  ];
 
   // API 호출 함수
   const fetchPortfolios = async (page: number = 1, category: string = "all") => {
@@ -370,24 +360,16 @@ const PortfolioSection = () => {
   // 초기 로드
   useEffect(() => {
     // 백엔드 API 시도, 실패 시 자동으로 더미 데이터 사용
-    fetchPortfolios(1, selectedCategory);
+    fetchPortfolios(1, "all");
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // 카테고리 변경 시 - 클라이언트 사이드 필터링으로 변경
-  const handleCategoryChange = (categoryId: string) => {
-    setSelectedCategory(categoryId);
-    setCurrentPage(1);
-  };
-
-  // 더보기 핸들러 - 클라이언트 사이드로 변경
+  // 더보기 핸들러
   const handleLoadMore = () => {
     setCurrentPage(prev => prev + 1);
   };
 
-  // 클라이언트 사이드 필터링 및 페이지네이션
-  const filteredPortfolios = selectedCategory === "all"
-    ? portfolios
-    : portfolios.filter(p => p.category === selectedCategory);
+  // 클라이언트 사이드 페이지네이션 (필터 없이 전체 표시)
+  const filteredPortfolios = portfolios;
 
   const itemsPerPage = 9;
   const visiblePortfolios = filteredPortfolios.slice(0, currentPage * itemsPerPage);
@@ -413,27 +395,6 @@ const PortfolioSection = () => {
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
             믿고 맡기실 수 있는 전문적인 청소 서비스의 실제 사례들을 확인해보세요
           </p>
-        </div>
-
-        {/* Category Filter */}
-        <div className="flex justify-center gap-2 mb-12">
-          {categories.map((category) => {
-            const Icon = category.icon;
-            return (
-              <button
-                key={category.id}
-                onClick={() => handleCategoryChange(category.id)}
-                className={`flex items-center gap-2 px-6 py-3 rounded-full font-medium transition-all duration-300 ${
-                  selectedCategory === category.id
-                    ? "bg-primary text-white shadow-lg"
-                    : "bg-white text-gray-600 hover:bg-gray-100 border"
-                }`}
-              >
-                <Icon className="h-4 w-4" />
-                {category.name}
-              </button>
-            );
-          })}
         </div>
 
         {/* Error Message */}

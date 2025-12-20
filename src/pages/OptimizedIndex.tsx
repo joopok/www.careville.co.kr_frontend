@@ -10,7 +10,6 @@ import ServiceMenuSection from "@/components/ServiceMenuSection";
 const AirConditionerSection = lazy(() => import("@/components/AirConditionerSection"));
 const HomeCleaningSection = lazy(() => import("@/components/HomeCleaningSection"));
 const BusinessCleaningSection = lazy(() => import("@/components/BusinessCleaningSection"));
-const PricingSection = lazy(() => import("@/components/PricingSection"));
 const ReviewsSection = lazy(() => import("@/components/ReviewsSection"));
 const NoticeSection = lazy(() => import("@/components/NoticeSection"));
 const PortfolioSection = lazy(() => import("@/components/PortfolioSection"));
@@ -48,49 +47,60 @@ const OptimizedIndex = () => {
       <ServiceMenuSection />
 
       {/* Air Conditioner Services */}
-      <Suspense fallback={<SectionLoader />}>
-        <AirConditionerSection />
-      </Suspense>
+      <div id="air-conditioner">
+        <Suspense fallback={<SectionLoader />}>
+          <AirConditionerSection />
+        </Suspense>
+      </div>
 
       {/* Home Cleaning */}
-      <Suspense fallback={<SectionLoader />}>
-        <HomeCleaningSection />
-      </Suspense>
+      <div id="home-cleaning">
+        <Suspense fallback={<SectionLoader />}>
+          <HomeCleaningSection />
+        </Suspense>
+      </div>
 
       {/* Business Cleaning */}
-      <Suspense fallback={<SectionLoader />}>
-        <BusinessCleaningSection />
-      </Suspense>
-
-      {/* Pricing */}
-      <Suspense fallback={<SectionLoader />}>
-        <PricingSection />
-      </Suspense>
+      <div id="business-cleaning">
+        <Suspense fallback={<SectionLoader />}>
+          <BusinessCleaningSection />
+        </Suspense>
+      </div>
 
       {/* Reviews */}
-      <Suspense fallback={<SectionLoader />}>
-        <ReviewsSection />
-      </Suspense>
+      <div id="reviews">
+        <Suspense fallback={<SectionLoader />}>
+          <ReviewsSection />
+        </Suspense>
+      </div>
 
       {/* Portfolio */}
-      <Suspense fallback={<SectionLoader />}>
-        <PortfolioSection />
-      </Suspense>
+      <div id="portfolio">
+        <Suspense fallback={<SectionLoader />}>
+          <PortfolioSection />
+        </Suspense>
+      </div>
 
       {/* Contact */}
-      <Suspense fallback={<SectionLoader />}>
-        <ContactSection />
-      </Suspense>
+      <div id="contact">
+        <Suspense fallback={<SectionLoader />}>
+          <ContactSection />
+        </Suspense>
+      </div>
 
       {/* Additional Services */}
-      <Suspense fallback={<SectionLoader />}>
-        <AdditionalSection />
-      </Suspense>
+      <div id="additional">
+        <Suspense fallback={<SectionLoader />}>
+          <AdditionalSection />
+        </Suspense>
+      </div>
 
       {/* Notice/FAQ */}
-      <Suspense fallback={<SectionLoader />}>
-        <NoticeSection />
-      </Suspense>
+      <div id="notice">
+        <Suspense fallback={<SectionLoader />}>
+          <NoticeSection />
+        </Suspense>
+      </div>
 
       <Footer />
     </div>

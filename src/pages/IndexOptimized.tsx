@@ -6,7 +6,6 @@ import HeroSection from "@/components/HeroSection";
 const ServiceMenuSection = lazy(() => import("@/components/ServiceMenuSection"));
 const HomeCleaningSection = lazy(() => import("@/components/HomeCleaningSection"));
 const BusinessCleaningSection = lazy(() => import("@/components/BusinessCleaningSection"));
-const PricingSection = lazy(() => import("@/components/PricingSection"));
 const ReviewsSection = lazy(() => import("@/components/ReviewsSection"));
 const PortfolioSection = lazy(() => import("@/components/PortfolioSection"));
 const NoticeSection = lazy(() => import("@/components/NoticeSection"));
@@ -82,13 +81,6 @@ const IndexOptimized = () => {
       <Suspense fallback={<LoadingSpinner />}>
         <ProgressiveSection>
           <BusinessCleaningSection />
-        </ProgressiveSection>
-      </Suspense>
-
-      {/* 3. 서비스가격 */}
-      <Suspense fallback={<LoadingSpinner />}>
-        <ProgressiveSection>
-          <PricingSection />
         </ProgressiveSection>
       </Suspense>
 

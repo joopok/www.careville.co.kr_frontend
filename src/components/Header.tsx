@@ -1,13 +1,12 @@
 import { Button } from "@/components/ui/button";
-import { Menu, X, Phone, Leaf } from "lucide-react";
-import { useState, useEffect, useCallback, useMemo, memo } from "react";
+import { Menu, X, Phone } from "lucide-react";
+import { useState, useEffect, useCallback, memo } from "react";
+import Logo from "@/components/Logo";
 
 // 메뉴 아이템 상수 - 컴포넌트 외부로 이동하여 재생성 방지
 const MENU_ITEMS = [
-  { name: "가전케어", href: "#home-cleaning" },
-  { name: "키친케어", href: "#business-cleaning" },
-  { name: "사업장케어", href: "#pricing" },
-  { name: "가격정책", href: "#pricing" },
+  { name: "홈클리닝", href: "#home-cleaning" },
+  { name: "사업장케어", href: "#business-cleaning" },
   { name: "작업후기", href: "#reviews" },
   { name: "시공사례", href: "#portfolio" },
   { name: "CS센터", href: "#contact" },
@@ -41,14 +40,17 @@ const Header = () => {
     };
   }, []);
 
-  // useCallback으로 함수 메모이제이션
-  const scrollToSection = useCallback((href: string) => {
-    const element = document.querySelector(href);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+  // 모바일 메뉴 열릴 때 body 스크롤 방지
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
     }
-    setIsMenuOpen(false);
-  }, []);
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isMenuOpen]);
 
   const handleLogoClick = useCallback(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -66,69 +68,80 @@ const Header = () => {
     } ${
       isLoaded ? 'translate-y-0 opacity-100' : '-translate-y-4 opacity-0'
     }`}>
-      <div className="container mx-auto px-6">
+      <div className="container mx-auto px-4 sm:px-6">
         <div className={`relative flex items-center justify-between transition-all duration-300 ${
-          isScrolled ? 'h-20' : 'h-24'
+          isScrolled ? 'h-16 sm:h-20' : 'h-18 sm:h-24'
         }`}>
 
           {/* Logo */}
           <div
-            className="flex items-center gap-3 group cursor-pointer"
+            className="cursor-pointer z-10 transition-all duration-300"
             onClick={handleLogoClick}
           >
-            {/* Logo Icon - Organic Shape */}
-            <div className={`relative w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 ${
-              isScrolled
-                ? 'bg-primary'
-                : 'bg-white/90'
-            }`}>
-              <Leaf className={`w-6 h-6 transition-colors duration-300 ${
-                isScrolled ? 'text-white' : 'text-primary'
-              }`} />
-              {/* Decorative dot */}
-              <div className={`absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full transition-colors duration-300 ${
-                isScrolled ? 'bg-secondary' : 'bg-secondary'
-              }`} />
-            </div>
-
-            {/* Logo Text */}
-            <div className="flex flex-col">
-              <span className={`text-2xl font-bold tracking-tight transition-colors duration-300 ${
-                isScrolled
-                  ? 'text-foreground'
-                  : 'text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]'
-              }`}>
-                케어빌
-              </span>
-              <span className={`text-[11px] font-medium tracking-widest uppercase transition-colors duration-300 ${
-                isScrolled
-                  ? 'text-muted-foreground'
-                  : 'text-white/70'
-              }`}>
-                CareVille
-              </span>
-            </div>
+            <Logo
+              variant="full"
+              size="sm"
+              darkBg={!isScrolled}
+            />
           </div>
 
-          {/* Desktop Navigation - Center */}
-          <nav className="hidden xl:flex items-center absolute left-1/2 -translate-x-1/2">
-            <div className={`flex items-center gap-1 rounded-full px-3 py-2 transition-all duration-300 ${
+          {/* Desktop Navigation */}
+          <nav className="hidden lg:flex items-center absolute left-1/2 -translate-x-1/2 z-30 pointer-events-auto">
+            <div className={`flex items-center gap-0.5 xl:gap-1 rounded-full px-2 xl:px-3 py-2 transition-all duration-300 ${
               isScrolled ? 'bg-muted/50' : 'bg-white/10 backdrop-blur-sm'
             }`}>
               {MENU_ITEMS.map((item, index) => (
                 <button
                   key={item.name}
                   type="button"
-                  onClick={() => scrollToSection(item.href)}
-                  className={`relative px-4 py-2 text-[17px] font-bold whitespace-nowrap transition-all duration-300 rounded-full ${
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const targetId = item.href.replace('#', '');
+                    const headerOffset = 80;
+
+                    const scrollToElement = () => {
+                      const element = document.getElementById(targetId);
+                      if (element) {
+                        const elementRect = element.getBoundingClientRect();
+                        const absoluteTop = elementRect.top + window.pageYOffset - headerOffset;
+                        window.scrollTo({
+                          top: Math.max(0, absoluteTop),
+                          behavior: 'smooth'
+                        });
+                        return true;
+                      }
+                      return false;
+                    };
+
+                    // 요소가 있으면 바로 스크롤
+                    if (scrollToElement()) return;
+
+                    // lazy-loading 트리거를 위해 한 번만 페이지 끝으로 이동
+                    window.scrollTo({ top: document.body.scrollHeight, behavior: 'auto' });
+
+                    // 로드 완료 후 타겟으로 부드럽게 스크롤 (재시도 시 끝으로 이동 안함)
+                    let attempts = 0;
+                    const maxAttempts = 15;
+                    const checkAndScroll = () => {
+                      attempts++;
+                      if (scrollToElement()) return;
+                      if (attempts < maxAttempts) {
+                        setTimeout(checkAndScroll, 100);
+                      }
+                    };
+
+                    setTimeout(checkAndScroll, 300);
+                  }}
+                  className={`relative px-2.5 xl:px-4 py-2 text-sm xl:text-[17px] font-bold whitespace-nowrap transition-colors duration-300 rounded-full cursor-pointer ${
                     isScrolled
                       ? 'text-foreground/80 hover:text-primary hover:bg-primary/5'
                       : 'text-white/90 hover:text-white hover:bg-white/10'
-                  } ${
-                    isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
                   }`}
                   style={{
-                    transitionDelay: isLoaded ? `${50 + index * 30}ms` : '0ms'
+                    opacity: 1,
+                    pointerEvents: 'auto',
+                    zIndex: 100
                   }}
                 >
                   {item.name}
@@ -138,61 +151,126 @@ const Header = () => {
           </nav>
 
           {/* Right Side - CTA */}
-          <div className="flex items-center gap-3">
-            {/* Phone CTA - Desktop */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* Phone - Tablet & Desktop */}
             <a
               href="tel:1600-9762"
-              className={`hidden md:flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-base transition-all duration-300 ${
+              className={`hidden sm:flex items-center gap-1.5 sm:gap-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-full font-semibold text-sm sm:text-base transition-all duration-300 ${
                 isScrolled
                   ? 'bg-primary text-white hover:bg-primary-dark shadow-lg shadow-primary/20'
                   : 'bg-white text-primary hover:bg-white/90 shadow-lg'
               }`}
             >
-              <Phone className="w-5 h-5" />
+              <Phone className="w-4 h-4 sm:w-5 sm:h-5" />
               <span>1600-9762</span>
+            </a>
+
+            {/* Phone - Mobile Icon */}
+            <a
+              href="tel:1600-9762"
+              className={`sm:hidden flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300 ${
+                isScrolled ? 'bg-primary text-white' : 'bg-white text-primary'
+              }`}
+            >
+              <Phone className="w-5 h-5" />
             </a>
 
             {/* Mobile Menu Button */}
             <Button
               variant="ghost"
               size="icon"
-              className={`xl:hidden w-12 h-12 transition-all duration-300 ${
-                isScrolled
-                  ? 'text-foreground hover:bg-muted'
-                  : 'text-white hover:bg-white/10'
+              className={`lg:hidden w-10 h-10 sm:w-12 sm:h-12 transition-all duration-300 ${
+                isScrolled ? 'text-foreground hover:bg-muted' : 'text-white hover:bg-white/10'
               }`}
               onClick={toggleMenu}
             >
-              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              {isMenuOpen ? <X className="h-5 w-5 sm:h-6 sm:w-6" /> : <Menu className="h-5 w-5 sm:h-6 sm:w-6" />}
             </Button>
           </div>
         </div>
 
-        {/* Mobile Menu */}
-        <div className={`xl:hidden overflow-hidden transition-all duration-500 ease-out ${
-          isMenuOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
+        {/* Mobile Menu - Full Screen */}
+        <div className={`lg:hidden fixed inset-0 z-40 transition-all duration-500 ease-out ${
+          isMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         }`}>
-          <div className="py-4 space-y-1 bg-card/95 backdrop-blur-xl rounded-2xl mt-2 border border-border/50 shadow-xl">
-            {MENU_ITEMS.map((item, index) => (
-              <button
-                key={item.name}
-                onClick={() => scrollToSection(item.href)}
-                className="block w-full text-left text-foreground/80 hover:text-primary hover:bg-primary/5 transition-all duration-300 text-lg font-bold px-6 py-4 rounded-xl"
-                style={{ animationDelay: `${index * 50}ms` }}
-              >
-                {item.name}
-              </button>
-            ))}
+          {/* Backdrop */}
+          <div
+            className={`absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300 ${
+              isMenuOpen ? 'opacity-100' : 'opacity-0'
+            }`}
+            onClick={() => setIsMenuOpen(false)}
+          />
 
-            {/* Mobile Phone CTA */}
-            <div className="px-4 pt-4 border-t border-border/50 mt-2">
-              <a
-                href="tel:1600-9762"
-                className="flex items-center justify-center gap-2 w-full px-6 py-4 bg-primary text-white rounded-xl font-bold text-lg hover:bg-primary-dark transition-colors"
-              >
-                <Phone className="w-5 h-5" />
-                <span>전화 상담하기</span>
-              </a>
+          {/* Menu Panel */}
+          <div className={`absolute top-16 sm:top-20 left-4 right-4 max-h-[calc(100vh-5rem)] overflow-y-auto transition-all duration-500 ease-out ${
+            isMenuOpen ? 'translate-y-0 opacity-100' : '-translate-y-4 opacity-0'
+          }`}>
+            <div className="py-4 space-y-1 bg-card/98 backdrop-blur-xl rounded-2xl border border-border/50 shadow-2xl">
+              {MENU_ITEMS.map((item, index) => (
+                <button
+                  key={item.name}
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setIsMenuOpen(false);
+                    const targetId = item.href.replace('#', '');
+                    const headerOffset = 80;
+
+                    const scrollToElement = () => {
+                      const element = document.getElementById(targetId);
+                      if (element) {
+                        const elementRect = element.getBoundingClientRect();
+                        const absoluteTop = elementRect.top + window.pageYOffset - headerOffset;
+                        window.scrollTo({
+                          top: Math.max(0, absoluteTop),
+                          behavior: 'smooth'
+                        });
+                        return true;
+                      }
+                      return false;
+                    };
+
+                    setTimeout(() => {
+                      if (scrollToElement()) return;
+
+                      // lazy-loading 트리거를 위해 한 번만 페이지 끝으로 이동
+                      window.scrollTo({ top: document.body.scrollHeight, behavior: 'auto' });
+
+                      // 로드 완료 후 타겟으로 부드럽게 스크롤 (재시도 시 끝으로 이동 안함)
+                      let attempts = 0;
+                      const maxAttempts = 15;
+                      const checkAndScroll = () => {
+                        attempts++;
+                        if (scrollToElement()) return;
+                        if (attempts < maxAttempts) {
+                          setTimeout(checkAndScroll, 100);
+                        }
+                      };
+
+                      setTimeout(checkAndScroll, 300);
+                    }, 150);
+                  }}
+                  className="block w-full text-left text-foreground/80 hover:text-primary hover:bg-primary/5 transition-colors duration-300 text-base sm:text-lg font-bold px-5 sm:px-6 py-3.5 sm:py-4 rounded-xl cursor-pointer"
+                  style={{
+                    opacity: 1,
+                    pointerEvents: 'auto'
+                  }}
+                >
+                  {item.name}
+                </button>
+              ))}
+
+              {/* Mobile Phone CTA */}
+              <div className="px-4 pt-4 border-t border-border/50 mt-2">
+                <a
+                  href="tel:1600-9762"
+                  className="flex items-center justify-center gap-2 w-full px-6 py-3.5 sm:py-4 bg-primary text-white rounded-xl font-bold text-base sm:text-lg hover:bg-primary-dark transition-colors active:scale-[0.98]"
+                >
+                  <Phone className="w-5 h-5" />
+                  <span>전화 상담하기</span>
+                </a>
+              </div>
             </div>
           </div>
         </div>

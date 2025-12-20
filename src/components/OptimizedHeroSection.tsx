@@ -179,9 +179,9 @@ const OptimizedHeroSection = () => {
   ];
 
   const handleQuickInquiry = useCallback(() => {
-    const element = document.getElementById('quick-inquiry');
+    const element = document.querySelector('#contact');
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      element.scrollIntoView({ behavior: 'smooth' });
     }
   }, []);
 
@@ -190,7 +190,7 @@ const OptimizedHeroSection = () => {
       <SlideshowBanner />
       
       <div className="flex-1 flex items-center -mt-[390px]">
-        <div className="container mx-auto px-6 py-20 relative z-10">
+        <div className="container mx-auto px-6 py-20 relative z-30">
           <div className="text-center text-white space-y-8 max-w-4xl mx-auto">
             <div className={`space-y-6 transition-all duration-1000 transform ${
               isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'

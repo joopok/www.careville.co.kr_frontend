@@ -1,14 +1,52 @@
+import { useState, useCallback } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Building2, Users, Calendar, Briefcase, CheckCircle2, Clock, Phone, Shield, Sparkles } from "lucide-react";
+import { Building2, Users, Calendar, Briefcase, CheckCircle2, Clock, Phone, Shield, Sparkles, Wind, Eye } from "lucide-react";
 import { motion } from "framer-motion";
 import { handlePhoneCall } from "@/lib/utils";
+import ServiceDetailModal from "./ServiceDetailModal";
+import ServiceRequestModal from "./ServiceRequestModal";
 
 const BusinessCleaningSection = () => {
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
+  const [selectedService, setSelectedService] = useState<string | null>(null);
+
+  const openDetailModal = useCallback((serviceTitle: string) => {
+    setSelectedService(serviceTitle);
+    setIsDetailModalOpen(true);
+  }, []);
+
+  const closeDetailModal = useCallback(() => {
+    setIsDetailModalOpen(false);
+    setSelectedService(null);
+  }, []);
+
+  const openRequestModal = useCallback((serviceTitle: string) => {
+    setSelectedService(serviceTitle);
+    setIsRequestModalOpen(true);
+  }, []);
+
+  const closeRequestModal = useCallback(() => {
+    setIsRequestModalOpen(false);
+    setSelectedService(null);
+  }, []);
+
   // Primary Green Color Palette - Matching PricingSection "예약하기" button
   // Forest Green (#2D4A3E / HSL 160 35% 22%) - Trust, Nature, Cleanliness
   const services = [
+    {
+      icon: Wind,
+      title: "시스템 에어컨 분해 세척",
+      description: "천장형/덕트형 시스템 에어컨 전문 세척",
+      features: [
+        "전품목 에어컨 분해 세척",
+        "덕트형 에어컨 내부 청소",
+        "송풍구 및 필터 완벽 세척",
+        "항균 코팅 서비스"
+      ]
+    },
     {
       icon: Briefcase,
       title: "사무실 청소",
@@ -33,24 +71,13 @@ const BusinessCleaningSection = () => {
     },
     {
       icon: Users,
-      title: "준공 청소",
-      description: "완벽한 마무리 청소 서비스",
+      title: "입주 청소",
+      description: "새로운 시작을 위한 완벽한 청소",
       features: [
-        "건축 잔재물 완벽 제거",
-        "유리창 전면 청소",
-        "바닥 광택 및 코팅",
-        "입주 전 완벽 청소"
-      ]
-    },
-    {
-      icon: Calendar,
-      title: "정기 청소",
-      description: "체계적인 관리 시스템 제공",
-      features: [
-        "주간/월간 계약 가능",
-        "맞춤형 스케줄 관리",
-        "정기 품질 점검",
-        "전담 매니저 배정"
+        "이사 전/후 전체 청소",
+        "모든 공간 먼지 제거",
+        "바닥 청소 및 광택",
+        "주방/욕실 완벽 세척"
       ]
     }
   ];
@@ -130,10 +157,25 @@ const BusinessCleaningSection = () => {
                     ))}
                   </ul>
 
-                  {/* Button matching PricingSection "예약하기" style */}
-                  <Button className="w-full mt-6 h-14 rounded-xl bg-primary text-white hover:bg-primary-dark font-medium text-base transition-all duration-300 group-hover:shadow-lg group-hover:shadow-primary/20">
-                    서비스 신청
-                  </Button>
+                  {/* 자세히 보기 버튼 */}
+                  <button
+                    onClick={() => openDetailModal(service.title)}
+                    className="w-full flex items-center justify-center gap-2 py-2.5 mt-4 text-sm text-primary hover:text-primary-dark border border-primary/30 hover:border-primary rounded-xl transition-all hover:bg-primary/5"
+                  >
+                    <Eye className="w-4 h-4" />
+                    자세히 보기
+                  </button>
+
+                  {/* Price and Button */}
+                  <div className="flex items-center justify-between mt-4 gap-3">
+                    <span className="text-xl font-bold text-primary">금액 별도협의</span>
+                    <Button
+                      onClick={() => openRequestModal(service.title)}
+                      className="w-1/2 h-12 rounded-xl bg-primary text-white hover:bg-primary-dark font-medium text-sm transition-all duration-300 group-hover:shadow-lg group-hover:shadow-primary/20"
+                    >
+                      서비스 신청
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             </motion.div>
@@ -207,6 +249,18 @@ const BusinessCleaningSection = () => {
           </Card>
         </motion.div>
       </div>
+
+      <ServiceDetailModal
+        isOpen={isDetailModalOpen}
+        onClose={closeDetailModal}
+        serviceId={selectedService}
+      />
+
+      <ServiceRequestModal
+        isOpen={isRequestModalOpen}
+        onClose={closeRequestModal}
+        serviceName={selectedService}
+      />
     </section>
   );
 };

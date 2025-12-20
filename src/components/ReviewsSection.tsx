@@ -1,9 +1,14 @@
 import { Card } from "@/components/ui/card";
-import { Star, Quote, ThumbsUp, MessageSquare, ChevronLeft, ChevronRight } from "lucide-react";
+import { Star, Quote, MessageSquare, ChevronLeft, ChevronRight } from "lucide-react";
 import { useState, useRef, memo, useEffect } from "react";
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Grid, Autoplay } from 'swiper/modules';
+import { Navigation, Grid } from 'swiper/modules';
 import type { Swiper as SwiperType } from 'swiper';
+
+// Swiper styles
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/grid';
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,15 +17,10 @@ import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-// Import Swiper styles
-import 'swiper/css';
-import 'swiper/css/navigation';
-import 'swiper/css/grid';
 import './ReviewsSection.css';
 
 const ReviewsSection = () => {
-  const [selectedCategory, setSelectedCategory] = useState("all");
-  const swiperRef = useRef<SwiperType>(null); 
+  const swiperRef = useRef<SwiperType>(null);
   const [reviews, setReviews] = useState([
     {
       serviceNm: "",
@@ -201,16 +201,13 @@ const ReviewsSection = () => {
   const categories = [
     { id: "all", name: "전체", count: reviews.length },
     ...serviceCdList
-      .filter(service => service.serviceCd && service.serviceNm) // 유효한 데이터만
+      .filter(service => service.serviceCd && service.serviceNm)
       .map(service => ({
         id: service.serviceCd,
         name: service.serviceNm,
         count: reviews.filter(r => r.serviceCd === service.serviceCd).length
       }))
-  ];
-  const filteredReviews = selectedCategory === "all" 
-    ? reviews 
-    : reviews.filter(r => r.serviceCd === selectedCategory); 
+  ]; 
   
     
 
@@ -537,69 +534,50 @@ const ReviewsSection = () => {
           </Dialog>
         </div>
 
-        <div className="flex justify-center gap-2 mb-8">
-          {categories.map((category) => (
-            <button
-              key={category.id}
-              onClick={() => setSelectedCategory(category.id)}
-              className={`px-4 py-2 rounded-full font-medium transition-all duration-300 ${
-                selectedCategory === category.id
-                  ? "bg-primary text-white"
-                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-              }`}
-            >
-              {category.name} ({category.count})
-            </button>
-          ))}
-        </div>
-
         <div className="relative max-w-6xl mx-auto">
-          {/* Custom Navigation Buttons */}
+          {/* Navigation Buttons */}
           <button
             onClick={() => swiperRef.current?.slidePrev()}
-            className="absolute left-0 top-[50%] -translate-y-[50%] -translate-x-6 md:-translate-x-14 z-10 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 hover:shadow-xl transition-all duration-300 group"
-            aria-label="Previous reviews"
+            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 md:-translate-x-14 z-10 w-10 h-10 md:w-12 md:h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 hover:shadow-xl transition-all duration-300 group"
+            aria-label="이전 후기"
           >
-            <ChevronLeft className="w-6 h-6 text-gray-600 group-hover:text-primary transition-colors" />
+            <ChevronLeft className="w-5 h-5 md:w-6 md:h-6 text-gray-600 group-hover:text-primary transition-colors" />
           </button>
           <button
             onClick={() => swiperRef.current?.slideNext()}
-            className="absolute right-0 top-[50%] -translate-y-[50%] translate-x-6 md:translate-x-14 z-10 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 hover:shadow-xl transition-all duration-300 group"
-            aria-label="Next reviews"
+            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 md:translate-x-14 z-10 w-10 h-10 md:w-12 md:h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 hover:shadow-xl transition-all duration-300 group"
+            aria-label="다음 후기"
           >
-            <ChevronRight className="w-6 h-6 text-gray-600 group-hover:text-primary transition-colors" />
+            <ChevronRight className="w-5 h-5 md:w-6 md:h-6 text-gray-600 group-hover:text-primary transition-colors" />
           </button>
 
           <Swiper
             onBeforeInit={(swiper) => {
               swiperRef.current = swiper;
             }}
-            modules={[Navigation, Grid, Autoplay]}
+            modules={[Navigation, Grid]}
             spaceBetween={20}
             slidesPerView={1}
+            centeredSlides={false}
             grid={{
               rows: 2,
               fill: 'row'
             }}
-            autoplay={{
-              delay: 5000,
-              disableOnInteraction: true,
-              pauseOnMouseEnter: true,
-            }}
             breakpoints={{
               768: {
                 slidesPerView: 2,
+                spaceBetween: 24,
                 grid: {
                   rows: 2,
                   fill: 'row'
                 }
               }
             }}
-            className="reviews-swiper"
+            className="reviews-swiper mx-auto"
           >
-            {filteredReviews.map((review) => (
+            {reviews.map((review) => (
               <SwiperSlide key={review.reviewSeq}>
-                <div className="pb-2">
+                <div className="pb-2 w-full">
                   <ReviewCard review={review} />
                 </div>
               </SwiperSlide>
