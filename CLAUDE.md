@@ -201,6 +201,26 @@ The `web.js` file is the entry point for Cafe24 Node.js hosting:
 - Ensure `package.json` has `"type": "module"`
 - Ensure `web.js` uses `import` syntax, not `require`
 
+## Backend Server (서버)
+
+**중요**: 서버, DB, 프로그램 수정 요청 시 아래 경로에 직접 접근하여 수정할 것
+
+### Backend Project Path
+```
+/Users/doseunghyeon/developerApp/springDev/www.careville.co.kr_backend
+```
+
+### Backend Information
+- **Framework**: Spring Boot (Java)
+- **API Base URL**: http://ksm1779.cafe24.com
+- **관련 키워드**: 서버, DB, 데이터베이스, API, 백엔드, 프로그램 수정
+
+### When to Access Backend
+- "서버 수정" 요청 시 → 백엔드 소스 직접 수정
+- "DB 수정" 요청 시 → 백엔드 Entity/Repository 수정
+- "프로그램 수정" 요청 시 → 백엔드 로직 수정
+- "API 수정" 요청 시 → Controller/Service 수정
+
 ## Technology Stack
 
 **Core**: React 18, TypeScript 5, Vite 5

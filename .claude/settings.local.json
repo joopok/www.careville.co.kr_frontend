@@ -67,7 +67,9 @@
       "Bash(unzip:*)",
       "Bash(GIT_SSH_COMMAND=\"ssh -vvv\" git push:*)",
       "Skill(frontend-design)",
-      "mcp__playwright__browser_run_code"
+      "mcp__playwright__browser_run_code",
+      "Bash(ls:*)",
+      "Bash(npx update-browserslist-db@latest:*)"
     ],
     "deny": [],
     "ask": []

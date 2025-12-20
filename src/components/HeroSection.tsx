@@ -9,9 +9,7 @@ const SLIDESHOW_IMAGES = [
   "images/banner3.png",
   "images/banner4.png",
   "images/banner5.png",
-  "images/aircon1.jpg",
-  "images/aircon2.jpg",
-  "images/aircon3.jpg"
+  "images/banner6.png"
 ];
 
 const HeroSection = () => {

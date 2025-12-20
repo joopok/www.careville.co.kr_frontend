@@ -10,8 +10,8 @@ lerna-debug.log*
 node_modules
 build
 backdata
-# dist 폴더는 Cafe24 배포를 위해 Git에 포함
-dist
+# Cafe24 배포를 위해 dist는 Git에 포함 (추적 유지)
+# dist-ssr 산출물은 제외 가능
 dist-ssr
 *.local
 CLAUDE.md
