@@ -14,9 +14,19 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Logo from "@/components/Logo";
+import { siteConfig, getTelLink, getMailLink } from "@/config/site";
+import { useConfig, defaultConfig } from "@/contexts/ConfigContext";
 
 const Footer = () => {
-  const currentYear = new Date().getFullYear();
+  const { getConfig } = useConfig();
+
+  // API에서 로드된 설정값 사용 (없으면 기본값)
+  const phoneNumber = getConfig('PHONE', defaultConfig.PHONE);
+  const email = getConfig('EMAIL', defaultConfig.EMAIL);
+  const companyName = getConfig('COMPANY_NAME', defaultConfig.COMPANY_NAME);
+  const ceoName = getConfig('CEO_NAME', defaultConfig.CEO_NAME);
+  const businessNumber = getConfig('BUSINESS_NUMBER', defaultConfig.BUSINESS_NUMBER);
+  const address = getConfig('ADDRESS', defaultConfig.ADDRESS);
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -100,23 +110,23 @@ const Footer = () => {
 
           {/* Contact Info */}
           <div>
-            <h4 className="font-bold text-white mb-6 text-lg">고객센터</h4>
+            <h4 className="font-bold text-white mb-6 text-lg">{siteConfig.customerService.title}</h4>
             <ul className="space-y-4">
               <li>
-                <a href="tel:1600-9762" className="group flex items-start gap-3 text-white/70 hover:text-white transition-colors">
+                <a href={`tel:${phoneNumber}`} className="group flex items-start gap-3 text-white/70 hover:text-white transition-colors">
                   <Phone className="w-5 h-5 mt-0.5 flex-shrink-0 text-primary" />
                   <div>
-                    <p className="font-semibold text-white group-hover:text-primary transition-colors">1600-9762</p>
-                    <p className="text-sm text-white/50">24시간 상담 가능</p>
+                    <p className="font-semibold text-white group-hover:text-primary transition-colors">{phoneNumber}</p>
+                    <p className="text-sm text-white/50">{siteConfig.customerService.phoneDescription}</p>
                   </div>
                 </a>
               </li>
               <li>
-                <a href="mailto:seung0910@naver.com" className="group flex items-start gap-3 text-white/70 hover:text-white transition-colors">
+                <a href={`mailto:${email}`} className="group flex items-start gap-3 text-white/70 hover:text-white transition-colors">
                   <Mail className="w-5 h-5 mt-0.5 flex-shrink-0 text-primary" />
                   <div>
-                    <p className="font-semibold text-white group-hover:text-primary transition-colors">seung0910@naver.com</p>
-                    <p className="text-sm text-white/50">이메일 문의</p>
+                    <p className="font-semibold text-white group-hover:text-primary transition-colors">{email}</p>
+                    <p className="text-sm text-white/50">{siteConfig.customerService.emailDescription}</p>
                   </div>
                 </a>
               </li>
@@ -124,8 +134,8 @@ const Footer = () => {
                 <Clock className="w-5 h-5 mt-0.5 flex-shrink-0 text-primary" />
                 <div>
                   <p className="font-semibold text-white">운영시간</p>
-                  <p className="text-sm text-white/50">평일 09:00 - 18:00</p>
-                  <p className="text-sm text-white/50">주말 09:00 - 15:00</p>
+                  <p className="text-sm text-white/50">{siteConfig.customerService.hours.weekday}</p>
+                  <p className="text-sm text-white/50">{siteConfig.customerService.hours.weekend}</p>
                 </div>
               </li>
             </ul>
@@ -135,15 +145,15 @@ const Footer = () => {
           <div>
             <h4 className="font-bold text-white mb-6 text-lg">사업자 정보</h4>
             <div className="space-y-3 text-sm text-white/60">
-              <p><span className="text-white/80">상호명:</span> 주식회사 케이빌</p>
-              <p><span className="text-white/80">대표이사:</span> 이경숙</p>
-              <p><span className="text-white/80">사업자번호:</span> 276-87-03677</p>
-              <p><span className="text-white/80">사업종류:</span> 서비스, 건설업, 도소매</p>
+              <p><span className="text-white/80">상호명:</span> {companyName}</p>
+              <p><span className="text-white/80">대표이사:</span> {ceoName}</p>
+              <p><span className="text-white/80">사업자번호:</span> {businessNumber}</p>
+              <p><span className="text-white/80">사업종류:</span> {siteConfig.company.businessType.join(", ")}</p>
               <p>
-                <span className="text-white/80">본사:</span> 경기 고양시 일산동구 정발산로 31-10, 806호(장항동, 파크프라자)
+                <span className="text-white/80">{siteConfig.address.headquarters.label}:</span> {address}
               </p>
               <p className="pt-2">
-                <span className="text-white/80">경기지사:</span> 경기 고양시 으뜸로8, 504호(덕은아이에스비즈타워센트럴 1차)
+                <span className="text-white/80">{siteConfig.address.branches[0].label}:</span> {siteConfig.address.branches[0].full}
               </p>
             </div>
           </div>
@@ -153,8 +163,8 @@ const Footer = () => {
         <div className="mt-12 pt-8 border-t border-white/10">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-sm text-white/50 text-center md:text-left">
-              Copyright © {currentYear} CareVille. All rights reserved.
-              본 사이트의 모든 콘텐츠는 저작권법의 보호를 받습니다.
+              Copyright © {siteConfig.copyright.year} {siteConfig.nameEn}. All rights reserved.
+              {siteConfig.copyright.text}
             </p>
 
             {/* Scroll to Top Button */}

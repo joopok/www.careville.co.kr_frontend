@@ -1,47 +1,35 @@
-import { useState, memo, useEffect } from "react";
+import { useState, memo, useMemo } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Building2,
-  Calendar,
-  MapPin,
   Eye,
   ChevronRight,
   X,
-  ArrowRight,
-  AlertTriangle
+  ArrowRight
 } from "lucide-react";
 import { motion } from "framer-motion";
 
 // 백엔드 API 응답 타입
-interface CaseApiResponse {
-  list: CaseItem[];
-  pagination: {
-    currPage: number;
-    totalPages: number;
-    totalRows: number;
-  };
-  caseSvcCdList: ServiceCode[];
-}
-
 interface CaseItem {
   caseSeq: number;
   serviceCd: string | null;
   serviceNm: string | null;
   caseSj: string;
   caseCn: string;
-  regNm: string;
-  fileSeq: number;
-  viewfileseq: string;  // 백엔드가 소문자로 반환
+  regNm?: string;
+  fileSeq?: number;
+  viewfileseq: string | number;  // 백엔드가 소문자로 반환
   hashtag: string;
   rgsDt: string;
 }
 
-interface ServiceCode {
-  serviceCd: string;
-  serviceNm: string;
+// Props 타입
+interface PortfolioSectionProps {
+  portfolioList: CaseItem[];
+  loading: boolean;
 }
 
 // 프론트엔드 Portfolio 타입
@@ -59,178 +47,6 @@ interface Portfolio {
   description: string;
   tags: string[];
 }
-
-// 더미 데이터 (폴백용)
-const DUMMY_PORTFOLIOS: Portfolio[] = [
-    {
-      id: 1,
-      category: "home",
-      title: "강남구 아파트 입주청소",
-      location: "서울시 강남구",
-      date: "2024.01.20",
-      area: "42평",
-      type: "신축 입주청소",
-      mainImage: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600",
-      beforeImage: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600",
-      afterImage: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600",
-      description: "신축 아파트 입주 전 완벽한 청소로 깨끗한 새 출발을 도와드렸습니다.",
-      tags: ["입주청소", "아파트", "42평"]
-    },
-    {
-      id: 2,
-      category: "office",
-      title: "IT 기업 사무실 정기청소",
-      location: "서울시 판교",
-      date: "2024.01.18",
-      area: "200평",
-      type: "사무실 청소",
-      mainImage: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=600",
-      beforeImage: "https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=600",
-      afterImage: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=600",
-      description: "200평 규모의 IT 기업 사무실을 정기적으로 관리하고 있습니다.",
-      tags: ["사무실", "정기청소", "200평"]
-    },
-    {
-      id: 3,
-      category: "special",
-      title: "음식점 주방 특수청소",
-      location: "서울시 종로구",
-      date: "2024.01.15",
-      area: "30평",
-      type: "특수청소",
-      mainImage: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600",
-      beforeImage: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600",
-      afterImage: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600",
-      description: "음식점 주방의 기름때와 찌든 때를 완벽하게 제거했습니다.",
-      tags: ["특수청소", "음식점", "주방"]
-    },
-    {
-      id: 4,
-      category: "home",
-      title: "송파구 빌라 이사청소",
-      location: "서울시 송파구",
-      date: "2024.01.12",
-      area: "25평",
-      type: "이사청소",
-      mainImage: "https://images.unsplash.com/photo-1565538420870-da08ff96a207?w=600",
-      beforeImage: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600",
-      afterImage: "https://images.unsplash.com/photo-1565538420870-da08ff96a207?w=600",
-      description: "10년 거주한 빌라를 새집처럼 깨끗하게 청소했습니다.",
-      tags: ["이사청소", "빌라", "25평"]
-    },
-    {
-      id: 5,
-      category: "office",
-      title: "병원 소독 방역",
-      location: "서울시 서초구",
-      date: "2024.01.10",
-      area: "150평",
-      type: "소독방역",
-      mainImage: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=600",
-      beforeImage: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=600",
-      afterImage: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=600",
-      description: "병원 전체 소독 방역으로 안전한 의료 환경을 만들었습니다.",
-      tags: ["병원", "소독방역", "150평"]
-    },
-    {
-      id: 6,
-      category: "special",
-      title: "화재 현장 복구 청소",
-      location: "서울시 마포구",
-      date: "2024.01.08",
-      area: "35평",
-      type: "화재청소",
-      mainImage: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600",
-      beforeImage: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600",
-      afterImage: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600",
-      description: "화재로 인한 그을음과 냄새를 완벽하게 제거했습니다.",
-      tags: ["화재청소", "특수청소", "복구"]
-    },
-    {
-      id: 7,
-      category: "home",
-      title: "성북구 원룸 정기청소",
-      location: "서울시 성북구",
-      date: "2024.01.05",
-      area: "10평",
-      type: "정기청소",
-      mainImage: "https://images.unsplash.com/photo-1540932239986-30128078f3c5?w=600",
-      beforeImage: "https://images.unsplash.com/photo-1540932239986-30128078f3c5?w=600",
-      afterImage: "https://images.unsplash.com/photo-1540932239986-30128078f3c5?w=600",
-      description: "매월 정기적인 청소로 쾌적한 주거 환경을 유지합니다.",
-      tags: ["정기청소", "원룸", "10평"]
-    },
-    {
-      id: 8,
-      category: "office",
-      title: "카페 리모델링 후 청소",
-      location: "서울시 용산구",
-      date: "2024.01.03",
-      area: "40평",
-      type: "리모델링청소",
-      mainImage: "https://images.unsplash.com/photo-1493857671505-72967e2e2760?w=600",
-      beforeImage: "https://images.unsplash.com/photo-1493857671505-72967e2e2760?w=600",
-      afterImage: "https://images.unsplash.com/photo-1493857671505-72967e2e2760?w=600",
-      description: "카페 리모델링 후 미세먼지와 잔해물을 깨끗이 제거했습니다.",
-      tags: ["카페", "리모델링", "40평"]
-    },
-    {
-      id: 9,
-      category: "special",
-      title: "곰팡이 전문 제거",
-      location: "서울시 동작구",
-      date: "2023.12.28",
-      area: "32평",
-      type: "곰팡이제거",
-      mainImage: "https://images.unsplash.com/photo-1527515545081-5db817172677?w=600",
-      beforeImage: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600",
-      afterImage: "https://images.unsplash.com/photo-1527515545081-5db817172677?w=600",
-      description: "욕실과 베란다의 곰팡이를 전문적으로 제거했습니다.",
-      tags: ["곰팡이제거", "특수청소", "32평"]
-    },
-    {
-      id: 10,
-      category: "home",
-      title: "노원구 다세대주택 청소",
-      location: "서울시 노원구",
-      date: "2023.12.25",
-      area: "28평",
-      type: "입주청소",
-      mainImage: "https://images.unsplash.com/photo-1560448075-cbc16bb4af8e?w=600",
-      beforeImage: "https://images.unsplash.com/photo-1560448075-cbc16bb4af8e?w=600",
-      afterImage: "https://images.unsplash.com/photo-1560448075-cbc16bb4af8e?w=600",
-      description: "다세대주택 전체를 깨끗하게 청소했습니다.",
-      tags: ["다세대주택", "입주청소", "28평"]
-    },
-    {
-      id: 11,
-      category: "office",
-      title: "헬스장 정기 관리",
-      location: "서울시 강동구",
-      date: "2023.12.20",
-      area: "100평",
-      type: "정기청소",
-      mainImage: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600",
-      beforeImage: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600",
-      afterImage: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600",
-      description: "헬스장 기구와 시설을 정기적으로 소독 관리합니다.",
-      tags: ["헬스장", "정기청소", "100평"]
-    },
-    {
-      id: 12,
-      category: "special",
-      title: "펜션 시즌 대청소",
-      location: "경기도 가평",
-      date: "2023.12.15",
-      area: "80평",
-      type: "대청소",
-      mainImage: "https://images.unsplash.com/photo-1464146072230-91cabc968266?w=600",
-      beforeImage: "https://images.unsplash.com/photo-1464146072230-91cabc968266?w=600",
-      afterImage: "https://images.unsplash.com/photo-1464146072230-91cabc968266?w=600",
-      description: "펜션 성수기 전 완벽한 대청소를 진행했습니다.",
-      tags: ["펜션", "대청소", "80평"]
-    }
-];
 
 // 서비스 코드 매핑 (백엔드 serviceCd → 프론트 category)
 const SERVICE_CODE_MAP: Record<string, string> = {
@@ -257,9 +73,7 @@ const convertCaseToPortfolio = (caseItem: CaseItem): Portfolio => {
 
   // 이미지 URL 생성 (viewfileseq 사용 - 백엔드가 소문자로 반환)
   const imageUrl = caseItem.viewfileseq
-    ? (import.meta.env.DEV
-        ? `/fileView.do?fileSeq=${caseItem.viewfileseq}`
-        : `${import.meta.env.VITE_API_URL}/fileView.do?fileSeq=${caseItem.viewfileseq}`)
+    ? `${import.meta.env.VITE_API_URL}/fileView.do?fileSeq=${caseItem.viewfileseq}`
     : "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600";
 
   return {
@@ -273,107 +87,29 @@ const convertCaseToPortfolio = (caseItem: CaseItem): Portfolio => {
     mainImage: imageUrl,
     beforeImage: imageUrl, // 백엔드에 before/after 구분 없음
     afterImage: imageUrl,
-    description: caseItem.caseCn.replace(/<[^>]*>/g, '').substring(0, 100), // HTML 태그 제거 후 100자
+    description: (caseItem.caseCn || '').replace(/<[^>]*>/g, '').substring(0, 100), // HTML 태그 제거 후 100자 (null 가드 추가)
     tags
   };
 };
 
-const PortfolioSection = () => {
+const PortfolioSection = ({ portfolioList, loading }: PortfolioSectionProps) => {
   const [selectedPortfolio, setSelectedPortfolio] = useState<Portfolio | null>(null);
   const [imageType, setImageType] = useState<'before' | 'after'>('after');
+  const [visibleCount, setVisibleCount] = useState(6); // 처음에 6개 표시
 
-  // API 상태 관리
-  const [portfolios, setPortfolios] = useState<Portfolio[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
+  // props로 받은 데이터를 Portfolio 형태로 변환 (useMemo로 최적화)
+  const portfolios = useMemo(() => {
+    return portfolioList.map(convertCaseToPortfolio);
+  }, [portfolioList]);
 
-  // API 호출 함수
-  const fetchPortfolios = async (page: number = 1, category: string = "all") => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const apiUrl = import.meta.env.DEV
-        ? '/caseList.do'
-        : `${import.meta.env.VITE_API_URL}/caseList.do`;
-
-      // FormData로 POST 요청 (백엔드가 POST 메서드 사용)
-      const formData = new FormData();
-      formData.append('currPage', page.toString());
-
-      // 카테고리 필터링
-      if (category !== "all") {
-        // category를 serviceCd로 역변환
-        const serviceCd = Object.keys(SERVICE_CODE_MAP).find(
-          key => SERVICE_CODE_MAP[key] === category
-        );
-        if (serviceCd) {
-          formData.append('serviceCd', serviceCd);
-        }
-      }
-
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        body: formData
-      });
-
-      if (!response.ok) {
-        throw new Error(`API 오류: ${response.status}`);
-      }
-
-      const data: CaseApiResponse = await response.json();
-
-      if (data.list && data.list.length > 0) {
-        const convertedData = data.list.map(convertCaseToPortfolio);
-
-        if (page === 1) {
-          setPortfolios(convertedData);
-        } else {
-          setPortfolios(prev => [...prev, ...convertedData]);
-        }
-
-        setHasMore(data.pagination.currPage < data.pagination.totalPages);
-      } else {
-        // 데이터가 없으면 더미 데이터 사용
-        if (page === 1) {
-          setPortfolios(DUMMY_PORTFOLIOS);
-        }
-        setHasMore(false);
-      }
-    } catch (err) {
-      console.warn('시공사례 조회 실패 (더미 데이터 사용):', err);
-      // 에러 메시지는 설정하지 않음 (사용자에게 보이지 않음)
-      // setError(err instanceof Error ? err.message : '데이터를 불러오는데 실패했습니다.');
-
-      // 에러 발생 시 더미 데이터 사용
-      if (page === 1) {
-        setPortfolios(DUMMY_PORTFOLIOS);
-      }
-      setHasMore(false);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // 초기 로드
-  useEffect(() => {
-    // 백엔드 API 시도, 실패 시 자동으로 더미 데이터 사용
-    fetchPortfolios(1, "all");
-  }, []);
-
-  // 더보기 핸들러
+  // 더보기 핸들러 - 클라이언트 사이드 (6개씩 추가 표시)
   const handleLoadMore = () => {
-    setCurrentPage(prev => prev + 1);
+    setVisibleCount((prev) => Math.min(prev + 6, portfolios.length));
   };
 
-  // 클라이언트 사이드 페이지네이션 (필터 없이 전체 표시)
-  const filteredPortfolios = portfolios;
-
-  const itemsPerPage = 9;
-  const visiblePortfolios = filteredPortfolios.slice(0, currentPage * itemsPerPage);
-  const hasMoreItems = visiblePortfolios.length < filteredPortfolios.length;
+  // 현재 보이는 포트폴리오 (6개씩 표시: 6 → 12 → 18 → 24)
+  const visiblePortfolios = portfolios.slice(0, visibleCount);
+  const hasMore = visibleCount < portfolios.length;
 
   return (
     <section id="portfolio" className="py-20 bg-gradient-to-b from-gray-50 to-white">
@@ -396,26 +132,6 @@ const PortfolioSection = () => {
             믿고 맡기실 수 있는 전문적인 청소 서비스의 실제 사례들을 확인해보세요
           </p>
         </div>
-
-        {/* Error Message */}
-        {error && (
-          <div className="mb-12">
-            <Card className="border-destructive/50 bg-destructive/5">
-              <div className="p-8 text-center">
-                <div className="flex flex-col items-center gap-4">
-                  <div className="w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center">
-                    <AlertTriangle className="h-8 w-8 text-destructive" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-destructive mb-2">데이터 로드 실패</h3>
-                    <p className="text-muted-foreground mb-4">{error}</p>
-                    <p className="text-sm text-muted-foreground">샘플 데이터를 표시합니다.</p>
-                  </div>
-                </div>
-              </div>
-            </Card>
-          </div>
-        )}
 
         {/* Portfolio Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
@@ -478,15 +194,9 @@ const PortfolioSection = () => {
                   <h3 className="font-semibold text-lg mb-2 group-hover:text-primary transition-colors">
                     {portfolio.title}
                   </h3>
-                  <div className="space-y-2 text-sm text-muted-foreground">
-                    <div className="flex items-center gap-2">
-                      <MapPin className="h-4 w-4" />
-                      <span>{portfolio.location}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4" />
-                      <span>{portfolio.date}</span>
-                    </div>
+                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                    <span>{portfolio.location}</span>
+                    <span>{portfolio.date}</span>
                   </div>
                   <div className="flex gap-2 mt-3">
                     {portfolio.tags.map((tag) => (
@@ -503,7 +213,7 @@ const PortfolioSection = () => {
         </div>
 
         {/* Load More Button */}
-        {!loading && hasMoreItems && visiblePortfolios.length > 0 && (
+        {!loading && hasMore && visiblePortfolios.length > 0 && (
           <div className="text-center">
             <Button
               onClick={handleLoadMore}

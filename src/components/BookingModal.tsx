@@ -139,9 +139,7 @@ const BookingModal = ({ isOpen, onClose, selectedService }: BookingModalProps) =
 
     try {
       // API 연동: 실제 백엔드 API 호출
-      const apiUrl = import.meta.env.DEV
-        ? '/api/v1/booking'
-        : `${import.meta.env.VITE_API_URL}/api/v1/booking`;
+      const apiUrl = `${import.meta.env.VITE_API_URL}/api/v1/booking`;
 
       // API 요청 데이터 구성
       const requestData = {
@@ -150,7 +148,7 @@ const BookingModal = ({ isOpen, onClose, selectedService }: BookingModalProps) =
         salePrice: selectedService?.salePrice || 0,
         serviceTime: selectedService?.serviceTime || "",
         customerName: bookingData.customer.name,
-        customerPhone: bookingData.customer.phone,
+        customerPhone: bookingData.customer.phone.replace(/-/g, ''),
         customerEmail: bookingData.customer.email,
         bookingDate: date ? format(date, "yyyyMMdd") : "",
         timeSlot: bookingData.booking.timeSlot,

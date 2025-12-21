@@ -2,6 +2,8 @@ import { Button } from "@/components/ui/button";
 import { Menu, X, Phone } from "lucide-react";
 import { useState, useEffect, useCallback, memo } from "react";
 import Logo from "@/components/Logo";
+import { siteConfig, getTelLink } from "@/config/site";
+import { useConfig, defaultConfig } from "@/contexts/ConfigContext";
 
 // 메뉴 아이템 상수 - 컴포넌트 외부로 이동하여 재생성 방지
 const MENU_ITEMS = [
@@ -14,9 +16,13 @@ const MENU_ITEMS = [
 ] as const;
 
 const Header = () => {
+  const { getConfig } = useConfig();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
+
+  // API에서 로드된 설정값 사용 (없으면 기본값)
+  const phoneNumber = getConfig('PHONE', defaultConfig.PHONE);
 
   useEffect(() => {
     let ticking = false;
@@ -154,7 +160,7 @@ const Header = () => {
           <div className="flex items-center gap-2 sm:gap-3">
             {/* Phone - Tablet & Desktop */}
             <a
-              href="tel:1600-9762"
+              href={getTelLink()}
               className={`hidden sm:flex items-center gap-1.5 sm:gap-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-full font-semibold text-sm sm:text-base transition-all duration-300 ${
                 isScrolled
                   ? 'bg-primary text-white hover:bg-primary-dark shadow-lg shadow-primary/20'
@@ -162,12 +168,12 @@ const Header = () => {
               }`}
             >
               <Phone className="w-4 h-4 sm:w-5 sm:h-5" />
-              <span>1600-9762</span>
+              <span>{phoneNumber}</span>
             </a>
 
             {/* Phone - Mobile Icon */}
             <a
-              href="tel:1600-9762"
+              href={getTelLink()}
               className={`sm:hidden flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300 ${
                 isScrolled ? 'bg-primary text-white' : 'bg-white text-primary'
               }`}
@@ -264,7 +270,7 @@ const Header = () => {
               {/* Mobile Phone CTA */}
               <div className="px-4 pt-4 border-t border-border/50 mt-2">
                 <a
-                  href="tel:1600-9762"
+                  href={getTelLink()}
                   className="flex items-center justify-center gap-2 w-full px-6 py-3.5 sm:py-4 bg-primary text-white rounded-xl font-bold text-base sm:text-lg hover:bg-primary-dark transition-colors active:scale-[0.98]"
                 >
                   <Phone className="w-5 h-5" />

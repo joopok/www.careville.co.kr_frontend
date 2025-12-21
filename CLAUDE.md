@@ -16,10 +16,23 @@ This is the CareVille (케어빌) frontend application - a premium home care ser
 - `npm run preview` - Preview production build locally
 
 ### Environment Configuration
-- `.env.development` - Development API: `http://localhost:8081`
-- `.env.production` - Production API: `http://ksm1779.cafe24.com`
 
-Access via `import.meta.env.VITE_API_URL`
+| 파일 | 환경 | API URL | 실행 명령어 |
+|------|------|---------|-------------|
+| `.env.localhost` | 로컬 | `http://localhost:8080` | `npm run dev:local` |
+| `.env.development` | 개발 | `http://ksm1779.cafe24.com` | `npm run dev` |
+| `.env.production` | 운영 | `http://ksm1779.cafe24.com` | `npm run build` |
+
+**스크립트 설명**:
+- `npm run dev` - 원격 개발 서버 연결 (기본)
+- `npm run dev:local` - 로컬 백엔드 연결 (localhost:8080)
+- `npm run dev:remote` - 원격 개발 서버 연결 (dev와 동일)
+- `npm run build` - 운영 빌드
+- `npm run build:dev` - 개발 빌드
+
+**주의**: `dev:local` 사용 시 로컬 백엔드 서버(`localhost:8080`)가 실행 중이어야 합니다.
+
+**사용법**: `import.meta.env.VITE_API_URL`
 
 ## Architecture & Key Patterns
 

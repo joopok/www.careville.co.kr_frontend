@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -106,9 +107,9 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
   };
 
   // 간단 주소 검색 UI
-  const [isAddrSearchOpen, setIsAddrSearchOpen] = React.useState(false);
-  const [addrZip, setAddrZip] = React.useState("");
-  const [addrBase, setAddrBase] = React.useState("");
+  const [isAddrSearchOpen, setIsAddrSearchOpen] = useState(false);
+  const [addrZip, setAddrZip] = useState("");
+  const [addrBase, setAddrBase] = useState("");
   const applyAddress = () => {
     if (addrBase.trim()) {
       setValue('zip', addrZip.trim());
@@ -117,9 +118,28 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
     }
   };
 
+  // 다음 우편번호 API 타입
+  interface DaumPostcodeData {
+    roadAddress?: string;
+    jibunAddress?: string;
+    zonecode?: string;
+  }
+
+  interface DaumPostcode {
+    new (options: {
+      oncomplete: (data: DaumPostcodeData) => void;
+      width: string;
+      height: string;
+    }): { embed: (container: HTMLElement) => void };
+  }
+
+  interface DaumWindow {
+    daum?: { Postcode?: DaumPostcode };
+  }
+
   // 카카오/다음 우편번호 서비스 연동
   const ensureDaumPostcodeScript = () => new Promise<void>((resolve, reject) => {
-    const w = window as unknown as { daum?: any };
+    const w = window as unknown as DaumWindow;
     if (w.daum && w.daum.Postcode) return resolve();
     const script = document.createElement('script');
     script.src = '//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
@@ -133,11 +153,11 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
     setIsAddrSearchOpen(true);
     try {
       await ensureDaumPostcodeScript();
-      const w = window as unknown as { daum: any };
+      const w = window as unknown as DaumWindow;
       const container = document.getElementById('daum-postcode-container');
-      if (!container) return;
+      if (!container || !w.daum?.Postcode) return;
       new w.daum.Postcode({
-        oncomplete: (data: any) => {
+        oncomplete: (data: DaumPostcodeData) => {
           const road = data.roadAddress?.trim();
           const jibun = data.jibunAddress?.trim();
           const addr = road || jibun || '';
@@ -157,7 +177,9 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
   };
 
   const onSubmit = async (values: ContactFormValues) => {
-    const url = `${import.meta.env.VITE_API_URL}/cnsltReg.do`;
+    // API URL
+    const baseUrl = `${import.meta.env.VITE_API_URL}/cnsltReg.do`;
+
     const dataToSend = { ...values };
 
     // Remove hyphens from hopeDay
@@ -170,7 +192,7 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
       formData.append(key, dataToSend[key as keyof ContactFormValues] || "");
     }
 
-    const finalUrl = `${url}?${formData.toString()}`;
+    const finalUrl = `${baseUrl}?${formData.toString()}`;
 
     console.log("Sending POST request to:", finalUrl);
 
@@ -183,12 +205,25 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const result = await response.json();
+      // 안전한 응답 처리 (JSON 또는 텍스트)
+      const contentType = response.headers.get('content-type');
+      let result: Record<string, unknown> = {};
 
-      if (result.isError == "false") {
+      if (contentType && contentType.includes('application/json')) {
+        result = await response.json();
+      } else {
+        // JSON이 아닌 경우 성공으로 간주
         toast.success("상담 신청이 성공적으로 접수되었습니다.");
-        onClose(); // Close the modal after successful submission
-      } else if (result.isError == "true") {
+        form.reset();
+        onClose();
+        return;
+      }
+
+      if (result.isError === "false" || result.isError === false) {
+        toast.success("상담 신청이 성공적으로 접수되었습니다.");
+        form.reset();
+        onClose();
+      } else if (result.isError === "true" || result.isError === true) {
         toast.error(
           `상담 신청 실패: ${
             result.excpMsg || result.excpCdMsg || "알 수 없는 오류"
@@ -196,8 +231,10 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
         );
         console.error("Submission error:", result);
       } else {
-        toast.error("상담 신청에 실패했습니다. 다시 시도해주세요.");
-        console.error("Submission error:", result);
+        // isError 필드가 없는 경우 성공으로 간주
+        toast.success("상담 신청이 성공적으로 접수되었습니다.");
+        form.reset();
+        onClose();
       }
     } catch (error) {
       toast.error("네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");

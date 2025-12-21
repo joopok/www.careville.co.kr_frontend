@@ -6,7 +6,9 @@ import { Button } from "@/components/ui/button";
 interface ServiceRequestModalProps {
   isOpen: boolean;
   onClose: () => void;
+  serviceCd: string | null;
   serviceName: string | null;
+  productNo?: number | null;
   category?: "홈클리닝" | "사업장 클리닝";
 }
 
@@ -20,7 +22,7 @@ interface FormData {
   message: string;
 }
 
-const ServiceRequestModal = ({ isOpen, onClose, serviceName, category = "사업장 클리닝" }: ServiceRequestModalProps) => {
+const ServiceRequestModal = ({ isOpen, onClose, serviceCd, serviceName, productNo, category = "사업장 클리닝" }: ServiceRequestModalProps) => {
   const [formData, setFormData] = useState<FormData>({
     name: "",
     phone: "",
@@ -99,22 +101,68 @@ const ServiceRequestModal = ({ isOpen, onClose, serviceName, category = "사업�
 
     setIsSubmitting(true);
 
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    try {
+      // 백엔드 cnsltReg.do API 사용
+      // 개발 모드에서는 프록시 사용, 프로덕션에서는 직접 요청
+      const baseUrl = import.meta.env.DEV ? '/cnsltReg.do' : `${import.meta.env.VITE_API_URL}/cnsltReg.do`;
 
-    // Here you would normally send data to your backend
-    console.log("Service Request:", {
-      service: serviceName,
-      ...formData
-    });
+      // URL 파라미터 구성
+      const params = new URLSearchParams();
+      params.append('nm', formData.name);
+      // tel2가 필수 필드 (휴대폰번호)
+      params.append('tel2', formData.phone.replace(/-/g, ''));
+      if (formData.email) params.append('email', formData.email);
+      if (formData.companyName) params.append('compNm', formData.companyName);
+      if (serviceCd) params.append('serviceCd', serviceCd);
+      if (formData.preferredDate) params.append('hopeDay', formData.preferredDate.replace(/-/g, ''));
+      if (formData.preferredTime) params.append('hopeTime', formData.preferredTime);
 
-    setIsSubmitting(false);
-    setIsSuccess(true);
+      // REQ_TYPE: 001=카테고리 기반, 002=상품 기반
+      if (productNo) {
+        params.append('reqType', '002');
+        params.append('productNo', productNo.toString());
+      } else {
+        params.append('reqType', '001');
+      }
 
-    // Auto close after success
-    setTimeout(() => {
-      onClose();
-    }, 2000);
+      // 상담 내용 구성
+      const inquiryContent = [
+        serviceName ? `서비스: ${serviceName}` : '',
+        category ? `카테고리: ${category}` : '',
+        formData.message ? `요청사항: ${formData.message}` : ''
+      ].filter(Boolean).join('\n');
+      params.append('inqryCn', inquiryContent || '서비스 신청');
+
+      const response = await fetch(`${baseUrl}?${params.toString()}`, {
+        method: 'POST',
+      });
+
+      if (!response.ok) {
+        throw new Error('서비스 신청에 실패했습니다.');
+      }
+
+      // 응답 처리
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        const result = await response.json();
+        if (result.isError === "true" || result.isError === true) {
+          throw new Error(result.excpMsg || '서비스 신청에 실패했습니다.');
+        }
+      }
+
+      setIsSuccess(true);
+
+      // Auto close after success
+      setTimeout(() => {
+        onClose();
+      }, 2000);
+
+    } catch (error) {
+      console.error('Service Request Error:', error);
+      alert(error instanceof Error ? error.message : '서비스 신청에 실패했습니다. 다시 시도해주세요.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const timeSlots = [
@@ -144,7 +192,6 @@ const ServiceRequestModal = ({ isOpen, onClose, serviceName, category = "사업�
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           className="fixed inset-0 z-50 flex items-center justify-center p-4"
-          onClick={onClose}
         >
           {/* Backdrop */}
           <motion.div

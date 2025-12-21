@@ -9,6 +9,7 @@ lerna-debug.log*
 
 node_modules
 build
+dist
 backdata
 # Cafe24 배포를 위해 dist는 Git에 포함 (추적 유지)
 # dist-ssr 산출물은 제외 가능

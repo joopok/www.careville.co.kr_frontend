@@ -1,10 +1,17 @@
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => ({
+export default defineConfig(({ mode }) => {
+  // 모드에 따른 환경변수 로드
+  const env = loadEnv(mode, process.cwd(), '');
+  const apiTarget = env.VITE_API_URL || 'http://ksm1779.cafe24.com';
+
+  console.log(`[Vite] Mode: ${mode}, API Target: ${apiTarget}`);
+
+  return {
   server: {
     host: "0.0.0.0",
     port: 8001,
@@ -18,31 +25,58 @@ export default defineConfig(({ mode }) => ({
       usePolling: true
     },
     proxy: {
+      // API는 원격 서버로 프록시
       '/api': {
-        target: 'http://ksm1779.cafe24.com',
+        target: apiTarget,
         changeOrigin: true,
         secure: false,
-        rewrite: (path) => path
+        rewrite: (path) => path,
+        configure: (proxy) => {
+          proxy.on('proxyReq', (proxyReq) => {
+            // Origin 헤더를 타겟 서버 주소로 변경 (CORS 우회)
+            proxyReq.setHeader('Origin', apiTarget);
+          });
+        }
       },
       '/cnsltReg.do': {
-        target: 'http://ksm1779.cafe24.com',
+        target: apiTarget,
         changeOrigin: true,
-        secure: false
+        secure: false,
+        configure: (proxy) => {
+          proxy.on('proxyReq', (proxyReq) => {
+            proxyReq.setHeader('Origin', apiTarget);
+          });
+        }
       },
       '/caseList.do': {
-        target: 'http://ksm1779.cafe24.com',
+        target: apiTarget,
         changeOrigin: true,
-        secure: false
+        secure: false,
+        configure: (proxy) => {
+          proxy.on('proxyReq', (proxyReq) => {
+            proxyReq.setHeader('Origin', apiTarget);
+          });
+        }
       },
       '/caseView.do': {
-        target: 'http://ksm1779.cafe24.com',
+        target: apiTarget,
         changeOrigin: true,
-        secure: false
+        secure: false,
+        configure: (proxy) => {
+          proxy.on('proxyReq', (proxyReq) => {
+            proxyReq.setHeader('Origin', apiTarget);
+          });
+        }
       },
       '/fileView.do': {
-        target: 'http://ksm1779.cafe24.com',
+        target: apiTarget,
         changeOrigin: true,
-        secure: false
+        secure: false,
+        configure: (proxy) => {
+          proxy.on('proxyReq', (proxyReq) => {
+            proxyReq.setHeader('Origin', apiTarget);
+          });
+        }
       }
     }
   },
@@ -124,4 +158,4 @@ export default defineConfig(({ mode }) => ({
     ],
     exclude: ['@vite/client', '@vite/env'],
   },
-}))
+};})

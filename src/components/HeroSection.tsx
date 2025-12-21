@@ -143,7 +143,7 @@ const HeroSection = () => {
                 <Button
                   size="lg"
                   className="group h-14 bg-secondary hover:bg-secondary-dark text-white px-8 rounded-full shadow-xl shadow-secondary/30 hover:shadow-2xl hover:shadow-secondary/40 transition-all duration-300 hover:scale-105 font-semibold"
-                  onClick={() => handlePhoneCall("1600-9762")}
+                  onClick={() => handlePhoneCall()}
                 >
                   <Phone className="mr-2 h-5 w-5 group-hover:animate-pulse" />
                   바로 상담받기
@@ -462,7 +462,7 @@ const FloatingButtons = () => {
           <Button
             size="icon"
             className="w-12 h-12 rounded-xl bg-primary hover:bg-primary-dark text-white shadow-lg shadow-primary/30 hover:shadow-xl transition-all duration-300 hover:scale-110"
-            onClick={() => handlePhoneCall("1600-9762")}
+            onClick={() => handlePhoneCall()}
           >
             <Phone className="h-5 w-5" />
           </Button>

@@ -1,25 +1,26 @@
 import { Helmet } from 'react-helmet-async';
+import { siteConfig } from '@/config/site';
 
 const StructuredData = () => {
   const schemaData = {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
-    "name": "케어빌",
-    "image": "https://www.careville.co.kr/logo.png",
-    "@id": "https://www.careville.co.kr",
-    "url": "https://www.careville.co.kr",
-    "telephone": "1600-9762",
-    "email": "info@careville.co.kr",
+    "name": siteConfig.name,
+    "image": siteConfig.logoUrl,
+    "@id": siteConfig.url,
+    "url": siteConfig.url,
+    "telephone": siteConfig.contact.phone,
+    "email": siteConfig.contact.emailOfficial,
     "address": {
       "@type": "PostalAddress",
-      "addressLocality": "강남구",
-      "addressRegion": "서울특별시",
-      "addressCountry": "KR"
+      "addressLocality": siteConfig.seo.geo.addressLocality,
+      "addressRegion": siteConfig.seo.geo.addressRegion,
+      "addressCountry": siteConfig.seo.geo.addressCountry
     },
     "geo": {
       "@type": "GeoCoordinates",
-      "latitude": 37.5172,
-      "longitude": 127.0473
+      "latitude": siteConfig.seo.geo.latitude,
+      "longitude": siteConfig.seo.geo.longitude
     },
     "openingHoursSpecification": [
       {
@@ -33,25 +34,25 @@ const StructuredData = () => {
           "Saturday",
           "Sunday"
         ],
-        "opens": "00:00",
-        "closes": "23:59"
+        "opens": siteConfig.seo.openingHours.opens,
+        "closes": siteConfig.seo.openingHours.closes
       }
     ],
-    "priceRange": "₩₩",
-    "description": "에어컨 청소, 입주 청소, 매트리스 케어 등 전문적인 홈케어 서비스를 제공합니다.",
+    "priceRange": siteConfig.seo.priceRange,
+    "description": siteConfig.description,
     "areaServed": {
       "@type": "GeoCircle",
       "geoMidpoint": {
         "@type": "GeoCoordinates",
-        "latitude": 37.5172,
-        "longitude": 127.0473
+        "latitude": siteConfig.seo.geo.latitude,
+        "longitude": siteConfig.seo.geo.longitude
       },
-      "geoRadius": "50000"
+      "geoRadius": String(siteConfig.seo.geo.serviceRadius)
     },
     "aggregateRating": {
       "@type": "AggregateRating",
-      "ratingValue": "4.8",
-      "reviewCount": "250"
+      "ratingValue": siteConfig.seo.rating.value,
+      "reviewCount": siteConfig.seo.rating.reviewCount
     },
     "hasOfferCatalog": {
       "@type": "OfferCatalog",

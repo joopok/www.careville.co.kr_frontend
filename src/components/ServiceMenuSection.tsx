@@ -10,6 +10,7 @@ import {
   Wind,
   Utensils
 } from "lucide-react";
+import { siteConfig, getTelLink } from "@/config/site";
 
 const serviceCategories = [
   {
@@ -120,7 +121,7 @@ const ServiceMenuSection = () => {
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
                   {/* Popular Badge */}
-                  {category.popular && activeCategory !== category.id && (
+                  {category.popular && (
                     <div className="absolute -top-2 -right-2 px-2 sm:px-3 py-0.5 sm:py-1 bg-secondary text-white text-[10px] sm:text-xs font-medium rounded-full">
                       인기
                     </div>
@@ -209,7 +210,8 @@ const ServiceMenuSection = () => {
                   <button
                     type="button"
                     onClick={() => {
-                      const targetId = 'home-cleaning';
+                      // 활성화된 탭에 따라 스크롤 대상 결정
+                      const targetId = activeCategory === 'business' ? 'business-cleaning' : 'home-cleaning';
                       const headerOffset = 80;
 
                       const scrollToElement = () => {
@@ -250,7 +252,7 @@ const ServiceMenuSection = () => {
                     <ArrowRight className="w-4 h-4" />
                   </button>
                   <a
-                    href="tel:1600-9762"
+                    href={getTelLink()}
                     className="inline-flex items-center justify-center sm:justify-start gap-2 px-5 sm:px-6 py-2.5 sm:py-3 bg-white/10 backdrop-blur-sm text-white font-medium rounded-full border border-white/30 hover:bg-white/20 transition-all duration-300 text-sm sm:text-base"
                   >
                     상담 문의

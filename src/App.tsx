@@ -9,6 +9,7 @@ import { measurePerformance } from "./utils/performance";
 // Use optimized version
 const Index = lazy(() => import("./pages/IndexOptimized"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+const AdminFaqs = lazy(() => import("./pages/AdminFaqs"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -41,6 +42,7 @@ const App = () => {
           <Suspense fallback={<PageLoader />}>
             <Routes>
               <Route path="/" element={<Index />} />
+              <Route path="/admin/faqs" element={<AdminFaqs />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

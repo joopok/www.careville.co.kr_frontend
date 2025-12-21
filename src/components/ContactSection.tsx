@@ -1,10 +1,11 @@
-import { useState, useCallback, memo } from "react";
+import { useState, useCallback, memo, useMemo } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Phone, Mail, MapPin, Clock, HeadphonesIcon, Send, ArrowRight, Loader2, CheckCircle } from "lucide-react";
-import ContactModal from "@/components/ContactModal";
+import { siteConfig } from "@/config/site";
+import { useConfig, defaultConfig } from "@/contexts/ConfigContext";
 
 interface InquiryForm {
   name: string;
@@ -19,44 +20,50 @@ interface FormErrors {
   content?: string;
 }
 
-// Contact info moved outside component to prevent recreation on each render
-const contactInfo = [
-  {
-    icon: Phone,
-    title: "전화 상담",
-    content: "1600-9762",
-    description: "평일 09:00 - 18:00",
-    action: "tel:1600-9762",
-    highlight: true
-  },
-  {
-    icon: Mail,
-    title: "이메일 문의",
-    content: "seung0910@naver.com",
-    description: "24시간 접수 가능",
-    action: "mailto:seung0910@naver.com"
-  },
-  {
-    icon: MapPin,
-    title: "본사",
-    content: "경기 고양시 일산동구 정발산로 31-10",
-    description: "806호(장항동, 파크프라자)"
-  },
-  {
-    icon: MapPin,
-    title: "경기지사",
-    content: "경기도 고양시 으뜸로8,",
-    description: "덕은아이에스비즈타워신트럴 1차 504호"
-  },
-  {
-    icon: Clock,
-    title: "영업 시간",
-    content: "연중무휴",
-    description: "긴급 상황 24시간 대응"
-  }
-];
-
 const ContactSection = memo(() => {
+  const { getConfig } = useConfig();
+
+  // API에서 로드된 설정값 사용 (없으면 기본값)
+  const phoneNumber = getConfig('PHONE', defaultConfig.PHONE);
+  const emailAddress = getConfig('EMAIL', defaultConfig.EMAIL);
+  const address = getConfig('ADDRESS', defaultConfig.ADDRESS);
+
+  // 동적 설정값을 사용하는 contactInfo (useMemo로 최적화)
+  const contactInfo = useMemo(() => [
+    {
+      icon: Phone,
+      title: "전화 상담",
+      content: phoneNumber,
+      description: siteConfig.customerService.hours.weekday,
+      action: `tel:${phoneNumber}`,
+      highlight: true
+    },
+    {
+      icon: Mail,
+      title: "이메일 문의",
+      content: emailAddress,
+      description: "24시간 접수 가능",
+      action: `mailto:${emailAddress}`
+    },
+    {
+      icon: MapPin,
+      title: siteConfig.address.headquarters.label,
+      content: address.split(',')[0] || siteConfig.address.headquarters.line1,
+      description: address.split(',')[1] || siteConfig.address.headquarters.line2
+    },
+    {
+      icon: MapPin,
+      title: siteConfig.address.branches[0].label,
+      content: siteConfig.address.branches[0].line1,
+      description: siteConfig.address.branches[0].line2
+    },
+    {
+      icon: Clock,
+      title: "영업 시간",
+      content: "연중무휴",
+      description: siteConfig.customerService.hours.emergency
+    }
+  ], [phoneNumber, emailAddress, address]);
   const [formData, setFormData] = useState<InquiryForm>({
     name: "",
     phone: "",
@@ -117,24 +124,32 @@ const ContactSection = memo(() => {
     setIsSubmitting(true);
 
     try {
-      const apiUrl = import.meta.env.DEV
-        ? '/api/inquiry'
-        : `${import.meta.env.VITE_API_URL}/api/inquiry`;
-      const response = await fetch(apiUrl, {
+      // 백엔드 cnsltReg.do API 사용 (폼 데이터 형식)
+      const apiUrl = `${import.meta.env.VITE_API_URL}/cnsltReg.do`;
+
+      // URL 파라미터 구성 (백엔드가 @RequestParam으로 받음)
+      const params = new URLSearchParams();
+      params.append('nm', formData.name);
+      params.append('tel1', formData.phone.replace(/-/g, ''));
+      if (formData.email) params.append('email', formData.email);
+      params.append('inqryCn', formData.content);
+      params.append('svcCnCd', '000'); // 일반 문의
+
+      const response = await fetch(`${apiUrl}?${params.toString()}`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          phone: formData.phone.replace(/-/g, ''),
-          email: formData.email,
-          content: formData.content
-        }),
       });
 
       if (!response.ok) {
         throw new Error('Failed to submit inquiry');
+      }
+
+      // 응답 처리 (백엔드가 JSON 또는 텍스트 반환 가능)
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        const result = await response.json();
+        if (result.isError === "true") {
+          throw new Error(result.excpMsg || '문의 전송에 실패했습니다.');
+        }
       }
 
       setIsSuccess(true);
@@ -152,9 +167,6 @@ const ContactSection = memo(() => {
       setIsSubmitting(false);
     }
   }, [formData, validateForm]);
-
-  // 상담 신청 모달 상태
-  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
 
   return (
     <section id="contact" className="section-padding bg-background relative overflow-hidden">
@@ -261,7 +273,6 @@ const ContactSection = memo(() => {
                     {errors.content && <p className="text-red-500 text-xs mt-1">{errors.content}</p>}
                   </div>
 
-                  <div className="flex gap-3">
                   <Button
                     type="submit"
                     disabled={isSubmitting}
@@ -280,15 +291,6 @@ const ContactSection = memo(() => {
                       </>
                     )}
                   </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="h-14 rounded-xl"
-                    onClick={() => setIsContactModalOpen(true)}
-                  >
-                    상담 신청
-                  </Button>
-                  </div>
                 </form>
               )}
             </Card>
@@ -347,7 +349,6 @@ const ContactSection = memo(() => {
             ))}
           </div>
         </div>
-        <ContactModal isOpen={isContactModalOpen} onClose={() => setIsContactModalOpen(false)} />
       </div>
     </section>
   );

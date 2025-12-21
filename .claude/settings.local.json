@@ -1,6 +1,7 @@
 {
   "permissions": {
     "allow": [
+      "Skill(minimal-typography)",
       "Edit",
       "Write",
       "Bash(lsof:*)",
@@ -69,7 +70,18 @@
       "Skill(frontend-design)",
       "mcp__playwright__browser_run_code",
       "Bash(ls:*)",
-      "Bash(npx update-browserslist-db@latest:*)"
+      "Bash(npx update-browserslist-db@latest:*)",
+      "Bash(npm run lint:*)",
+      "Bash(timeout 10 npm run dev:*)",
+      "Bash(./mvnw compile:*)",
+      "Bash(timeout 5 npm run dev:*)",
+      "Bash(./mvnw clean compile:*)",
+      "Bash(kill:*)",
+      "Bash(timeout 10 npm run dev:local:*)",
+      "Bash(timeout 5 npm run dev:local:*)",
+      "Bash(xargs kill -9)",
+      "Bash(rm:*)",
+      "Bash(pkill:*)"
     ],
     "deny": [],
     "ask": []

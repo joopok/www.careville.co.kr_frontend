@@ -4,6 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { exec } from 'child_process';
 import { promisify } from 'util';
+import fs from 'fs/promises';
 
 const execAsync = promisify(exec);
 const __filename = fileURLToPath(import.meta.url);
@@ -43,6 +44,111 @@ async function killProcessOnPort(port) {
 // Gzip 압축 활성화 (성능 최적화)
 app.use(compression());
 
+// JSON/body parser (for API endpoints) - MUST be before routes
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// --- FAQ API (file-based) ---
+const DATA_DIR = path.join(__dirname, 'data');
+const FAQ_FILE = path.join(DATA_DIR, 'faqs.json');
+
+async function ensureFaqFile() {
+  try {
+    await fs.mkdir(DATA_DIR, { recursive: true });
+    try {
+      await fs.access(FAQ_FILE);
+    } catch {
+      await fs.writeFile(FAQ_FILE, JSON.stringify([], null, 2), 'utf-8');
+    }
+  } catch (e) {
+    console.error('FAQ storage init error:', e);
+  }
+}
+
+async function readFaqs() {
+  await ensureFaqFile();
+  const raw = await fs.readFile(FAQ_FILE, 'utf-8');
+  return JSON.parse(raw || '[]');
+}
+
+async function writeFaqs(items) {
+  await ensureFaqFile();
+  await fs.writeFile(FAQ_FILE, JSON.stringify(items, null, 2), 'utf-8');
+}
+
+// List FAQs
+app.get('/api/faqs', async (req, res) => {
+  try {
+    const items = await readFaqs();
+    res.json({ success: true, data: items });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ success: false, message: 'Failed to load FAQs' });
+  }
+});
+
+// Create FAQ
+app.post('/api/faqs', async (req, res) => {
+  try {
+    const { question, answer, category = '', display = true, order = 0 } = req.body || {};
+    if (!question || !answer) {
+      return res.status(400).json({ success: false, message: 'question and answer are required' });
+    }
+    const items = await readFaqs();
+    const id = Date.now().toString();
+    const item = { id, question, answer, category, display: !!display, order: Number(order) || 0 };
+    items.push(item);
+    items.sort((a, b) => (a.order || 0) - (b.order || 0));
+    await writeFaqs(items);
+    res.json({ success: true, data: item });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ success: false, message: 'Failed to create FAQ' });
+  }
+});
+
+// Update FAQ
+app.put('/api/faqs/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { question, answer, category, display, order } = req.body || {};
+    const items = await readFaqs();
+    const idx = items.findIndex((x) => x.id === id);
+    if (idx === -1) return res.status(404).json({ success: false, message: 'FAQ not found' });
+    const prev = items[idx];
+    const updated = {
+      ...prev,
+      ...(question !== undefined ? { question } : {}),
+      ...(answer !== undefined ? { answer } : {}),
+      ...(category !== undefined ? { category } : {}),
+      ...(display !== undefined ? { display: !!display } : {}),
+      ...(order !== undefined ? { order: Number(order) || 0 } : {}),
+    };
+    items[idx] = updated;
+    items.sort((a, b) => (a.order || 0) - (b.order || 0));
+    await writeFaqs(items);
+    res.json({ success: true, data: updated });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ success: false, message: 'Failed to update FAQ' });
+  }
+});
+
+// Delete FAQ
+app.delete('/api/faqs/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const items = await readFaqs();
+    const next = items.filter((x) => x.id !== id);
+    if (next.length === items.length) return res.status(404).json({ success: false, message: 'FAQ not found' });
+    await writeFaqs(next);
+    res.json({ success: true });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ success: false, message: 'Failed to delete FAQ' });
+  }
+});
+
 // dist 폴더의 정적 파일 서빙
 app.use(express.static(path.join(__dirname, 'dist'), {
   maxAge: '1y', // 정적 자산 캐시 1년
@@ -55,7 +161,7 @@ app.use(express.static(path.join(__dirname, 'dist'), {
   }
 }));
 
-// React Router 지원 - 모든 경로를 index.html로 처리
+// React Router 지원 - 모든 경로를 index.html로 처리 (API 라우트 이후에 위치)
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
