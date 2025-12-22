@@ -1,205 +1,301 @@
-import express from 'express';
-import compression from 'compression';
+import http from 'http';
+import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import fs from 'fs/promises';
+import zlib from 'zlib';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const app = express();
 const PORT = process.env.PORT || 8001;
+const DIST_DIR = path.join(__dirname, 'dist');
 
-// Gzip 압축 활성화 (성능 최적화)
-app.use(compression());
+// MIME types
+const MIME_TYPES = {
+  '.html': 'text/html; charset=utf-8',
+  '.css': 'text/css; charset=utf-8',
+  '.js': 'application/javascript; charset=utf-8',
+  '.json': 'application/json; charset=utf-8',
+  '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.gif': 'image/gif',
+  '.svg': 'image/svg+xml',
+  '.ico': 'image/x-icon',
+  '.webp': 'image/webp',
+  '.woff': 'font/woff',
+  '.woff2': 'font/woff2',
+  '.ttf': 'font/ttf',
+  '.eot': 'application/vnd.ms-fontobject',
+  '.mp4': 'video/mp4',
+  '.webm': 'video/webm',
+  '.pdf': 'application/pdf',
+  '.txt': 'text/plain; charset=utf-8',
+};
 
-// JSON/body parser (for API endpoints) - MUST be before routes
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-// --- FAQ API (file-based) ---
+// FAQ storage
 const DATA_DIR = path.join(__dirname, 'data');
 const FAQ_FILE = path.join(DATA_DIR, 'faqs.json');
 
-async function ensureFaqFile() {
+function ensureFaqFile() {
   try {
-    await fs.mkdir(DATA_DIR, { recursive: true });
-    try {
-      await fs.access(FAQ_FILE);
-    } catch {
-      await fs.writeFile(FAQ_FILE, JSON.stringify([], null, 2), 'utf-8');
+    if (!fs.existsSync(DATA_DIR)) {
+      fs.mkdirSync(DATA_DIR, { recursive: true });
+    }
+    if (!fs.existsSync(FAQ_FILE)) {
+      fs.writeFileSync(FAQ_FILE, JSON.stringify([], null, 2), 'utf-8');
     }
   } catch (e) {
     console.error('FAQ storage init error:', e);
   }
 }
 
-async function readFaqs() {
-  await ensureFaqFile();
-  const raw = await fs.readFile(FAQ_FILE, 'utf-8');
-  return JSON.parse(raw || '[]');
-}
-
-async function writeFaqs(items) {
-  await ensureFaqFile();
-  await fs.writeFile(FAQ_FILE, JSON.stringify(items, null, 2), 'utf-8');
-}
-
-// List FAQs
-app.get('/api/faqs', async (req, res) => {
+function readFaqs() {
+  ensureFaqFile();
   try {
-    const items = await readFaqs();
-    res.json({ success: true, data: items });
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ success: false, message: 'Failed to load FAQs' });
+    const raw = fs.readFileSync(FAQ_FILE, 'utf-8');
+    return JSON.parse(raw || '[]');
+  } catch {
+    return [];
   }
-});
+}
 
-// Create FAQ
-app.post('/api/faqs', async (req, res) => {
-  try {
-    const { question, answer, category = '', display = true, order = 0 } = req.body || {};
-    if (!question || !answer) {
-      return res.status(400).json({ success: false, message: 'question and answer are required' });
+function writeFaqs(items) {
+  ensureFaqFile();
+  fs.writeFileSync(FAQ_FILE, JSON.stringify(items, null, 2), 'utf-8');
+}
+
+// Parse JSON body
+function parseBody(req) {
+  return new Promise((resolve) => {
+    let body = '';
+    req.on('data', chunk => body += chunk);
+    req.on('end', () => {
+      try {
+        resolve(body ? JSON.parse(body) : {});
+      } catch {
+        resolve({});
+      }
+    });
+  });
+}
+
+// Send JSON response
+function sendJson(res, statusCode, data, acceptEncoding = '') {
+  const json = JSON.stringify(data);
+  const buffer = Buffer.from(json, 'utf-8');
+
+  res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+
+  if (acceptEncoding.includes('gzip') && buffer.length > 1024) {
+    res.setHeader('Content-Encoding', 'gzip');
+    res.writeHead(statusCode);
+    zlib.gzip(buffer, (err, compressed) => {
+      res.end(err ? buffer : compressed);
+    });
+  } else {
+    res.writeHead(statusCode);
+    res.end(buffer);
+  }
+}
+
+// Send file with optional gzip
+function sendFile(res, filePath, acceptEncoding = '') {
+  const ext = path.extname(filePath).toLowerCase();
+  const contentType = MIME_TYPES[ext] || 'application/octet-stream';
+
+  fs.readFile(filePath, (err, data) => {
+    if (err) {
+      res.writeHead(404);
+      res.end('Not Found');
+      return;
     }
-    const items = await readFaqs();
+
+    res.setHeader('Content-Type', contentType);
+
+    // Cache headers
+    if (ext === '.html') {
+      res.setHeader('Cache-Control', 'no-cache');
+    } else {
+      res.setHeader('Cache-Control', 'public, max-age=31536000');
+    }
+
+    // Gzip for text-based files > 1KB
+    const compressible = ['.html', '.css', '.js', '.json', '.svg', '.txt'];
+    if (acceptEncoding.includes('gzip') && compressible.includes(ext) && data.length > 1024) {
+      res.setHeader('Content-Encoding', 'gzip');
+      zlib.gzip(data, (err, compressed) => {
+        if (err) {
+          res.writeHead(200);
+          res.end(data);
+        } else {
+          res.writeHead(200);
+          res.end(compressed);
+        }
+      });
+    } else {
+      res.writeHead(200);
+      res.end(data);
+    }
+  });
+}
+
+// Main request handler
+async function handleRequest(req, res) {
+  const acceptEncoding = req.headers['accept-encoding'] || '';
+  const url = new URL(req.url, `http://localhost:${PORT}`);
+  const pathname = url.pathname;
+  const method = req.method;
+
+  // CORS preflight
+  if (method === 'OPTIONS') {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.writeHead(204);
+    res.end();
+    return;
+  }
+
+  // --- FAQ API ---
+  if (pathname === '/api/faqs' && method === 'GET') {
+    const items = readFaqs();
+    sendJson(res, 200, { success: true, data: items }, acceptEncoding);
+    return;
+  }
+
+  if (pathname === '/api/faqs' && method === 'POST') {
+    const body = await parseBody(req);
+    const { question, answer, category = '', display = true, order = 0 } = body;
+    if (!question || !answer) {
+      sendJson(res, 400, { success: false, message: 'question and answer are required' }, acceptEncoding);
+      return;
+    }
+    const items = readFaqs();
     const id = Date.now().toString();
     const item = { id, question, answer, category, display: !!display, order: Number(order) || 0 };
     items.push(item);
     items.sort((a, b) => (a.order || 0) - (b.order || 0));
-    await writeFaqs(items);
-    res.json({ success: true, data: item });
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ success: false, message: 'Failed to create FAQ' });
+    writeFaqs(items);
+    sendJson(res, 200, { success: true, data: item }, acceptEncoding);
+    return;
   }
-});
 
-// Update FAQ
-app.put('/api/faqs/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { question, answer, category, display, order } = req.body || {};
-    const items = await readFaqs();
-    const idx = items.findIndex((x) => x.id === id);
-    if (idx === -1) return res.status(404).json({ success: false, message: 'FAQ not found' });
-    const prev = items[idx];
-    const updated = {
-      ...prev,
-      ...(question !== undefined ? { question } : {}),
-      ...(answer !== undefined ? { answer } : {}),
-      ...(category !== undefined ? { category } : {}),
-      ...(display !== undefined ? { display: !!display } : {}),
-      ...(order !== undefined ? { order: Number(order) || 0 } : {}),
-    };
-    items[idx] = updated;
-    items.sort((a, b) => (a.order || 0) - (b.order || 0));
-    await writeFaqs(items);
-    res.json({ success: true, data: updated });
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ success: false, message: 'Failed to update FAQ' });
-  }
-});
+  // FAQ update/delete
+  const faqMatch = pathname.match(/^\/api\/faqs\/(.+)$/);
+  if (faqMatch) {
+    const id = faqMatch[1];
 
-// Delete FAQ
-app.delete('/api/faqs/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    const items = await readFaqs();
-    const next = items.filter((x) => x.id !== id);
-    if (next.length === items.length) return res.status(404).json({ success: false, message: 'FAQ not found' });
-    await writeFaqs(next);
-    res.json({ success: true });
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ success: false, message: 'Failed to delete FAQ' });
-  }
-});
+    if (method === 'PUT') {
+      const body = await parseBody(req);
+      const items = readFaqs();
+      const idx = items.findIndex(x => x.id === id);
+      if (idx === -1) {
+        sendJson(res, 404, { success: false, message: 'FAQ not found' }, acceptEncoding);
+        return;
+      }
+      const prev = items[idx];
+      const updated = {
+        ...prev,
+        ...(body.question !== undefined ? { question: body.question } : {}),
+        ...(body.answer !== undefined ? { answer: body.answer } : {}),
+        ...(body.category !== undefined ? { category: body.category } : {}),
+        ...(body.display !== undefined ? { display: !!body.display } : {}),
+        ...(body.order !== undefined ? { order: Number(body.order) || 0 } : {}),
+      };
+      items[idx] = updated;
+      items.sort((a, b) => (a.order || 0) - (b.order || 0));
+      writeFaqs(items);
+      sendJson(res, 200, { success: true, data: updated }, acceptEncoding);
+      return;
+    }
 
-// dist 폴더의 정적 파일 서빙
-app.use(express.static(path.join(__dirname, 'dist'), {
-  maxAge: '1y', // 정적 자산 캐시 1년
-  etag: true,
-  setHeaders: (res, filepath) => {
-    // HTML 파일은 캐시하지 않음
-    if (filepath.endsWith('.html')) {
-      res.setHeader('Cache-Control', 'no-cache');
+    if (method === 'DELETE') {
+      const items = readFaqs();
+      const next = items.filter(x => x.id !== id);
+      if (next.length === items.length) {
+        sendJson(res, 404, { success: false, message: 'FAQ not found' }, acceptEncoding);
+        return;
+      }
+      writeFaqs(next);
+      sendJson(res, 200, { success: true }, acceptEncoding);
+      return;
     }
   }
-}));
 
-// React Router 지원 - 모든 경로를 index.html로 처리 (API 라우트 이후에 위치)
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
-});
+  // --- Static files ---
+  let filePath = path.join(DIST_DIR, pathname === '/' ? 'index.html' : pathname);
 
-// 에러 핸들링
-app.use((err, req, res, next) => {
-  console.error('Server error:', err);
-  res.status(500).send('Internal Server Error');
-});
+  // Security: prevent directory traversal
+  if (!filePath.startsWith(DIST_DIR)) {
+    res.writeHead(403);
+    res.end('Forbidden');
+    return;
+  }
 
-// dist 폴더 존재 확인
-async function checkDistFolder() {
-  const distPath = path.join(__dirname, 'dist', 'index.html');
-  try {
-    await fs.access(distPath);
-    return true;
-  } catch {
+  // Check if file exists
+  if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
+    sendFile(res, filePath, acceptEncoding);
+    return;
+  }
+
+  // SPA fallback - serve index.html for all routes
+  const indexPath = path.join(DIST_DIR, 'index.html');
+  if (fs.existsSync(indexPath)) {
+    sendFile(res, indexPath, acceptEncoding);
+  } else {
+    res.writeHead(404);
+    res.end('Not Found - dist/index.html missing. Run npm run build first.');
+  }
+}
+
+// Create server
+const server = http.createServer(handleRequest);
+
+// Check dist folder
+function checkDistFolder() {
+  const indexPath = path.join(DIST_DIR, 'index.html');
+  if (!fs.existsSync(indexPath)) {
     console.error('❌ dist/index.html 파일이 없습니다!');
     console.error('📦 npm run build 명령어로 빌드를 먼저 실행하세요.');
     return false;
   }
+  return true;
 }
 
-// 서버 시작 함수
-async function startServer() {
-  try {
-    // dist 폴더 확인
-    const distExists = await checkDistFolder();
-    if (!distExists) {
-      process.exit(1);
-    }
-
-    // 서버 시작
-    const server = app.listen(PORT, () => {
-      console.log(`🚀 CareVille 서버가 포트 ${PORT}에서 실행 중입니다.`);
-      console.log(`📦 환경: ${process.env.NODE_ENV || 'production'}`);
-      console.log(`📂 정적 파일 경로: ${path.join(__dirname, 'dist')}`);
-    }).on('error', (err) => {
-      if (err.code === 'EADDRINUSE') {
-        console.error(`❌ 포트 ${PORT}가 이미 사용 중입니다.`);
-        console.error('💡 Cafe24 앱 관리에서 앱을 중지 후 다시 실행하세요.');
-        process.exit(1);
-      } else {
-        console.error('서버 에러:', err);
-        process.exit(1);
-      }
-    });
-
-    // Graceful shutdown
-    process.on('SIGTERM', () => {
-      console.log('SIGTERM received, closing server gracefully...');
-      server.close(() => {
-        console.log('Server closed');
-        process.exit(0);
-      });
-    });
-
-    process.on('SIGINT', () => {
-      console.log('SIGINT received, closing server gracefully...');
-      server.close(() => {
-        console.log('Server closed');
-        process.exit(0);
-      });
-    });
-
-  } catch (error) {
-    console.error('서버 시작 실패:', error);
+// Start server
+function startServer() {
+  if (!checkDistFolder()) {
     process.exit(1);
   }
+
+  server.listen(PORT, () => {
+    console.log(`🚀 CareVille 서버가 포트 ${PORT}에서 실행 중입니다.`);
+    console.log(`📦 환경: ${process.env.NODE_ENV || 'production'}`);
+    console.log(`📂 정적 파일 경로: ${DIST_DIR}`);
+    console.log('✅ Node.js 내장 모듈만 사용 (외부 의존성 없음)');
+  });
+
+  server.on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+      console.error(`❌ 포트 ${PORT}가 이미 사용 중입니다.`);
+      process.exit(1);
+    } else {
+      console.error('서버 에러:', err);
+      process.exit(1);
+    }
+  });
+
+  // Graceful shutdown
+  process.on('SIGTERM', () => {
+    console.log('SIGTERM received, closing server...');
+    server.close(() => process.exit(0));
+  });
+
+  process.on('SIGINT', () => {
+    console.log('SIGINT received, closing server...');
+    server.close(() => process.exit(0));
+  });
 }
 
-// 서버 시작
 startServer();
