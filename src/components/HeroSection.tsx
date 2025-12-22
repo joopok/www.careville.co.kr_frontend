@@ -60,8 +60,8 @@ const HeroSection = () => {
       <SlideshowBackground />
 
       {/* Gradient Overlays for Depth - Enhanced for text readability */}
-      <div className="absolute inset-0 bg-gradient-to-b from-foreground/60 via-foreground/40 to-foreground/80 z-10" />
-      <div className="absolute inset-0 bg-gradient-to-r from-foreground/50 via-foreground/20 to-foreground/40 z-10" />
+      <div className="absolute inset-0 bg-gradient-to-b from-foreground/45 via-foreground/25 to-foreground/65 z-10" />
+      <div className="absolute inset-0 bg-gradient-to-r from-foreground/35 via-foreground/5 to-foreground/25 z-10" />
 
       {/* Decorative Elements - Static for CPU optimization */}
       <div

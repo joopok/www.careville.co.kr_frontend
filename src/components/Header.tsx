@@ -70,7 +70,7 @@ const Header = () => {
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
       isScrolled
         ? 'bg-background/95 backdrop-blur-xl shadow-sm border-b border-border/50'
-        : 'bg-gradient-to-b from-foreground/60 via-foreground/30 to-transparent backdrop-blur-sm'
+        : 'bg-gradient-to-b from-foreground/45 via-foreground/15 to-transparent backdrop-blur-sm'
     } ${
       isLoaded ? 'translate-y-0 opacity-100' : '-translate-y-4 opacity-0'
     }`}>
