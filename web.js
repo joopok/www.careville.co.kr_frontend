@@ -6,7 +6,7 @@ import zlib from 'zlib';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const PORT = process.env.PORT || 8001;
+const PORTS = [8001, 8002]; // 동시에 사용할 포트 목록
 const DIST_DIR = path.join(__dirname, 'dist');
 
 // MIME types
@@ -143,7 +143,7 @@ function sendFile(res, filePath, acceptEncoding = '') {
 // Main request handler
 async function handleRequest(req, res) {
   const acceptEncoding = req.headers['accept-encoding'] || '';
-  const url = new URL(req.url, `http://localhost:${PORT}`);
+  const url = new URL(req.url, `http://localhost`);
   const pathname = url.pathname;
   const method = req.method;
 
@@ -249,8 +249,8 @@ async function handleRequest(req, res) {
   }
 }
 
-// Create server
-const server = http.createServer(handleRequest);
+// Create servers for each port
+const servers = [];
 
 // Check dist folder
 function checkDistFolder() {
@@ -263,39 +263,46 @@ function checkDistFolder() {
   return true;
 }
 
-// Start server
+// Start servers on all ports
 function startServer() {
   if (!checkDistFolder()) {
     process.exit(1);
   }
 
-  server.listen(PORT, () => {
-    console.log(`🚀 CareVille 서버가 포트 ${PORT}에서 실행 중입니다.`);
-    console.log(`📦 환경: ${process.env.NODE_ENV || 'production'}`);
-    console.log(`📂 정적 파일 경로: ${DIST_DIR}`);
-    console.log('✅ Node.js 내장 모듈만 사용 (외부 의존성 없음)');
+  // 환경변수로 포트가 지정된 경우 해당 포트만 사용
+  const portsToUse = process.env.PORT ? [parseInt(process.env.PORT)] : PORTS;
+
+  portsToUse.forEach((port) => {
+    const server = http.createServer(handleRequest);
+
+    server.listen(port, () => {
+      console.log(`🚀 CareVille 서버가 포트 ${port}에서 실행 중입니다.`);
+    });
+
+    server.on('error', (err) => {
+      if (err.code === 'EADDRINUSE') {
+        console.log(`⚠️ 포트 ${port}가 이미 사용 중입니다. 건너뜁니다.`);
+      } else {
+        console.error(`서버 에러 (포트 ${port}):`, err);
+      }
+    });
+
+    servers.push(server);
   });
 
-  server.on('error', (err) => {
-    if (err.code === 'EADDRINUSE') {
-      console.error(`❌ 포트 ${PORT}가 이미 사용 중입니다.`);
-      process.exit(1);
-    } else {
-      console.error('서버 에러:', err);
-      process.exit(1);
-    }
-  });
+  console.log(`📦 환경: ${process.env.NODE_ENV || 'production'}`);
+  console.log(`📂 정적 파일 경로: ${DIST_DIR}`);
+  console.log('✅ Node.js 내장 모듈만 사용 (외부 의존성 없음)');
 
   // Graceful shutdown
-  process.on('SIGTERM', () => {
-    console.log('SIGTERM received, closing server...');
-    server.close(() => process.exit(0));
-  });
+  const shutdown = () => {
+    console.log('서버 종료 중...');
+    servers.forEach(s => s.close());
+    process.exit(0);
+  };
 
-  process.on('SIGINT', () => {
-    console.log('SIGINT received, closing server...');
-    server.close(() => process.exit(0));
-  });
+  process.on('SIGTERM', shutdown);
+  process.on('SIGINT', shutdown);
 }
 
 startServer();

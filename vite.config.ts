@@ -14,8 +14,8 @@ export default defineConfig(({ mode }) => {
   return {
   server: {
     host: "0.0.0.0",
-    port: 8001,
-    strictPort: false,
+    port: 8001, // 8001 사용 불가시 8002로 자동 전환
+    strictPort: false, // false면 포트 사용중일 때 다음 포트 시도
     open: true,
     hmr: {
       overlay: true,
