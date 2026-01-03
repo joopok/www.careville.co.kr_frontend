@@ -26,7 +26,7 @@ const ContactSection = memo(() => {
   // API에서 로드된 설정값 사용 (없으면 기본값)
   const phoneNumber = getConfig('PHONE', defaultConfig.PHONE);
   const emailAddress = getConfig('EMAIL', defaultConfig.EMAIL);
-  const address = getConfig('ADDRESS', defaultConfig.ADDRESS);
+  const address = getConfig('ADDRESS_HQ', defaultConfig.ADDRESS);
 
   // 동적 설정값을 사용하는 contactInfo (useMemo로 최적화)
   const contactInfo = useMemo(() => [

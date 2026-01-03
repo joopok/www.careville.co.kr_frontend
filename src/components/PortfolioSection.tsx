@@ -21,7 +21,9 @@ interface CaseItem {
   caseCn: string;
   regNm?: string;
   fileSeq?: number;
-  viewfileseq: string | number;  // 백엔드가 소문자로 반환
+  viewFileSeq: string;   // 시공전 이미지
+  viewFileSeq2: string;  // 시공후 이미지
+  areaType?: string;     // 면적
   hashtag: string;
   rgsDt: string;
 }
@@ -63,6 +65,13 @@ const SERVICE_CODE_MAP: Record<string, string> = {
   "011": "home",
 };
 
+// 면적 추출 함수 (내용에서 "XX평" 패턴 찾기)
+const extractArea = (content: string): string => {
+  if (!content) return "";
+  const match = content.match(/(\d+)\s*평/);
+  return match ? `${match[1]}평` : "";
+};
+
 // 백엔드 데이터를 프론트 Portfolio로 변환
 const convertCaseToPortfolio = (caseItem: CaseItem): Portfolio => {
   // serviceCd가 null일 수 있으므로 null 체크 추가
@@ -71,10 +80,21 @@ const convertCaseToPortfolio = (caseItem: CaseItem): Portfolio => {
     : "special";
   const tags = caseItem.hashtag ? caseItem.hashtag.split(',').map(tag => tag.trim().replace(/^#/, '')) : [];
 
-  // 이미지 URL 생성 (viewfileseq 사용 - 백엔드가 소문자로 반환)
-  const imageUrl = caseItem.viewfileseq
-    ? `${import.meta.env.VITE_API_URL}/fileView.do?fileSeq=${caseItem.viewfileseq}`
-    : "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600";
+  const defaultImage = "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600";
+  const apiUrl = import.meta.env.VITE_API_URL;
+
+  // 시공전 이미지 (viewFileSeq)
+  const beforeImageUrl = caseItem.viewFileSeq
+    ? `${apiUrl}/fileView.do?viewFileSeq=${caseItem.viewFileSeq}`
+    : defaultImage;
+
+  // 시공후 이미지 (viewFileSeq2)
+  const afterImageUrl = caseItem.viewFileSeq2
+    ? `${apiUrl}/fileView.do?viewFileSeq=${caseItem.viewFileSeq2}`
+    : defaultImage;
+
+  // 면적: areaType 필드 사용 (없으면 caseCn에서 추출)
+  const area = caseItem.areaType || extractArea(caseItem.caseCn);
 
   return {
     id: caseItem.caseSeq,
@@ -82,11 +102,11 @@ const convertCaseToPortfolio = (caseItem: CaseItem): Portfolio => {
     title: caseItem.caseSj,
     location: "서울시", // 백엔드에 location 필드 없음
     date: caseItem.rgsDt,
-    area: tags.find(tag => tag.includes('평')) || "", // 태그에서 면적 추출
+    area,
     type: caseItem.serviceNm || "특수청소", // null일 경우 기본값
-    mainImage: imageUrl,
-    beforeImage: imageUrl, // 백엔드에 before/after 구분 없음
-    afterImage: imageUrl,
+    mainImage: afterImageUrl,   // 목록: 시공후 이미지
+    beforeImage: beforeImageUrl, // 상세: 시공전
+    afterImage: afterImageUrl,   // 상세: 시공후
     description: (caseItem.caseCn || '').replace(/<[^>]*>/g, '').substring(0, 100), // HTML 태그 제거 후 100자 (null 가드 추가)
     tags
   };
@@ -94,7 +114,7 @@ const convertCaseToPortfolio = (caseItem: CaseItem): Portfolio => {
 
 const PortfolioSection = ({ portfolioList, loading }: PortfolioSectionProps) => {
   const [selectedPortfolio, setSelectedPortfolio] = useState<Portfolio | null>(null);
-  const [imageType, setImageType] = useState<'before' | 'after'>('after');
+  const [imageType, setImageType] = useState<'before' | 'after'>('before');
   const [visibleCount, setVisibleCount] = useState(6); // 처음에 6개 표시
 
   // props로 받은 데이터를 Portfolio 형태로 변환 (useMemo로 최적화)
@@ -167,13 +187,17 @@ const PortfolioSection = ({ portfolioList, loading }: PortfolioSectionProps) => 
               transition={{ delay: index * 0.1 }}
             >
               <Card className="group cursor-pointer overflow-hidden hover:shadow-xl transition-all duration-300"
-                    onClick={() => setSelectedPortfolio(portfolio)}>
+                    onClick={() => { setImageType('before'); setSelectedPortfolio(portfolio); }}>
                 {/* Image */}
                 <div className="relative h-48 overflow-hidden bg-gray-100">
-                  <img 
-                    src={portfolio.mainImage} 
+                  <img
+                    src={portfolio.mainImage}
                     alt={portfolio.title}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600";
+                    }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -267,12 +291,16 @@ const PortfolioSection = ({ portfolioList, loading }: PortfolioSectionProps) => 
 
                   {/* Main Image */}
                   <div className="relative h-96 rounded-lg overflow-hidden bg-gray-100">
-                    <img 
-                      src={imageType === 'before' && selectedPortfolio.beforeImage 
-                        ? selectedPortfolio.beforeImage 
-                        : selectedPortfolio.afterImage || selectedPortfolio.mainImage} 
+                    <img
+                      src={imageType === 'before' && selectedPortfolio.beforeImage
+                        ? selectedPortfolio.beforeImage
+                        : selectedPortfolio.afterImage || selectedPortfolio.mainImage}
                       alt={selectedPortfolio.title}
                       className="w-full h-full object-cover"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600";
+                      }}
                     />
                     {imageType === 'before' && (
                       <div className="absolute top-4 left-4 bg-gray-900/80 text-white px-3 py-1 rounded">
@@ -290,19 +318,19 @@ const PortfolioSection = ({ portfolioList, loading }: PortfolioSectionProps) => 
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-gray-50 rounded-lg">
                     <div>
                       <p className="text-sm text-muted-foreground">위치</p>
-                      <p className="font-semibold">{selectedPortfolio.location}</p>
+                      <p className="font-semibold">{selectedPortfolio.location || "-"}</p>
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">면적</p>
-                      <p className="font-semibold">{selectedPortfolio.area}</p>
+                      <p className="font-semibold">{selectedPortfolio.area || "-"}</p>
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">작업일</p>
-                      <p className="font-semibold">{selectedPortfolio.date}</p>
+                      <p className="font-semibold">{selectedPortfolio.date || "-"}</p>
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">작업유형</p>
-                      <p className="font-semibold">{selectedPortfolio.type}</p>
+                      <p className="font-semibold">{selectedPortfolio.type || "-"}</p>
                     </div>
                   </div>
 
@@ -323,11 +351,10 @@ const PortfolioSection = ({ portfolioList, loading }: PortfolioSectionProps) => 
                     ))}
                   </div>
 
-                  {/* CTA Button */}
+                  {/* Close Button */}
                   <div className="flex justify-center pt-4">
-                    <Button size="lg" className="gap-2">
-                      무료 견적 받기
-                      <ArrowRight className="h-4 w-4" />
+                    <Button size="lg" variant="outline" onClick={() => setSelectedPortfolio(null)}>
+                      닫기
                     </Button>
                   </div>
                 </div>

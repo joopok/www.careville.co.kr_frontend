@@ -58,7 +58,9 @@ interface CaseItem {
   caseCn: string;
   hashtag: string;
   rgsDt: string;
-  viewfileseq: number;
+  viewFileSeq: string;   // 시공전 이미지
+  viewFileSeq2: string;  // 시공후 이미지
+  areaType?: string;     // 면적
 }
 
 // FAQ 타입
@@ -168,8 +170,8 @@ const IndexOptimized = () => {
     // 2. 시공사례 API (중간 속도)
     fetch(`${apiBase}/caseList.do`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ rowStrt: 0, rowLimit: 24 })
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ limitStartNum: '0', limitViewRowCnt: '24' })
     })
       .then(res => {
         if (!res.ok) throw new Error('Failed to fetch cases');

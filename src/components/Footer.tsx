@@ -25,8 +25,8 @@ const Footer = () => {
   const email = getConfig('EMAIL', defaultConfig.EMAIL);
   const companyName = getConfig('COMPANY_NAME', defaultConfig.COMPANY_NAME);
   const ceoName = getConfig('CEO_NAME', defaultConfig.CEO_NAME);
-  const businessNumber = getConfig('BUSINESS_NUMBER', defaultConfig.BUSINESS_NUMBER);
-  const address = getConfig('ADDRESS', defaultConfig.ADDRESS);
+  const businessNumber = getConfig('BIZ_NUMBER', defaultConfig.BUSINESS_NUMBER);
+  const address = getConfig('ADDRESS_HQ', defaultConfig.ADDRESS);
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });

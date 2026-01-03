@@ -105,8 +105,8 @@ const BusinessCleaningSection = ({ productList, loading }: BusinessCleaningSecti
       });
   }, [productList]);
 
-  const openDetailModal = useCallback((serviceCd: string, serviceTitle: string) => {
-    setSelectedService({ serviceCd, title: serviceTitle });
+  const openDetailModal = useCallback((serviceCd: string, serviceTitle: string, productNo: number) => {
+    setSelectedService({ serviceCd, title: serviceTitle, productNo });
     setIsDetailModalOpen(true);
   }, []);
 
@@ -253,7 +253,7 @@ const BusinessCleaningSection = ({ productList, loading }: BusinessCleaningSecti
 
                   {/* 자세히 보기 버튼 */}
                   <button
-                    onClick={() => openDetailModal(service.serviceCd, service.title)}
+                    onClick={() => openDetailModal(service.serviceCd, service.title, service.productNo)}
                     className="w-full flex items-center justify-center gap-2 py-2.5 mt-4 text-sm text-primary hover:text-primary-dark border border-primary/30 hover:border-primary rounded-xl transition-all hover:bg-primary/5"
                   >
                     <Eye className="w-4 h-4" />
@@ -348,7 +348,9 @@ const BusinessCleaningSection = ({ productList, loading }: BusinessCleaningSecti
       <ServiceDetailModal
         isOpen={isDetailModalOpen}
         onClose={closeDetailModal}
-        serviceId={selectedService?.title || null}
+        productNo={selectedService?.productNo || null}
+        serviceTitle={selectedService?.title || null}
+        serviceCd={selectedService?.serviceCd || null}
       />
 
       <ServiceRequestModal

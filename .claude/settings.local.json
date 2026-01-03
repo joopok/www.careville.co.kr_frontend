@@ -81,7 +81,12 @@
       "Bash(timeout 5 npm run dev:local:*)",
       "Bash(xargs kill -9)",
       "Bash(rm:*)",
-      "Bash(pkill:*)"
+      "Bash(pkill:*)",
+      "Bash(git restore:*)",
+      "Bash(git checkout:*)",
+      "Bash(git fetch:*)",
+      "WebFetch(domain:careville.co.kr)",
+      "Bash(timeout 8 npm run dev:*)"
     ],
     "deny": [],
     "ask": []

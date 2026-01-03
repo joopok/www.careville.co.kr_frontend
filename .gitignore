@@ -15,7 +15,7 @@ backdata
 dist-ssr
 *.local
 CLAUDE.md
-
+.claude/**
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
