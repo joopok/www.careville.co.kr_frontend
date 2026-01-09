@@ -34,7 +34,7 @@ export const siteConfig = {
     },
     branches: [
       {
-        label: "경기지사",
+        label: "서울지사",
         line1: "경기 고양시 으뜸로8",
         line2: "504호(덕은아이에스비즈타워센트럴 1차)",
         full: "경기 고양시 으뜸로8, 504호(덕은아이에스비즈타워센트럴 1차)",

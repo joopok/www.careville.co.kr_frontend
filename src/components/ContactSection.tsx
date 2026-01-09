@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Phone, Mail, MapPin, Clock, HeadphonesIcon, Send, ArrowRight, Loader2, CheckCircle } from "lucide-react";
-import { siteConfig } from "@/config/site";
 import { useConfig, defaultConfig } from "@/contexts/ConfigContext";
 
 interface InquiryForm {
@@ -26,7 +25,13 @@ const ContactSection = memo(() => {
   // API에서 로드된 설정값 사용 (없으면 기본값)
   const phoneNumber = getConfig('PHONE', defaultConfig.PHONE);
   const emailAddress = getConfig('EMAIL', defaultConfig.EMAIL);
-  const address = getConfig('ADDRESS_HQ', defaultConfig.ADDRESS);
+  const address = getConfig('ADDRESS_HQ', defaultConfig.ADDRESS_HQ);
+  const branchName = getConfig('BRANCH_NAME', defaultConfig.BRANCH_NAME);
+  const branchAddress = getConfig('ADDRESS_BRANCH', defaultConfig.ADDRESS_BRANCH);
+
+  // 고객센터 운영시간
+  const weekdayHours = getConfig('WEEKDAY_HOURS', defaultConfig.WEEKDAY_HOURS);
+  const emergencyHours = getConfig('EMERGENCY_HOURS', defaultConfig.EMERGENCY_HOURS);
 
   // 동적 설정값을 사용하는 contactInfo (useMemo로 최적화)
   const contactInfo = useMemo(() => [
@@ -34,7 +39,7 @@ const ContactSection = memo(() => {
       icon: Phone,
       title: "전화 상담",
       content: phoneNumber,
-      description: siteConfig.customerService.hours.weekday,
+      description: weekdayHours,
       action: `tel:${phoneNumber}`,
       highlight: true
     },
@@ -47,23 +52,23 @@ const ContactSection = memo(() => {
     },
     {
       icon: MapPin,
-      title: siteConfig.address.headquarters.label,
-      content: address.split(',')[0] || siteConfig.address.headquarters.line1,
-      description: address.split(',')[1] || siteConfig.address.headquarters.line2
+      title: "본사",
+      content: address.split(',')[0] || address,
+      description: address.split(',')[1] || ''
     },
     {
       icon: MapPin,
-      title: siteConfig.address.branches[0].label,
-      content: siteConfig.address.branches[0].line1,
-      description: siteConfig.address.branches[0].line2
+      title: branchName,
+      content: branchAddress.split(',')[0] || branchAddress,
+      description: branchAddress.split(',')[1] || ''
     },
     {
       icon: Clock,
       title: "영업 시간",
       content: "연중무휴",
-      description: siteConfig.customerService.hours.emergency
+      description: emergencyHours
     }
-  ], [phoneNumber, emailAddress, address]);
+  ], [phoneNumber, emailAddress, address, branchName, branchAddress, weekdayHours, emergencyHours]);
   const [formData, setFormData] = useState<InquiryForm>({
     name: "",
     phone: "",

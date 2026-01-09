@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Phone, MessageCircle, ArrowDown, Sparkles, Check, Award, Shield, Clock, Play } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import { handlePhoneCall } from "@/lib/utils";
+import { useConfig, defaultConfig } from "@/contexts/ConfigContext";
 
 const SLIDESHOW_IMAGES = [
   "images/banner1.png",
@@ -13,6 +14,9 @@ const SLIDESHOW_IMAGES = [
 ];
 
 const HeroSection = () => {
+  const { getConfig } = useConfig();
+  const phoneNumber = getConfig('PHONE', defaultConfig.PHONE);
+
   const [isVisible, setIsVisible] = useState(false);
   const [activeFeature, setActiveFeature] = useState(0);
 
@@ -143,7 +147,7 @@ const HeroSection = () => {
                 <Button
                   size="lg"
                   className="group h-14 bg-secondary hover:bg-secondary-dark text-white px-8 rounded-full shadow-xl shadow-secondary/30 hover:shadow-2xl hover:shadow-secondary/40 transition-all duration-300 hover:scale-105 font-semibold"
-                  onClick={() => handlePhoneCall()}
+                  onClick={() => handlePhoneCall(phoneNumber)}
                 >
                   <Phone className="mr-2 h-5 w-5 group-hover:animate-pulse" />
                   바로 상담받기
@@ -423,6 +427,9 @@ const SlideshowBackground = () => {
 
 // Floating Contact Buttons
 const FloatingButtons = () => {
+  const { getConfig } = useConfig();
+  const phoneNumber = getConfig('PHONE', defaultConfig.PHONE);
+
   const scrollToQuickInquiry = () => {
     const element = document.getElementById('quick-inquiry');
     if (element) {
@@ -462,18 +469,9 @@ const FloatingButtons = () => {
           <Button
             size="icon"
             className="w-12 h-12 rounded-xl bg-primary hover:bg-primary-dark text-white shadow-lg shadow-primary/30 hover:shadow-xl transition-all duration-300 hover:scale-110"
-            onClick={() => handlePhoneCall()}
+            onClick={() => handlePhoneCall(phoneNumber)}
           >
             <Phone className="h-5 w-5" />
-          </Button>
-
-          {/* Blog */}
-          <Button
-            size="icon"
-            className="w-12 h-12 rounded-xl bg-[#03C75A] hover:bg-[#02B150] text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110"
-            onClick={() => window.open('https://blog.naver.com/PostList.naver?blogId=on_totalcare&parentCategoryNo=1&skinType=&skinId=&from=menu&userSelectMenu=true', '_blank')}
-          >
-            <span className="text-xs font-bold">N</span>
           </Button>
 
           {/* Inquiry */}

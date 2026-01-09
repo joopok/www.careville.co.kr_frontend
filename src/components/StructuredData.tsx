@@ -1,16 +1,24 @@
 import { Helmet } from 'react-helmet-async';
 import { siteConfig } from '@/config/site';
+import { useConfig, defaultConfig } from '@/contexts/ConfigContext';
 
 const StructuredData = () => {
+  const { getConfig } = useConfig();
+
+  // API에서 로드된 설정값 사용 (없으면 기본값)
+  const phoneNumber = getConfig('PHONE', defaultConfig.PHONE);
+  const email = getConfig('EMAIL', defaultConfig.EMAIL);
+  const companyName = getConfig('COMPANY_NAME', defaultConfig.COMPANY_NAME);
+
   const schemaData = {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
-    "name": siteConfig.name,
+    "name": companyName,
     "image": siteConfig.logoUrl,
     "@id": siteConfig.url,
     "url": siteConfig.url,
-    "telephone": siteConfig.contact.phone,
-    "email": siteConfig.contact.emailOfficial,
+    "telephone": phoneNumber,
+    "email": email,
     "address": {
       "@type": "PostalAddress",
       "addressLocality": siteConfig.seo.geo.addressLocality,

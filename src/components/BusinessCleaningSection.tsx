@@ -5,7 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Building2, Users, Briefcase, CheckCircle2, Clock, Phone, Shield, Sparkles, Wind, Eye, Star } from "lucide-react";
 import { motion } from "framer-motion";
 import { handlePhoneCall } from "@/lib/utils";
-import { siteConfig, getTelLink } from "@/config/site";
+import { useConfig, defaultConfig } from "@/contexts/ConfigContext";
 import ServiceDetailModal from "./ServiceDetailModal";
 import ServiceRequestModal from "./ServiceRequestModal";
 
@@ -61,6 +61,9 @@ const formatPrice = (): string => {
 };
 
 const BusinessCleaningSection = ({ productList, loading }: BusinessCleaningSectionProps) => {
+  const { getConfig } = useConfig();
+  const phoneNumber = getConfig('PHONE', defaultConfig.PHONE);
+
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
   const [selectedService, setSelectedService] = useState<SelectedService | null>(null);
@@ -319,23 +322,17 @@ const BusinessCleaningSection = ({ productList, loading }: BusinessCleaningSecti
                 {/* Right Content */}
                 <div className="text-center md:text-right">
                   <p className="text-sm text-white/70 mb-2">기업 상담 전용</p>
-                  <p className="text-4xl md:text-5xl font-bold mb-3 tracking-tight">{siteConfig.contact.phone}</p>
+                  <p className="text-4xl md:text-5xl font-bold mb-3 tracking-tight">{phoneNumber}</p>
                   <p className="text-white/70 mb-8">규모와 업종에 맞는 최적의 솔루션</p>
 
                   <div className="flex flex-col sm:flex-row gap-3 justify-center md:justify-end">
                     <Button
                       size="lg"
                       className="bg-white text-primary hover:bg-white/90 rounded-xl h-12 px-6 font-semibold shadow-lg shadow-black/20"
-                      onClick={() => handlePhoneCall()}
+                      onClick={() => handlePhoneCall(phoneNumber)}
                     >
                       <Phone className="w-4 h-4 mr-2" />
                       전화 상담
-                    </Button>
-                    <Button
-                      size="lg"
-                      className="bg-white text-primary hover:bg-white/90 rounded-xl h-12 px-6 font-semibold shadow-lg shadow-black/20"
-                    >
-                      무료 견적 받기
                     </Button>
                   </div>
                 </div>

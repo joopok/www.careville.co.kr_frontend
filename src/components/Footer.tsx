@@ -26,7 +26,16 @@ const Footer = () => {
   const companyName = getConfig('COMPANY_NAME', defaultConfig.COMPANY_NAME);
   const ceoName = getConfig('CEO_NAME', defaultConfig.CEO_NAME);
   const businessNumber = getConfig('BIZ_NUMBER', defaultConfig.BUSINESS_NUMBER);
-  const address = getConfig('ADDRESS_HQ', defaultConfig.ADDRESS);
+  const businessType = getConfig('BUSINESS_TYPE', defaultConfig.BUSINESS_TYPE);
+  const address = getConfig('ADDRESS_HQ', defaultConfig.ADDRESS_HQ);
+  const branchName = getConfig('BRANCH_NAME', defaultConfig.BRANCH_NAME);
+  const branchAddress = getConfig('ADDRESS_BRANCH', defaultConfig.ADDRESS_BRANCH);
+
+  // 고객센터 운영시간
+  const phoneDescription = getConfig('PHONE_DESCRIPTION', defaultConfig.PHONE_DESCRIPTION);
+  const emailDescription = getConfig('EMAIL_DESCRIPTION', defaultConfig.EMAIL_DESCRIPTION);
+  const weekdayHours = getConfig('WEEKDAY_HOURS', defaultConfig.WEEKDAY_HOURS);
+  const weekendHours = getConfig('WEEKEND_HOURS', defaultConfig.WEEKEND_HOURS);
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -117,7 +126,7 @@ const Footer = () => {
                   <Phone className="w-5 h-5 mt-0.5 flex-shrink-0 text-primary" />
                   <div>
                     <p className="font-semibold text-white group-hover:text-primary transition-colors">{phoneNumber}</p>
-                    <p className="text-sm text-white/50">{siteConfig.customerService.phoneDescription}</p>
+                    <p className="text-sm text-white/50">{phoneDescription}</p>
                   </div>
                 </a>
               </li>
@@ -126,7 +135,7 @@ const Footer = () => {
                   <Mail className="w-5 h-5 mt-0.5 flex-shrink-0 text-primary" />
                   <div>
                     <p className="font-semibold text-white group-hover:text-primary transition-colors">{email}</p>
-                    <p className="text-sm text-white/50">{siteConfig.customerService.emailDescription}</p>
+                    <p className="text-sm text-white/50">{emailDescription}</p>
                   </div>
                 </a>
               </li>
@@ -134,8 +143,8 @@ const Footer = () => {
                 <Clock className="w-5 h-5 mt-0.5 flex-shrink-0 text-primary" />
                 <div>
                   <p className="font-semibold text-white">운영시간</p>
-                  <p className="text-sm text-white/50">{siteConfig.customerService.hours.weekday}</p>
-                  <p className="text-sm text-white/50">{siteConfig.customerService.hours.weekend}</p>
+                  <p className="text-sm text-white/50">{weekdayHours}</p>
+                  <p className="text-sm text-white/50">{weekendHours}</p>
                 </div>
               </li>
             </ul>
@@ -148,12 +157,12 @@ const Footer = () => {
               <p><span className="text-white/80">상호명:</span> {companyName}</p>
               <p><span className="text-white/80">대표이사:</span> {ceoName}</p>
               <p><span className="text-white/80">사업자번호:</span> {businessNumber}</p>
-              <p><span className="text-white/80">사업종류:</span> {siteConfig.company.businessType.join(", ")}</p>
+              <p><span className="text-white/80">사업종류:</span> {businessType}</p>
               <p>
-                <span className="text-white/80">{siteConfig.address.headquarters.label}:</span> {address}
+                <span className="text-white/80">본사:</span> {address}
               </p>
               <p className="pt-2">
-                <span className="text-white/80">{siteConfig.address.branches[0].label}:</span> {siteConfig.address.branches[0].full}
+                <span className="text-white/80">{branchName}:</span> {branchAddress}
               </p>
             </div>
           </div>

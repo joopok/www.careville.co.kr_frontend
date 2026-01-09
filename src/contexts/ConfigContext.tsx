@@ -82,13 +82,29 @@ export const useConfig = (): ConfigContextType => {
 
 // 기본 설정값 (API 로드 전 또는 실패 시 사용)
 export const defaultConfig = {
+  // 기본 정보
   SITE_NAME: '케어빌',
   PHONE: '1600-9762',
   EMAIL: 'seung0910@naver.com',
+
+  // 사업자 정보
   COMPANY_NAME: '주식회사 케이빌',
   CEO_NAME: '이경숙',
   BUSINESS_NUMBER: '276-87-03677',
+  BUSINESS_TYPE: '서비스, 건설업, 도소매',
+
+  // 주소
   ADDRESS: '경기 고양시 일산동구 정발산로 31-10, 806호(장항동, 파크프라자)',
+  ADDRESS_HQ: '경기 고양시 일산동구 정발산로 31-10, 806호(장항동, 파크프라자)',
+  ADDRESS_BRANCH: '경기 고양시 으뜸로8, 504호(덕은아이에스비즈타워센트럴 1차)',
+  BRANCH_NAME: '서울지사',
+
+  // 고객센터 운영시간
+  WEEKDAY_HOURS: '평일 09:00 - 18:00',
+  WEEKEND_HOURS: '주말 09:00 - 15:00',
+  EMERGENCY_HOURS: '연중무휴(긴급 24시간)',
+  PHONE_DESCRIPTION: '24시간 상담 가능',
+  EMAIL_DESCRIPTION: '이메일 문의',
 } as const;
 
 export default ConfigContext;

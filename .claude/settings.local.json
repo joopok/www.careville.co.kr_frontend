@@ -90,5 +90,9 @@
     ],
     "deny": [],
     "ask": []
-  }
+  },
+  "enabledMcpjsonServers": [
+    "playwright-test"
+  ],
+  "enableAllProjectMcpServers": true
 }

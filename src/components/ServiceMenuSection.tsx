@@ -10,7 +10,7 @@ import {
   Wind,
   Utensils
 } from "lucide-react";
-import { siteConfig, getTelLink } from "@/config/site";
+import { useConfig, defaultConfig } from "@/contexts/ConfigContext";
 
 const serviceCategories = [
   {
@@ -70,6 +70,9 @@ const features = [
 ];
 
 const ServiceMenuSection = () => {
+  const { getConfig } = useConfig();
+  const phoneNumber = getConfig('PHONE', defaultConfig.PHONE);
+
   const [activeCategory, setActiveCategory] = useState("home");
   const activeService = serviceCategories.find(s => s.id === activeCategory);
 
@@ -252,7 +255,7 @@ const ServiceMenuSection = () => {
                     <ArrowRight className="w-4 h-4" />
                   </button>
                   <a
-                    href={getTelLink()}
+                    href={`tel:${phoneNumber}`}
                     className="inline-flex items-center justify-center sm:justify-start gap-2 px-5 sm:px-6 py-2.5 sm:py-3 bg-white/10 backdrop-blur-sm text-white font-medium rounded-full border border-white/30 hover:bg-white/20 transition-all duration-300 text-sm sm:text-base"
                   >
                     상담 문의
