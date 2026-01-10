@@ -8,11 +8,18 @@ interface ConfigItem {
   description?: string;
 }
 
+// 히어로 이미지 타입
+export interface HeroImage {
+  webp: string;
+  png: string;
+}
+
 // Context 값 타입
 interface ConfigContextType {
   config: Record<string, string>;
   loading: boolean;
   getConfig: (key: string, defaultValue?: string) => string;
+  getHeroImages: () => HeroImage[];
 }
 
 // Context 생성
@@ -64,8 +71,35 @@ export const ConfigProvider = ({ children }: ConfigProviderProps) => {
     return config[key] || defaultValue;
   };
 
+  // 히어로 이미지 목록 조회 함수
+  const getHeroImages = (): HeroImage[] => {
+    const apiBase = import.meta.env.VITE_API_URL;
+    const heroImages: HeroImage[] = [];
+
+    // HERO_IMG_01 ~ HERO_IMG_10 중 값이 있는 것만 필터링
+    for (let i = 1; i <= 10; i++) {
+      const key = `HERO_IMG_${String(i).padStart(2, '0')}`;
+      const value = config[key];
+
+      if (value && value.trim() !== '') {
+        // 경로 형식: "202601/파일명.png" → a=202601, b=파일명.png
+        const pathParts = value.split('/');
+        if (pathParts.length === 2) {
+          const [folder, fileName] = pathParts;
+          const imageUrl = `${apiBase}/heroFileView.do?a=${encodeURIComponent(folder)}&b=${encodeURIComponent(fileName)}`;
+          heroImages.push({
+            webp: imageUrl,
+            png: imageUrl,
+          });
+        }
+      }
+    }
+
+    return heroImages;
+  };
+
   return (
-    <ConfigContext.Provider value={{ config, loading, getConfig }}>
+    <ConfigContext.Provider value={{ config, loading, getConfig, getHeroImages }}>
       {children}
     </ConfigContext.Provider>
   );

@@ -86,13 +86,17 @@
       "Bash(git checkout:*)",
       "Bash(git fetch:*)",
       "WebFetch(domain:careville.co.kr)",
-      "Bash(timeout 8 npm run dev:*)"
+      "Bash(timeout 8 npm run dev:*)",
+      "Bash(/opt/anaconda3/bin/cwebp:*)",
+      "Bash(sips:*)",
+      "Bash(grep:*)",
+      "Bash(./gradlew build:*)"
     ],
     "deny": [],
     "ask": []
   },
+  "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "playwright-test"
-  ],
-  "enableAllProjectMcpServers": true
+  ]
 }

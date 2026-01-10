@@ -2,20 +2,25 @@ import { Button } from "@/components/ui/button";
 import { Phone, MessageCircle, ArrowDown, Sparkles, Check, Award, Shield, Clock, Play } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import { handlePhoneCall } from "@/lib/utils";
-import { useConfig, defaultConfig } from "@/contexts/ConfigContext";
+import { useConfig, defaultConfig, HeroImage } from "@/contexts/ConfigContext";
 
-const SLIDESHOW_IMAGES = [
-  "images/banner1.png",
-  "images/banner2.png",
-  "images/banner3.png",
-  "images/banner4.png",
-  "images/banner5.png",
-  "images/banner6.png"
+// 기본 이미지 소스 (Config API에 이미지가 없을 때 폴백용)
+const DEFAULT_IMAGES: HeroImage[] = [
+  { webp: "images/banner1.webp", png: "images/banner1.png" },
+  { webp: "images/banner2.webp", png: "images/banner2.png" },
+  { webp: "images/banner3.webp", png: "images/banner3.png" },
+  { webp: "images/banner4.webp", png: "images/banner4.png" },
+  { webp: "images/banner5.webp", png: "images/banner5.png" },
+  { webp: "images/banner6.webp", png: "images/banner6.png" },
 ];
 
 const HeroSection = () => {
-  const { getConfig } = useConfig();
+  const { getConfig, getHeroImages } = useConfig();
   const phoneNumber = getConfig('PHONE', defaultConfig.PHONE);
+
+  // Config API에서 히어로 이미지 가져오기 (1개 이상이면 사용, 없으면 기본 이미지)
+  const heroImages = getHeroImages();
+  const slideshowImages = heroImages.length >= 1 ? heroImages : DEFAULT_IMAGES;
 
   const [isVisible, setIsVisible] = useState(false);
   const [activeFeature, setActiveFeature] = useState(0);
@@ -61,7 +66,7 @@ const HeroSection = () => {
   return (
     <section id="hero" className="relative min-h-screen flex flex-col overflow-hidden">
       {/* Background Slideshow */}
-      <SlideshowBackground />
+      <SlideshowBackground images={slideshowImages} fallbackImages={DEFAULT_IMAGES} />
 
       {/* Gradient Overlays for Depth - Enhanced for text readability */}
       <div className="absolute inset-0 bg-gradient-to-b from-foreground/45 via-foreground/25 to-foreground/65 z-10" />
@@ -311,30 +316,59 @@ const HeroSection = () => {
   );
 };
 
+// Slideshow Background Props
+interface SlideshowBackgroundProps {
+  images: HeroImage[];
+  fallbackImages: HeroImage[];
+}
+
 // Slideshow Background Component - Optimized for smooth transitions and low CPU usage
-const SlideshowBackground = () => {
+const SlideshowBackground = ({ images, fallbackImages }: SlideshowBackgroundProps) => {
   const [currIndex, setCurrIndex] = useState(0);
+  const [validImages, setValidImages] = useState<HeroImage[]>(images);
+  const [imageLoadFailed, setImageLoadFailed] = useState(false);
   const touchStart = useRef(0);
   const touchEnd = useRef(0);
   const intervalRef = useRef<number | null>(null);
 
-  // Preload images on mount
+  // 이미지 유효성 검사 및 폴백 처리
   useEffect(() => {
-    SLIDESHOW_IMAGES.forEach((src) => {
-      const img = new Image();
-      img.src = src;
+    if (images.length === 0) {
+      setValidImages(fallbackImages);
+      return;
+    }
+
+    // 첫 번째 이미지 로드 테스트
+    const testImg = new window.Image();
+    testImg.onload = () => {
+      setValidImages(images);
+      setImageLoadFailed(false);
+    };
+    testImg.onerror = () => {
+      console.log('Config 이미지 로드 실패, 기본 이미지 사용');
+      setValidImages(fallbackImages);
+      setImageLoadFailed(true);
+    };
+    testImg.src = images[0].webp;
+  }, [images, fallbackImages]);
+
+  // Preload images on mount (WebP 우선)
+  useEffect(() => {
+    validImages.forEach((imgSrc) => {
+      const img = new window.Image();
+      img.src = imgSrc.webp;
     });
-  }, []);
+  }, [validImages]);
 
   // Auto-advance slideshow
   useEffect(() => {
     intervalRef.current = window.setInterval(() => {
-      setCurrIndex((prev) => (prev + 1) % SLIDESHOW_IMAGES.length);
+      setCurrIndex((prev) => (prev + 1) % validImages.length);
     }, 7000);
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, []);
+  }, [validImages.length]);
 
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStart.current = e.targetTouches[0].clientX;
@@ -349,9 +383,9 @@ const SlideshowBackground = () => {
     const distance = touchStart.current - touchEnd.current;
     if (Math.abs(distance) > 50) {
       if (distance > 0) {
-        setCurrIndex((prev) => (prev + 1) % SLIDESHOW_IMAGES.length);
+        setCurrIndex((prev) => (prev + 1) % validImages.length);
       } else {
-        setCurrIndex((prev) => (prev - 1 + SLIDESHOW_IMAGES.length) % SLIDESHOW_IMAGES.length);
+        setCurrIndex((prev) => (prev - 1 + validImages.length) % validImages.length);
       }
     }
     touchStart.current = 0;
@@ -368,7 +402,7 @@ const SlideshowBackground = () => {
         style={{ contain: 'strict' }}
       >
         {/* Keep ALL images in DOM for smooth transitions - use opacity only */}
-        {SLIDESHOW_IMAGES.map((src, index) => {
+        {validImages.map((imgSrc, index) => {
           const isActive = index === currIndex;
 
           return (
@@ -383,18 +417,22 @@ const SlideshowBackground = () => {
                 contain: 'layout style paint',
               }}
             >
-              <img
-                src={src}
-                alt={`Banner ${index + 1}`}
-                className="w-full h-full object-cover"
-                style={{
-                  // Subtle zoom effect only on active slide, GPU accelerated
-                  transform: isActive ? 'scale(1.02)' : 'scale(1)',
-                  transition: 'transform 7s ease-out',
-                  willChange: isActive ? 'transform' : 'auto',
-                }}
-                loading={index === 0 ? 'eager' : 'lazy'}
-              />
+              <picture>
+                <source srcSet={imgSrc.webp} type="image/webp" />
+                <source srcSet={imgSrc.png} type="image/png" />
+                <img
+                  src={imgSrc.png}
+                  alt={`케어빌 홈클리닝 서비스 배너 ${index + 1}`}
+                  className="w-full h-full object-cover"
+                  style={{
+                    // Subtle zoom effect only on active slide, GPU accelerated
+                    transform: isActive ? 'scale(1.02)' : 'scale(1)',
+                    transition: 'transform 7s ease-out',
+                    willChange: isActive ? 'transform' : 'auto',
+                  }}
+                  loading={index === 0 ? 'eager' : 'lazy'}
+                />
+              </picture>
             </div>
           );
         })}
@@ -402,7 +440,7 @@ const SlideshowBackground = () => {
 
       {/* Slide Indicators */}
       <div className="absolute bottom-24 left-1/2 -translate-x-1/2 flex items-center gap-3 z-20">
-        {SLIDESHOW_IMAGES.map((_, index) => (
+        {validImages.map((_, index) => (
           <button
             key={index}
             onClick={() => setCurrIndex(index)}
